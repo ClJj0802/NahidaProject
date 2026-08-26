@@ -43,8 +43,8 @@ async function moveWindowToBottomRight() {
   const windowSize =
     physicalWindowSize.toLogical(scaleFactor);
 
-  const marginRight = 0;
-  const marginBottom = 0;
+  const marginRight = 10;
+  const marginBottom = 10;
 
   const x =
     workPosition.x +
@@ -149,10 +149,33 @@ async function main() {
 
   model.automator.autoFocus = false;
 
+  const focusCenter = {
+    x: 0.5,
+    y: 0.21,
+  };
+
   model.on("pointermove", (event) => {
+    const desiredCenterX =
+      app.screen.width * focusCenter.x;
+
+    const desiredCenterY =
+      app.screen.height * focusCenter.y;
+
+    const defaultCenterX =
+      app.screen.width / 2;
+
+    const defaultCenterY =
+      app.screen.height / 2;
+
+    const offsetX =
+      defaultCenterX - desiredCenterX;
+
+    const offsetY =
+      defaultCenterY - desiredCenterY;
+
     model.focus(
-      event.global.x,
-      event.global.y
+      event.global.x + offsetX,
+      event.global.y + offsetY
     );
   });
 
@@ -193,6 +216,11 @@ async function main() {
   console.log(
     "Live2D model loaded successfully"
   );
+
+  console.log("Focus center:", {
+    x: app.screen.width * focusCenter.x,
+    y: app.screen.height * focusCenter.y,
+  });
 
   console.log(model);
 }

@@ -5,10 +5,11 @@ body,
   height: 100%;
   margin: 0;
   overflow: hidden;
+
+  background: transparent;
 }
 
-#app {
-  position: relative;
-  outline: 3px solid red;
-  outline-offset: -3px;
+canvas {
+  display: block;
+  background: transparent;
 }
