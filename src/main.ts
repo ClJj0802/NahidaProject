@@ -1,6 +1,7 @@
 import "./styles.css";
 
-import { Application, extensions } from "pixi.js";
+import { Application, Rectangle, extensions } from "pixi.js";
+
 import {
   Live2DModel,
   Live2DPlugin,
@@ -16,9 +17,11 @@ async function main() {
     preference: "webgl",
     autoDensity: true,
     resolution: window.devicePixelRatio,
+    backgroundAlpha: 0,
   });
 
-  const root = document.querySelector<HTMLDivElement>("#app");
+  const root =
+    document.querySelector<HTMLDivElement>("#app");
 
   if (!root) {
     throw new Error("#app element was not found");
@@ -27,8 +30,10 @@ async function main() {
   root.appendChild(app.canvas);
 
   const fpsCounter = document.createElement("div");
+
   fpsCounter.id = "fps-counter";
   fpsCounter.textContent = "FPS: --";
+
   document.body.appendChild(fpsCounter);
 
   const model = await Live2DModel.from(
@@ -56,9 +61,21 @@ async function main() {
     );
   };
 
-  fitModel();
-
   app.stage.addChild(model);
+
+  model.hitArea = new Rectangle(
+    -model.width * 0.35,
+    -model.height * 0.4,
+    model.width * 0.7,
+    model.height * 0.8
+  );
+
+  model.automator.autoFocus = false;
+  model.on("pointermove", (event) => {
+    model.focus(event.global.x, event.global.y);
+  });
+
+  fitModel();
 
   window.addEventListener("resize", fitModel);
 

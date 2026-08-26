@@ -10,17 +10,22 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "withGlobalTauri": true,
     "windows": [
       {
-        "title": "nahida-pet",
-        "width": 800,
-        "height": 600
+        "label": "main",
+        "title": "Nahida Pet",
+        "width": 500,
+        "height": 700,
+        "x": 1200,
+        "y": 450,
+        "resizable": false,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "shadow": false
       }
-    ],
-    "security": {
-      "csp": null
-    }
+    ]
   },
   "bundle": {
     "active": true,
