@@ -14,10 +14,8 @@
       {
         "label": "main",
         "title": "Nahida Pet",
-        "width": 500,
-        "height": 700,
-        "x": 1200,
-        "y": 450,
+        "width": 200,
+        "height": 380,
         "resizable": false,
         "decorations": false,
         "transparent": true,
