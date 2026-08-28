@@ -1,9 +1,8 @@
 from pathlib import Path
 
 from src.database import (
-    get_memories,
+    get_memories_by_ids,
     get_recent_messages,
-    get_recent_daily_summaries,
 )
 
 from src.llm_client import chat_completion
@@ -24,8 +23,10 @@ def load_persona():
     ).strip()
 
 
-def build_memory_context(limit=30):
-    memories = get_memories(limit)
+def build_memory_context(memory_ids):
+    memories = get_memories_by_ids(
+        memory_ids
+    )
 
     if not memories:
         return "No relevant long-term memories."
@@ -38,28 +39,6 @@ def build_memory_context(limit=30):
         )
 
     return "\n".join(lines)
-
-
-def build_daily_context(limit=7):
-    summaries = get_recent_daily_summaries(
-        limit
-    )
-
-    if not summaries:
-        return "No recent daily summaries."
-
-    lines = []
-
-    for item in reversed(summaries):
-        lines.append(
-            f"[{item['summary_date']}]"
-        )
-        lines.append(
-            item["summary"]
-        )
-        lines.append("")
-
-    return "\n".join(lines).strip()
 
 
 def build_recent_conversation(limit=16):
@@ -86,33 +65,33 @@ def build_recent_conversation(limit=16):
     return messages
 
 
-def generate_nahida_response():
+def generate_nahida_response(
+    relevant_memory_ids=None,
+):
+    if relevant_memory_ids is None:
+        relevant_memory_ids = []
+
     persona = load_persona()
 
     memories = build_memory_context(
-        limit=30
+        relevant_memory_ids
     )
 
-    daily_context = build_daily_context(
-        limit=7
-    )
-
-    conversation = (
-        build_recent_conversation(
-            limit=16
-        )
+    conversation = build_recent_conversation(
+        limit=16
     )
 
     system_context = f"""
 {persona}
 
-LONG-TERM MEMORIES:
+RELEVANT LONG-TERM MEMORIES:
 
 {memories}
 
-RECENT DAILY MEMORIES:
-
-{daily_context}
+Important:
+Only use the memories above when they are genuinely relevant.
+Do not mention memories merely to demonstrate that you remember them.
+Answer the user's current message naturally.
 """.strip()
 
     messages = [
@@ -127,5 +106,5 @@ RECENT DAILY MEMORIES:
     return chat_completion(
         messages=messages,
         temperature=0.7,
-        max_tokens=300,
+        max_tokens=220,
     ).strip()

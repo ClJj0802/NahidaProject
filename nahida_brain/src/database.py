@@ -401,4 +401,34 @@ def get_recent_daily_summaries(limit=7):
 
     return rows
 
+def get_memories_by_ids(memory_ids):
+    if not memory_ids:
+        return []
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    placeholders = ",".join(
+        "?"
+        for _ in memory_ids
+    )
+
+    query = f"""
+        SELECT *
+        FROM memories
+        WHERE
+            active = 1
+            AND id IN ({placeholders})
+        ORDER BY importance DESC
+    """
+
+    cursor.execute(
+        query,
+        memory_ids,
+    )
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
     return rows

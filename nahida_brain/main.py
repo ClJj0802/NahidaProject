@@ -45,18 +45,30 @@ def process_memory(
         print(
             f"[Memory] Analysis failed: {exc}"
         )
-        return
+
+        return []
+
+    relevant_memory_ids = (
+        decision.relevant_memory_ids
+    )
+
+    if relevant_memory_ids:
+        print(
+            "[Memory] Relevant: "
+            f"{relevant_memory_ids}"
+        )
 
     if decision.action == "ignore":
         print("[Memory] IGNORE")
-        return
+
+        return relevant_memory_ids
 
     if decision.action == "add":
         if (
             not decision.category
             or not decision.content
         ):
-            return
+            return relevant_memory_ids
 
         memory_id = save_memory(
             category=decision.category,
@@ -70,14 +82,14 @@ def process_memory(
             f"{decision.content}"
         )
 
-        return
+        return relevant_memory_ids
 
     if decision.action == "update":
         if (
             decision.target_memory_id
             is None
         ):
-            return
+            return relevant_memory_ids
 
         valid_ids = {
             memory["id"]
@@ -89,13 +101,13 @@ def process_memory(
             decision.target_memory_id
             not in valid_ids
         ):
-            return
+            return relevant_memory_ids
 
         if (
             not decision.category
             or not decision.content
         ):
-            return
+            return relevant_memory_ids
 
         success = update_memory(
             memory_id=(
@@ -114,28 +126,35 @@ def process_memory(
                 f"{decision.content}"
             )
 
+        return relevant_memory_ids
+
+    return relevant_memory_ids
+
 
 def chat_with_nahida(text):
-    previous_messages = (
-        get_recent_messages(12)
-    )
+    previous_messages = get_recent_messages(12)
 
     message_id = save_message(
         role="user",
         content=text,
     )
 
-    process_memory(
+    relevant_memory_ids = process_memory(
         text=text,
         message_id=message_id,
         previous_messages=previous_messages,
     )
 
+    print(
+        f"[Debug] Relevant memory IDs: "
+        f"{relevant_memory_ids}"
+    )
+
     print("[Nahida] Thinking...")
 
     try:
-        response = (
-            generate_nahida_response()
+        response = generate_nahida_response(
+            relevant_memory_ids=relevant_memory_ids,
         )
 
     except Exception as exc:
@@ -154,7 +173,6 @@ def chat_with_nahida(text):
         f"Nahida > {response}"
     )
     print()
-
 
 def show_memories():
     memories = get_memories()

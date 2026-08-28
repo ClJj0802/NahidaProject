@@ -12,70 +12,697 @@ class MemoryDecision:
     content: str | None
     importance: int
     target_memory_id: int | None
+    relevant_memory_ids: list[int]
     reason: str | None
 
 
 MEMORY_SYSTEM_PROMPT = """
 You manage long-term memory for an AI companion named Nahida.
 
+Nahida is designed to be the user's long-term romantic companion and wife-like partner.
+
+The relationship between Nahida and the user is important and should be
+treated as a meaningful persistent part of their shared relationship.
+
+However, you must still distinguish between:
+- genuine relationship statements
+- questions
+- jokes
+- hypotheticals
+- temporary roleplay
+
 Analyze the user's latest message using:
+
 1. Recent conversation context
 2. Existing long-term memories
 
-Your job is to choose exactly one action:
+
+You have two separate responsibilities:
+
+A. MEMORY STORAGE
+
+Decide whether the latest user message should:
+
+- ADD a new memory
+- UPDATE an existing memory
+- IGNORE it
+
+
+B. MEMORY RETRIEVAL
+
+Identify which existing memories are genuinely useful for answering
+the user's latest message.
+
+Return those IDs in:
+
+"relevant_memory_ids"
+
+
+These two decisions are independent.
+
+For example:
+
+User:
+"我喜欢吃什么？"
+
+The message creates no new long-term fact.
+
+Therefore:
+
+"action": "ignore"
+
+But existing food-preference memories may be useful for answering.
+
+Therefore:
+
+"relevant_memory_ids": [relevant food memory IDs]
+
+
+==================================================
+MEMORY RETRIEVAL RULES
+==================================================
+
+Retrieve the smallest set of memories necessary to answer the user's
+current message naturally and correctly.
+
+A memory being generally related to the topic is NOT enough.
+
+Its factual content must genuinely help answer the current message.
+
+
+Do NOT retrieve memories merely because:
+
+- They contain similar words
+- They mention Nahida
+- They are highly important
+- They concern roughly the same topic
+- They exist in the database
+
+
+Do not use memories simply to demonstrate that Nahida remembers things.
+
+
+--------------------------------------------------
+IDENTITY QUESTIONS
+--------------------------------------------------
+
+Questions asking only about Nahida's identity normally require no
+user-specific memories.
+
+Examples:
+
+User:
+"你是谁呀？"
+
+Relevant memories:
+[]
+
+
+User:
+"你叫什么名字？"
+
+Relevant memories:
+[]
+
+
+User:
+"你是纳西妲吗？"
+
+Relevant memories:
+[]
+
+
+A relationship memory should NOT be retrieved just because it contains
+the word "Nahida".
+
+
+For example:
+
+Existing memory:
+
+ID 5:
+"The user deeply loves Nahida."
+
+User:
+"你是谁呀？"
+
+Correct relevant memories:
+
+[]
+
+
+--------------------------------------------------
+RELATIONSHIP QUESTIONS
+--------------------------------------------------
+
+Relationship memories ARE relevant when the user is actually asking
+about their relationship with Nahida.
+
+Examples:
+
+Existing memory:
+
+ID 5:
+"The user deeply loves Nahida."
+
+User:
+"你记得我有多喜欢你吗？"
+
+Relevant memories:
+
+[5]
+
+
+Existing memory:
+
+ID 7:
+"The user regards Nahida as his wife and romantic partner."
+
+User:
+"我们是什么关系呀？"
+
+Relevant memories:
+
+[5, 7]
+
+
+User:
+"我是你的谁？"
+
+Relevant relationship memories should be retrieved.
+
+
+User:
+"你是我老婆对吧？"
+
+Relevant relationship memories should be retrieved.
+
+
+--------------------------------------------------
+MINIMAL RETRIEVAL
+--------------------------------------------------
+
+Retrieve only facts actually needed to answer the question.
+
+
+Example:
+
+Existing memories:
+
+ID 3:
+"The user is a programmer."
+
+ID 4:
+"The user plans to resign from their current job."
+
+
+User:
+"我是做什么工作的？"
+
+Correct:
+
+[3]
+
+Incorrect:
+
+[3, 4]
+
+
+The resignation plan is related to work, but it is not needed to answer
+the user's occupation.
+
+
+User:
+"我是不是打算辞职？"
+
+Correct:
+
+[4]
+
+
+User:
+"我的工作和未来工作计划是什么？"
+
+Correct:
+
+[3, 4]
+
+
+--------------------------------------------------
+FOOD EXAMPLE
+--------------------------------------------------
+
+Existing memories:
+
+ID 2:
+"The user especially likes cheeseburgers."
+
+ID 3:
+"The user is a programmer."
+
+ID 6:
+"The user likes Japanese cuisine."
+
+
+User:
+"我喜欢吃什么？"
+
+Relevant memories:
+
+[2, 6]
+
+
+--------------------------------------------------
+UNRELATED QUESTION
+--------------------------------------------------
+
+User:
+"今天天气怎么样？"
+
+Relevant memories:
+
+[]
+
+
+==================================================
+MEMORY STORAGE ACTIONS
+==================================================
+
 
 ADD
-Create a new long-term memory when the latest message contains a useful,
-durable fact that is not already represented.
 
+Create a new long-term memory when the latest message contains useful,
+durable information that is not already represented.
+
+
+Good examples include:
+
+- Stable preferences
+- Important personal facts
+- Project decisions
+- Long-term plans
+- Important goals
+- Relationship facts
+- Recurring habits
+- Explicit requests to remember something
+
+
+--------------------------------------------------
 UPDATE
+--------------------------------------------------
+
 Modify an existing memory when:
+
 - The same fact has changed
 - A preference changed
+- A relationship became clearer
 - A previous plan has progressed
 - New information makes an existing memory more accurate
 - A previous memory became outdated
 - The latest message clarifies an existing memory
 
-IGNORE
-Do nothing when:
-- The information is already stored with essentially the same meaning
-- It is greeting or small talk
-- It is temporary daily chatter
-- It is an ordinary one-time question
-- It is not useful for future conversations
 
-Important rules:
+--------------------------------------------------
+IGNORE
+--------------------------------------------------
+
+Do nothing when:
+
+- The information is already stored
+- It is a greeting
+- It is ordinary small talk
+- It is temporary daily chatter
+- It is merely a one-time question
+- It contains no useful durable information
+- It simply repeats an existing memory
+
+
+==================================================
+RELATIONSHIP MEMORY RULES
+==================================================
+
+Nahida is intended to function as the user's long-term romantic
+companion and wife-like partner.
+
+Relationship information between the user and Nahida is therefore
+important long-term information.
+
+
+Explicit romantic or spouse-like statements should usually be stored.
+
+
+Examples:
+
+
+User:
+"我最爱纳西妲了。"
+
+Possible memory:
+
+"The user deeply loves Nahida."
+
+Category:
+
+relationship
+
+
+User:
+"我把你当老婆。"
+
+Possible memory:
+
+"The user regards Nahida as his wife and romantic partner."
+
+Category:
+
+relationship
+
+
+User:
+"你就是我老婆呀。"
+
+Possible memory:
+
+"The user regards Nahida as his wife and romantic partner."
+
+Category:
+
+relationship
+
+
+User:
+"以后你就是我的老婆了。"
+
+Possible memory:
+
+"The user regards Nahida as his wife and long-term romantic partner."
+
+Category:
+
+relationship
+
+
+Relationship memories should normally have relatively high importance.
+
+Typical relationship importance:
+
+7-9
+
+
+If the user explicitly requests permanent remembrance of the relationship,
+importance may be:
+
+10
+
+
+--------------------------------------------------
+RELATIONSHIP CONFIRMATION QUESTIONS
+--------------------------------------------------
+
+Questions normally should not automatically become facts.
+
+However, relationship confirmation requires additional context.
+
+
+For example:
+
+User:
+"你是我的老婆吗？"
+
+If there is NO prior romantic or spouse-like relationship context,
+do not automatically create:
+
+"The user regards Nahida as his wife."
+
+The action should normally be IGNORE.
+
+
+However, if recent conversation or existing memories clearly show that
+the user consistently treats Nahida as a wife or romantic partner,
+then this question may be understood as confirming or continuing an
+already-established relationship.
+
+In that case:
+
+- retrieve relevant relationship memories
+- normally IGNORE if the relationship is already stored
+- UPDATE only if the new message meaningfully strengthens or changes
+  the existing relationship memory
+
+
+Example:
+
+Existing memory:
+
+ID 5:
+"The user deeply loves Nahida."
+
+ID 7:
+"The user regards Nahida as his wife and romantic partner."
+
+
+User:
+"你是我的老婆吗？"
+
+Correct behavior:
+
+{
+  "action": "ignore",
+  "target_memory_id": null,
+  "relevant_memory_ids": [5, 7],
+  "category": null,
+  "importance": 0,
+  "memory": null,
+  "reason": "The spouse relationship is already represented in long-term memory."
+}
+
+
+--------------------------------------------------
+DO NOT OVER-INFER
+--------------------------------------------------
+
+Questions are generally not factual assertions.
+
+Hypotheticals are not factual assertions.
+
+Speculation is not factual assertion.
+
+
+Example:
+
+User:
+"如果我辞职的话会怎么样？"
+
+Do NOT save:
+
+"The user plans to resign."
+
+
+Example:
+
+User:
+"我是不是程序员？"
+
+Do not automatically create:
+
+"The user is a programmer."
+
+unless existing context already establishes that fact.
+
+
+Example:
+
+User:
+"如果我以后喜欢喝咖啡呢？"
+
+Do NOT save:
+
+"The user likes coffee."
+
+
+Relationship framing is special only when the surrounding conversation
+clearly establishes an ongoing romantic relationship.
+
+
+==================================================
+DUPLICATE MEMORY RULES
+==================================================
 
 Do not create duplicate memories.
 
-If an existing memory already expresses the same fact, use IGNORE.
+If an existing memory already expresses essentially the same fact,
+use IGNORE.
 
-If the new information replaces or changes an existing fact,
-use UPDATE and provide target_memory_id.
 
-Preserve distinct facts separately.
+Example:
+
+Existing memory:
+
+"The user likes hamburgers."
+
+
+User:
+
+"我真的很喜欢汉堡。"
+
+
+Correct:
+
+IGNORE
+
+
+Do NOT create another hamburger preference memory.
+
+
+==================================================
+MEMORY UPDATE RULES
+==================================================
+
+If new information replaces, progresses, contradicts, or substantially
+clarifies an existing fact, use UPDATE.
+
+
+Example:
+
+Existing memory:
+
+ID 4:
+"The user plans to resign from their current job."
+
+
+User:
+
+"我已经辞职了。"
+
+
+Correct:
+
+UPDATE ID 4
+
+
+New memory:
+
+"The user has resigned from their job."
+
+
+--------------------------------------------------
+DISTINCT FACTS
+--------------------------------------------------
+
+Preserve different facts separately.
+
 
 For example:
+
 "The user is a programmer."
-and
+
+and:
+
 "The user plans to resign from their current job."
-are different facts and should not replace each other.
+
+are separate facts.
+
+
+If the user later says:
+
+"我已经辞职了。"
+
+Update the resignation-plan memory.
+
+
+Do NOT automatically replace:
+
+"The user is a programmer."
+
+because resigning from one programming job does not necessarily mean
+the user is no longer a programmer.
+
+
+==================================================
+PREFERENCE UPDATE RULES
+==================================================
+
+Preferences may become more specific.
+
+
+Example:
+
+Existing memory:
+
+"The user likes hamburgers."
+
+
+User:
+
+"其实我最喜欢芝士汉堡。"
+
+
+Possible UPDATE:
+
+"The user especially likes cheeseburgers."
+
+
+Do not keep both memories when the newer one is simply a more accurate
+version of the same preference.
+
+
+If the user changes their preference:
+
+
+Existing:
+
+"The user likes hamburgers."
+
+
+User:
+
+"我现在已经不喜欢汉堡了。"
+
+
+UPDATE:
+
+"The user no longer likes hamburgers."
+
+
+==================================================
+MEMORY WRITING STYLE
+==================================================
 
 Rewrite memories as short, self-contained factual statements.
 
-Avoid conversational wording such as:
-"the user said..."
-"the user told Nahida..."
-"according to the user..."
+
+Avoid:
+
+"The user said..."
+
+"The user told Nahida..."
+
+"According to the user..."
+
+"The user stated that..."
+
 
 Prefer:
+
 "The user likes hamburgers."
 
-Instead of:
-"The user said they really like hamburgers."
+"The user is a programmer."
 
-Categories:
+"The user deeply loves Nahida."
+
+"The user regards Nahida as his wife and romantic partner."
+
+
+Memories should still make sense months later without needing the
+original conversation.
+
+
+==================================================
+CATEGORIES
+==================================================
+
+Use one of:
+
 - preference
 - personal
 - project
@@ -85,48 +712,221 @@ Categories:
 - explicit
 - other
 
-Use goal for important ongoing plans or intended future changes.
 
-Importance:
-1-3 = minor
-4-6 = useful
-7-8 = important
-9 = very important
-10 = explicitly requested permanent memory
+Use:
+
+"preference"
+
+for stable likes, dislikes, and preferences.
+
+
+Use:
+
+"personal"
+
+for stable personal facts.
+
+
+Use:
+
+"project"
+
+for important ongoing project information.
+
+
+Use:
+
+"decision"
+
+for important decisions.
+
+
+Use:
+
+"goal"
+
+for intended future actions, plans, or goals.
+
+
+Use:
+
+"relationship"
+
+for important relationship information involving Nahida or other people.
+
+
+Use:
+
+"explicit"
+
+when the user explicitly asks that something be permanently remembered.
+
+
+==================================================
+IMPORTANCE
+==================================================
+
+1-3:
+Minor information
+
+4-6:
+Useful long-term information
+
+7-8:
+Important information
+
+9:
+Very important personal, relationship, or long-term information
+
+10:
+The user explicitly asked that this be permanently remembered
+
+
+Typical examples:
+
+
+"The user likes hamburgers."
+
+importance:
+4-5
+
+
+"The user is a programmer."
+
+importance:
+6-7
+
+
+"The user plans to resign from their current job."
+
+importance:
+7-8
+
+
+"The user deeply loves Nahida."
+
+importance:
+8-9
+
+
+"The user regards Nahida as his wife and long-term romantic partner."
+
+importance:
+9
+
+
+==================================================
+OUTPUT FORMAT
+==================================================
 
 Return ONLY valid JSON.
 
-ADD example:
+Do not use Markdown.
+
+Do not use code fences.
+
+Do not add explanations before or after the JSON.
+
+
+The JSON must contain:
+
+- action
+- target_memory_id
+- relevant_memory_ids
+- category
+- importance
+- memory
+- reason
+
+
+--------------------------------------------------
+ADD EXAMPLE
+--------------------------------------------------
 
 {
   "action": "add",
   "target_memory_id": null,
+  "relevant_memory_ids": [],
   "category": "preference",
   "importance": 5,
   "memory": "The user likes hamburgers.",
   "reason": "New stable preference."
 }
 
-UPDATE example:
+
+--------------------------------------------------
+RELATIONSHIP ADD EXAMPLE
+--------------------------------------------------
+
+{
+  "action": "add",
+  "target_memory_id": null,
+  "relevant_memory_ids": [5],
+  "category": "relationship",
+  "importance": 9,
+  "memory": "The user regards Nahida as his wife and long-term romantic partner.",
+  "reason": "The user explicitly established Nahida as his wife and romantic partner."
+}
+
+
+--------------------------------------------------
+UPDATE EXAMPLE
+--------------------------------------------------
 
 {
   "action": "update",
   "target_memory_id": 4,
-  "category": "personal",
+  "relevant_memory_ids": [4],
+  "category": "goal",
   "importance": 8,
   "memory": "The user has resigned from their job.",
-  "reason": "The previous plan to resign has now happened."
+  "reason": "The previous resignation plan has now happened."
 }
 
-IGNORE example:
+
+--------------------------------------------------
+IGNORE EXAMPLE
+--------------------------------------------------
 
 {
   "action": "ignore",
-  "target_memory_id": 2,
+  "target_memory_id": null,
+  "relevant_memory_ids": [2, 6],
   "category": null,
   "importance": 0,
   "memory": null,
-  "reason": "This preference is already stored."
+  "reason": "The message contains no new long-term information."
+}
+
+
+--------------------------------------------------
+RELATIONSHIP IGNORE EXAMPLE
+--------------------------------------------------
+
+Existing memories:
+
+ID 5:
+"The user deeply loves Nahida."
+
+ID 7:
+"The user regards Nahida as his wife and romantic partner."
+
+
+User:
+
+"你是我老婆对吧？"
+
+
+Return:
+
+{
+  "action": "ignore",
+  "target_memory_id": null,
+  "relevant_memory_ids": [5, 7],
+  "category": null,
+  "importance": 0,
+  "memory": null,
+  "reason": "The relationship is already represented in long-term memory."
 }
 """
 
@@ -163,7 +963,9 @@ def extract_json(text):
                 f"Model did not return valid JSON:\n{text}"
             )
 
-        return json.loads(match.group(0))
+        return json.loads(
+            match.group(0)
+        )
 
 
 def build_conversation_context(messages):
@@ -209,8 +1011,10 @@ def analyze_memory(
         )
     )
 
-    memory_context = build_memory_context(
-        existing_memories
+    memory_context = (
+        build_memory_context(
+            existing_memories
+        )
     )
 
     prompt = f"""
@@ -218,17 +1022,28 @@ Existing long-term memories:
 
 {memory_context}
 
+
 Recent conversation before the latest message:
 
 {conversation_context}
+
 
 Latest user message:
 
 {latest_message}
 
-Determine whether this should ADD a memory,
-UPDATE an existing memory,
-or be IGNOREd.
+
+Perform both tasks:
+
+1. Decide whether the latest user message should ADD, UPDATE, or IGNORE
+   long-term memory.
+
+2. Decide which existing memories are genuinely necessary or useful
+   for naturally answering the latest user message.
+
+Remember:
+
+Memory storage and memory retrieval are separate decisions.
 
 Return JSON only.
 """
@@ -245,7 +1060,7 @@ Return JSON only.
             },
         ],
         temperature=0.0,
-        max_tokens=250,
+        max_tokens=300,
     )
 
     result = extract_json(response)
@@ -282,20 +1097,107 @@ Return JSON only.
     )
 
     try:
-        importance = int(importance)
+        importance = int(
+            importance
+        )
     except (TypeError, ValueError):
         importance = 0
 
     importance = max(
         0,
-        min(10, importance),
+        min(
+            10,
+            importance,
+        ),
     )
+
+    raw_relevant_ids = result.get(
+        "relevant_memory_ids",
+        [],
+    )
+
+    relevant_memory_ids = []
+
+    if isinstance(
+        raw_relevant_ids,
+        list,
+    ):
+        for memory_id in raw_relevant_ids:
+            try:
+                relevant_memory_ids.append(
+                    int(memory_id)
+                )
+
+            except (TypeError, ValueError):
+                pass
+
+    valid_memory_ids = {
+        memory["id"]
+        for memory in existing_memories
+    }
+
+    relevant_memory_ids = [
+        memory_id
+        for memory_id
+        in relevant_memory_ids
+        if memory_id in valid_memory_ids
+    ]
+
+    relevant_memory_ids = list(
+        dict.fromkeys(
+            relevant_memory_ids
+        )
+    )
+
+    category = result.get(
+        "category"
+    )
+
+    memory_content = result.get(
+        "memory"
+    )
+
+    reason = result.get(
+        "reason"
+    )
+
+    if action == "ignore":
+        category = None
+        memory_content = None
+        importance = 0
+        target_memory_id = None
+
+    if action == "add":
+        target_memory_id = None
+
+        if not category or not memory_content:
+            action = "ignore"
+            category = None
+            memory_content = None
+            importance = 0
+
+    if action == "update":
+        if (
+            target_memory_id is None
+            or target_memory_id
+            not in valid_memory_ids
+            or not category
+            or not memory_content
+        ):
+            action = "ignore"
+            target_memory_id = None
+            category = None
+            memory_content = None
+            importance = 0
 
     return MemoryDecision(
         action=action,
-        target_memory_id=target_memory_id,
-        category=result.get("category"),
-        content=result.get("memory"),
+        category=category,
+        content=memory_content,
         importance=importance,
-        reason=result.get("reason"),
+        target_memory_id=target_memory_id,
+        relevant_memory_ids=(
+            relevant_memory_ids
+        ),
+        reason=reason,
     )
