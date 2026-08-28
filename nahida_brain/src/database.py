@@ -15,6 +15,21 @@ def get_connection():
     return conn
 
 
+def column_exists(conn, table_name, column_name):
+    cursor = conn.cursor()
+
+    cursor.execute(
+        f"PRAGMA table_info({table_name})"
+    )
+
+    columns = cursor.fetchall()
+
+    return any(
+        column["name"] == column_name
+        for column in columns
+    )
+
+
 def init_db():
     conn = get_connection()
     cursor = conn.cursor()
@@ -48,6 +63,18 @@ def init_db():
         """
     )
 
+    if not column_exists(
+        conn,
+        "memories",
+        "updated_at",
+    ):
+        cursor.execute(
+            """
+            ALTER TABLE memories
+            ADD COLUMN updated_at TEXT
+            """
+        )
+
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS daily_summaries (
@@ -68,7 +95,9 @@ def save_message(role, content):
     conn = get_connection()
     cursor = conn.cursor()
 
-    created_at = datetime.now().isoformat(timespec="seconds")
+    created_at = datetime.now().isoformat(
+        timespec="seconds"
+    )
 
     cursor.execute(
         """
@@ -103,7 +132,9 @@ def save_memory(
     conn = get_connection()
     cursor = conn.cursor()
 
-    created_at = datetime.now().isoformat(timespec="seconds")
+    now = datetime.now().isoformat(
+        timespec="seconds"
+    )
 
     cursor.execute(
         """
@@ -112,16 +143,18 @@ def save_memory(
             content,
             importance,
             source_message_id,
-            created_at
+            created_at,
+            updated_at
         )
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?)
         """,
         (
             category,
             content,
             importance,
             source_message_id,
-            created_at,
+            now,
+            now,
         ),
     )
 
@@ -131,6 +164,80 @@ def save_memory(
     conn.close()
 
     return memory_id
+
+
+def update_memory(
+    memory_id,
+    category,
+    content,
+    importance,
+    source_message_id=None,
+):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    updated_at = datetime.now().isoformat(
+        timespec="seconds"
+    )
+
+    cursor.execute(
+        """
+        UPDATE memories
+        SET
+            category = ?,
+            content = ?,
+            importance = ?,
+            source_message_id = ?,
+            updated_at = ?,
+            active = 1
+        WHERE id = ?
+        """,
+        (
+            category,
+            content,
+            importance,
+            source_message_id,
+            updated_at,
+            memory_id,
+        ),
+    )
+
+    changed = cursor.rowcount
+
+    conn.commit()
+    conn.close()
+
+    return changed > 0
+
+
+def deactivate_memory(memory_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    updated_at = datetime.now().isoformat(
+        timespec="seconds"
+    )
+
+    cursor.execute(
+        """
+        UPDATE memories
+        SET
+            active = 0,
+            updated_at = ?
+        WHERE id = ?
+        """,
+        (
+            updated_at,
+            memory_id,
+        ),
+    )
+
+    changed = cursor.rowcount
+
+    conn.commit()
+    conn.close()
+
+    return changed > 0
 
 
 def get_recent_messages(limit=20):
@@ -154,7 +261,7 @@ def get_recent_messages(limit=20):
     return list(reversed(rows))
 
 
-def get_memories(limit=50):
+def get_memories(limit=100):
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -174,6 +281,26 @@ def get_memories(limit=50):
     conn.close()
 
     return rows
+
+
+def get_memory(memory_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM memories
+        WHERE id = ?
+        """,
+        (memory_id,),
+    )
+
+    row = cursor.fetchone()
+
+    conn.close()
+
+    return row
 
 
 def get_messages_for_date(date_string):
