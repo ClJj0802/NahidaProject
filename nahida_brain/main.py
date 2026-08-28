@@ -18,19 +18,18 @@ from src.daily_summary import (
     generate_daily_summary,
 )
 
+from src.chat import (
+    generate_nahida_response,
+)
 
-def process_user_message(text):
-    previous_messages = (
-        get_recent_messages(10)
-    )
 
+def process_memory(
+    text,
+    message_id,
+    previous_messages,
+):
     existing_memories = (
         get_memories(100)
-    )
-
-    message_id = save_message(
-        role="user",
-        content=text,
     )
 
     print("[Memory] Analyzing...")
@@ -50,13 +49,6 @@ def process_user_message(text):
 
     if decision.action == "ignore":
         print("[Memory] IGNORE")
-
-        if decision.reason:
-            print(
-                f"[Memory] Reason: "
-                f"{decision.reason}"
-            )
-
         return
 
     if decision.action == "add":
@@ -64,9 +56,6 @@ def process_user_message(text):
             not decision.category
             or not decision.content
         ):
-            print(
-                "[Memory] Invalid ADD result"
-            )
             return
 
         memory_id = save_memory(
@@ -77,88 +66,94 @@ def process_user_message(text):
         )
 
         print(
-            f"[Memory] ADD #{memory_id}"
-        )
-
-        print(
-            f"[Memory] "
-            f"[{decision.category}] "
-            f"importance="
-            f"{decision.importance}"
-        )
-
-        print(
-            f"[Memory] {decision.content}"
+            f"[Memory] ADD #{memory_id}: "
+            f"{decision.content}"
         )
 
         return
 
     if decision.action == "update":
-        if decision.target_memory_id is None:
-            print(
-                "[Memory] UPDATE missing "
-                "target_memory_id"
-            )
+        if (
+            decision.target_memory_id
+            is None
+        ):
             return
 
         valid_ids = {
             memory["id"]
-            for memory in existing_memories
+            for memory
+            in existing_memories
         }
 
         if (
             decision.target_memory_id
             not in valid_ids
         ):
-            print(
-                "[Memory] Invalid UPDATE target"
-            )
             return
 
         if (
             not decision.category
             or not decision.content
         ):
-            print(
-                "[Memory] Invalid UPDATE content"
-            )
             return
 
         success = update_memory(
-            memory_id=decision.target_memory_id,
+            memory_id=(
+                decision.target_memory_id
+            ),
             category=decision.category,
             content=decision.content,
             importance=decision.importance,
             source_message_id=message_id,
         )
 
-        if not success:
+        if success:
             print(
-                "[Memory] UPDATE failed"
+                f"[Memory] UPDATE "
+                f"#{decision.target_memory_id}: "
+                f"{decision.content}"
             )
-            return
 
-        print(
-            f"[Memory] UPDATE "
-            f"#{decision.target_memory_id}"
+
+def chat_with_nahida(text):
+    previous_messages = (
+        get_recent_messages(12)
+    )
+
+    message_id = save_message(
+        role="user",
+        content=text,
+    )
+
+    process_memory(
+        text=text,
+        message_id=message_id,
+        previous_messages=previous_messages,
+    )
+
+    print("[Nahida] Thinking...")
+
+    try:
+        response = (
+            generate_nahida_response()
         )
 
+    except Exception as exc:
         print(
-            f"[Memory] "
-            f"[{decision.category}] "
-            f"importance="
-            f"{decision.importance}"
+            f"[Nahida] Failed: {exc}"
         )
+        return
 
-        print(
-            f"[Memory] {decision.content}"
-        )
+    save_message(
+        role="assistant",
+        content=response,
+    )
 
-        if decision.reason:
-            print(
-                f"[Memory] Reason: "
-                f"{decision.reason}"
-            )
+    print()
+    print(
+        f"Nahida > {response}"
+    )
+    print()
 
 
 def show_memories():
@@ -180,23 +175,11 @@ def show_memories():
         )
 
         print(memory["content"])
-
-        print(
-            f"Created: "
-            f"{memory['created_at']}"
-        )
-
-        if memory["updated_at"]:
-            print(
-                f"Updated: "
-                f"{memory['updated_at']}"
-            )
-
         print()
 
 
 def show_recent_messages():
-    messages = get_recent_messages(20)
+    messages = get_recent_messages(30)
 
     print()
     print("=== Recent Messages ===")
@@ -207,6 +190,8 @@ def show_recent_messages():
             f"{message['role']}: "
             f"{message['content']}"
         )
+
+    print()
 
 
 def summarize_today():
@@ -222,8 +207,8 @@ def summarize_today():
     )
 
     try:
-        summary = generate_daily_summary(
-            today
+        summary = (
+            generate_daily_summary(today)
         )
 
     except Exception as exc:
@@ -234,13 +219,15 @@ def summarize_today():
 
     if summary is None:
         print(
-            "[Daily] No messages to summarize."
+            "[Daily] No messages "
+            "to summarize."
         )
         return
 
     print()
     print(
-        f"=== Daily Summary: {today} ==="
+        f"=== Daily Summary: "
+        f"{today} ==="
     )
 
     print(summary)
@@ -253,16 +240,22 @@ def show_daily_summaries():
     )
 
     print()
-    print("=== Recent Daily Summaries ===")
+    print(
+        "=== Recent Daily Summaries ==="
+    )
 
     if not summaries:
-        print("No daily summaries.")
+        print(
+            "No daily summaries."
+        )
         return
 
     for item in summaries:
         print()
         print(
-            f"--- {item['summary_date']} ---"
+            f"--- "
+            f"{item['summary_date']} "
+            f"---"
         )
 
         print(item["summary"])
@@ -273,24 +266,24 @@ def show_daily_summaries():
 def main():
     init_db()
 
-    print("Nahida Memory V4")
+    print("Nahida Brain V5")
     print()
 
     print("Commands:")
     print(
-        "/memory    Show long-term memories"
+        "/memory     Show memories"
     )
     print(
-        "/history   Show recent messages"
+        "/history    Show conversation"
     )
     print(
-        "/summary   Summarize today"
+        "/summary    Summarize today"
     )
     print(
-        "/summaries Show recent daily summaries"
+        "/summaries  Show summaries"
     )
     print(
-        "/exit      Exit"
+        "/exit       Exit"
     )
     print()
 
@@ -319,7 +312,7 @@ def main():
         if not text:
             continue
 
-        process_user_message(text)
+        chat_with_nahida(text)
 
 
 if __name__ == "__main__":
