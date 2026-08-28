@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from src.database import (
     init_db,
     save_message,
@@ -5,14 +7,26 @@ from src.database import (
     update_memory,
     get_memories,
     get_recent_messages,
+    get_recent_daily_summaries,
 )
 
-from src.memory_filter import analyze_memory
+from src.memory_filter import (
+    analyze_memory,
+)
+
+from src.daily_summary import (
+    generate_daily_summary,
+)
 
 
 def process_user_message(text):
-    previous_messages = get_recent_messages(10)
-    existing_memories = get_memories(100)
+    previous_messages = (
+        get_recent_messages(10)
+    )
+
+    existing_memories = (
+        get_memories(100)
+    )
 
     message_id = save_message(
         role="user",
@@ -97,8 +111,7 @@ def process_user_message(text):
             not in valid_ids
         ):
             print(
-                "[Memory] Invalid UPDATE "
-                "target"
+                "[Memory] Invalid UPDATE target"
             )
             return
 
@@ -107,8 +120,7 @@ def process_user_message(text):
             or not decision.content
         ):
             print(
-                "[Memory] Invalid UPDATE "
-                "content"
+                "[Memory] Invalid UPDATE content"
             )
             return
 
@@ -197,20 +209,88 @@ def show_recent_messages():
         )
 
 
+def summarize_today():
+    today = (
+        datetime.now()
+        .date()
+        .isoformat()
+    )
+
+    print()
+    print(
+        f"[Daily] Summarizing {today}..."
+    )
+
+    try:
+        summary = generate_daily_summary(
+            today
+        )
+
+    except Exception as exc:
+        print(
+            f"[Daily] Failed: {exc}"
+        )
+        return
+
+    if summary is None:
+        print(
+            "[Daily] No messages to summarize."
+        )
+        return
+
+    print()
+    print(
+        f"=== Daily Summary: {today} ==="
+    )
+
+    print(summary)
+    print()
+
+
+def show_daily_summaries():
+    summaries = (
+        get_recent_daily_summaries(7)
+    )
+
+    print()
+    print("=== Recent Daily Summaries ===")
+
+    if not summaries:
+        print("No daily summaries.")
+        return
+
+    for item in summaries:
+        print()
+        print(
+            f"--- {item['summary_date']} ---"
+        )
+
+        print(item["summary"])
+
+    print()
+
+
 def main():
     init_db()
 
-    print("Nahida Memory V3")
+    print("Nahida Memory V4")
     print()
+
     print("Commands:")
     print(
-        "/memory   Show long-term memories"
+        "/memory    Show long-term memories"
     )
     print(
-        "/history  Show recent messages"
+        "/history   Show recent messages"
     )
     print(
-        "/exit     Exit"
+        "/summary   Summarize today"
+    )
+    print(
+        "/summaries Show recent daily summaries"
+    )
+    print(
+        "/exit      Exit"
     )
     print()
 
@@ -226,6 +306,14 @@ def main():
 
         if text == "/history":
             show_recent_messages()
+            continue
+
+        if text == "/summary":
+            summarize_today()
+            continue
+
+        if text == "/summaries":
+            show_daily_summaries()
             continue
 
         if not text:

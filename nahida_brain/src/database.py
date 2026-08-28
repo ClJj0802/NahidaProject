@@ -311,14 +311,94 @@ def get_messages_for_date(date_string):
         """
         SELECT *
         FROM messages
-        WHERE substr(created_at, 1, 10) = ?
+        WHERE created_at LIKE ?
         ORDER BY id ASC
         """,
-        (date_string,),
+        (f"{date_string}%",),
     )
 
     rows = cursor.fetchall()
 
     conn.close()
+
+    return rows
+
+def save_daily_summary(
+    summary_date,
+    summary,
+):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    now = datetime.now().isoformat(
+        timespec="seconds"
+    )
+
+    cursor.execute(
+        """
+        INSERT INTO daily_summaries (
+            summary_date,
+            summary,
+            created_at,
+            updated_at
+        )
+        VALUES (?, ?, ?, ?)
+
+        ON CONFLICT(summary_date)
+        DO UPDATE SET
+            summary = excluded.summary,
+            updated_at = excluded.updated_at
+        """,
+        (
+            summary_date,
+            summary,
+            now,
+            now,
+        ),
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def get_daily_summary(summary_date):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM daily_summaries
+        WHERE summary_date = ?
+        """,
+        (summary_date,),
+    )
+
+    row = cursor.fetchone()
+
+    conn.close()
+
+    return row
+
+
+def get_recent_daily_summaries(limit=7):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM daily_summaries
+        ORDER BY summary_date DESC
+        LIMIT ?
+        """,
+        (limit,),
+    )
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    return rows
 
     return rows
