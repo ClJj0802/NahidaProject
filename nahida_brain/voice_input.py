@@ -45,7 +45,8 @@ class VoiceInput:
         self.sample_rate = sample_rate
         self.channels = channels
         self.language = language
-        self.input_device = input_device
+        self.requested_input_device = input_device
+        self.input_device = None
 
         self.speech_threshold = speech_threshold
         self.silence_duration = silence_duration
@@ -55,6 +56,22 @@ class VoiceInput:
         self.last_raw_text = ""
         self.last_tags = []
         self.last_emotion = None
+
+        self.input_device = (
+            self._find_input_device(
+                self.requested_input_device
+            )
+        )
+
+        input_info = sd.query_devices(
+            self.input_device
+        )
+
+        print(
+            f"[Voice] Input device: "
+            f"{self.input_device} - "
+            f"{input_info['name']}"
+        )
 
         self.device = (
             "cuda:0"
@@ -82,6 +99,203 @@ class VoiceInput:
         )
 
         self._warm_up()
+
+    def _is_valid_input_device(
+        self,
+        device_index,
+    ):
+        if (
+            device_index is None
+            or device_index < 0
+        ):
+            return False
+
+        try:
+            info = sd.query_devices(
+                device_index
+            )
+
+            if (
+                info["max_input_channels"]
+                <= 0
+            ):
+                return False
+
+            sd.check_input_settings(
+                device=device_index,
+                channels=self.channels,
+                samplerate=self.sample_rate,
+                dtype="float32",
+            )
+
+            return True
+
+        except Exception:
+            return False
+
+    def _find_input_device(
+        self,
+        preferred_device=None,
+    ):
+        if preferred_device is not None:
+            if self._is_valid_input_device(
+                preferred_device
+            ):
+                return preferred_device
+
+            print(
+                f"[Voice] Requested input "
+                f"device {preferred_device} "
+                f"is unavailable."
+            )
+
+        try:
+            default_input = (
+                sd.default.device[0]
+            )
+        except Exception:
+            default_input = -1
+
+        if self._is_valid_input_device(
+            default_input
+        ):
+            return default_input
+
+        devices = sd.query_devices()
+
+        candidates = []
+
+        for index, info in enumerate(
+            devices
+        ):
+            if (
+                info["max_input_channels"]
+                <= 0
+            ):
+                continue
+
+            if not self._is_valid_input_device(
+                index
+            ):
+                continue
+
+            name = str(
+                info["name"]
+            ).lower()
+
+            score = 0
+
+            if "microphone" in name:
+                score += 4
+
+            if "mic" in name:
+                score += 3
+
+            if "input" in name:
+                score += 1
+
+            if "mapper" in name:
+                score -= 2
+
+            candidates.append(
+                (
+                    score,
+                    index,
+                )
+            )
+
+        if not candidates:
+            raise RuntimeError(
+                "No usable microphone input "
+                "device was found."
+            )
+
+        candidates.sort(
+            key=lambda item: (
+                -item[0],
+                item[1],
+            )
+        )
+
+        selected_device = (
+            candidates[0][1]
+        )
+
+        if default_input is None:
+            default_input = -1
+
+        if default_input < 0:
+            print(
+                "[Voice] Windows/PortAudio "
+                "has no default microphone. "
+                "Using automatic fallback."
+            )
+
+        return selected_device
+
+    def _open_input_stream(
+        self,
+        block_size,
+    ):
+        try:
+            return sd.InputStream(
+                samplerate=self.sample_rate,
+                channels=self.channels,
+                dtype="float32",
+                blocksize=block_size,
+                device=self.input_device,
+            )
+
+        except Exception as first_error:
+            print(
+                "[Voice] Current microphone "
+                "is unavailable. "
+                "Refreshing devices..."
+            )
+
+            try:
+                sd._terminate()
+                sd._initialize()
+            except Exception:
+                pass
+
+            previous_device = (
+                self.input_device
+            )
+
+            self.input_device = (
+                self._find_input_device(
+                    None
+                )
+            )
+
+            input_info = sd.query_devices(
+                self.input_device
+            )
+
+            print(
+                f"[Voice] Input device changed: "
+                f"{previous_device} -> "
+                f"{self.input_device} - "
+                f"{input_info['name']}"
+            )
+
+            try:
+                return sd.InputStream(
+                    samplerate=self.sample_rate,
+                    channels=self.channels,
+                    dtype="float32",
+                    blocksize=block_size,
+                    device=self.input_device,
+                )
+
+            except Exception as second_error:
+                raise RuntimeError(
+                    "Unable to open a microphone "
+                    "input stream. Check Windows "
+                    "microphone permissions and "
+                    "recording devices."
+                ) from second_error
 
     def _warm_up(self):
         print("[Voice] Warming up...")
@@ -218,13 +432,11 @@ class VoiceInput:
             "[Voice] Waiting for speech..."
         )
 
-        with sd.InputStream(
-            samplerate=self.sample_rate,
-            channels=self.channels,
-            dtype="float32",
-            blocksize=block_size,
-            device=self.input_device,
-        ) as stream:
+        stream = self._open_input_stream(
+            block_size
+        )
+
+        with stream:
 
             while True:
                 audio, overflowed = (
