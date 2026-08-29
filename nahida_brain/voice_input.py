@@ -38,7 +38,7 @@ class VoiceInput:
         language="auto",
         input_device=None,
         speech_threshold=0.001,
-        silence_duration=0.8,
+        silence_duration=1.5,
         max_duration=20.0,
         wait_timeout=10.0,
     ):
