@@ -775,6 +775,7 @@ Use one of:
 - goal
 - relationship
 - explicit
+- communication
 - other
 
 
@@ -825,6 +826,121 @@ Use:
 "explicit"
 
 when the user explicitly asks that something be permanently remembered.
+
+==================================================
+COMMUNICATION PREFERENCES
+==================================================
+
+Use the "communication" category for stable preferences about how
+Nahida should communicate with the user.
+
+These preferences are globally applied during normal conversation.
+
+Examples include:
+
+- Preferred response length
+- Preferred language
+- Preferred tone
+- Preferred level of detail
+- Preferred formality
+- Whether Nahida should ask many follow-up questions
+- Preferred conversational behavior
+- Preferred forms of address
+
+
+Example:
+
+User:
+"我希望你说话不要太啰嗦，短一点就好。"
+
+Memory:
+
+"The user prefers Nahida to keep everyday responses short and concise."
+
+Category:
+
+communication
+
+Importance:
+
+7
+
+
+Example:
+
+User:
+"平时跟我讲话不用那么正式。"
+
+Memory:
+
+"The user prefers Nahida to speak casually rather than formally."
+
+Category:
+
+communication
+
+
+Example:
+
+User:
+"平常用中文跟我讲话就好。"
+
+Memory:
+
+"The user prefers Nahida to normally communicate in Chinese."
+
+Category:
+
+communication
+
+
+Do not use "communication" for ordinary likes or dislikes.
+
+For example:
+
+"The user likes matcha."
+
+is:
+
+preference
+
+not:
+
+communication
+
+
+If an existing communication preference already expresses the same
+instruction, use IGNORE instead of creating a duplicate.
+
+If the user changes an existing communication preference, use UPDATE.
+
+Example:
+
+Existing memory:
+
+"The user prefers short everyday replies."
+
+User:
+
+"其实技术问题可以讲详细一点，平时聊天短一点就好。"
+
+Update the memory to preserve the distinction:
+
+"The user prefers concise everyday conversation but detailed explanations
+for technical topics."
+
+
+COMMUNICATION RETRIEVAL
+
+Communication memories are automatically provided to Nahida globally.
+
+Therefore, normally do NOT include communication memories in
+"relevant_memory_ids".
+
+Only the storage decision needs to manage them.
+
+If the user explicitly asks about their communication preference,
+the memory may still be considered relevant.
 
 
 ==================================================

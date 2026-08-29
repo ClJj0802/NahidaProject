@@ -4,6 +4,7 @@ from pathlib import Path
 from src.database import (
     get_memories_by_ids,
     get_recent_messages,
+    get_global_communication_preferences,
 )
 
 from src.llm_client import (
@@ -24,6 +25,25 @@ PERSONA_PATH = (
     / "persona"
     / "nahida_system.txt"
 )
+
+def build_global_communication_context():
+    preferences = (
+        get_global_communication_preferences()
+    )
+
+    if not preferences:
+        return (
+            "No global communication preferences."
+        )
+
+    lines = []
+
+    for preference in preferences:
+        lines.append(
+            f"- {preference['content']}"
+        )
+
+    return "\n".join(lines)
 
 def build_time_context():
     now = datetime.now().astimezone()
@@ -47,6 +67,13 @@ def build_memory_context(
     memories = get_memories_by_ids(
         memory_ids
     )
+
+    memories = [
+        memory
+        for memory in memories
+        if memory["category"]
+        != "communication"
+    ]
 
     if not memories:
         return (
@@ -132,6 +159,10 @@ def generate_nahida_response(
 
     persona = load_persona()
 
+    global_communication = (
+    build_global_communication_context()
+)
+
     memories = build_memory_context(
         relevant_memory_ids
     )
@@ -153,6 +184,19 @@ def generate_nahida_response(
 
     system_context = f"""
 {persona}
+
+GLOBAL COMMUNICATION RULES
+
+The communication preferences above are persistent instructions about
+how the user prefers Nahida to communicate.
+
+Apply them naturally in every response.
+
+Do not explicitly mention that these preferences came from memory.
+
+Do not quote them back to the user unless the user specifically asks.
+
+Communication preferences affect response style, not factual content.
 
 CURRENT TEMPORAL CONTEXT:
 

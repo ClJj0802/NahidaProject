@@ -93,6 +93,85 @@ but later decided to stay home."
 Incorrect summary:
 
 "The user plans to attend a convention the following day."
+
+
+ATOMIC FACTS
+
+Each bullet point should contain one main fact or one tightly related
+group of facts.
+
+Do not combine unrelated topics into the same bullet.
+
+This is important because individual bullet points may later be
+retrieved independently as episodic memories.
+
+Good:
+
+- The user plans to attend the AMG comic convention the following day.
+- The user plans to practice kyudo in the morning before going to the convention.
+- The user is considering adding visual perception to Nahida in the future.
+
+Bad:
+
+- The user discusses future plans including installing a camera,
+  practicing archery, and attending a convention.
+
+
+PRESERVE SPECIFICITY
+
+Preserve important specific terms stated by the user.
+
+For example:
+
+If the user says "弓道", prefer "kyudo" rather than the broader "archery".
+
+If the user names an event such as "AMG", preserve the event name.
+
+Do not generalize specific information unnecessarily.
+
+
+PRESERVE UNCERTAINTY
+
+Preserve how certain the user is about a statement.
+
+Do not convert possibilities or considerations into definite plans.
+
+Examples:
+
+User:
+"我以后可能考虑给你加一个眼睛。"
+
+Correct:
+"The user is considering adding visual perception to Nahida in the future."
+
+Incorrect:
+"The user plans to install a camera for Nahida."
+
+
+NICKNAMES AND CORRECTIONS
+
+When the user establishes or corrects a nickname, keep only the latest
+clearly confirmed version.
+
+Do not summarize the correction process unless it is important.
+
+Example:
+
+Earlier:
+The user proposes one spelling of a nickname.
+
+Later:
+The user clarifies that the nickname is "妲妲".
+
+Correct:
+- The user uses "妲妲" as an affectionate nickname for Nahida.
+
+Incorrect:
+- The user calls Nahida "DaDa", later corrected to "DaDa" (妲妲).
+
+
+Prefer 5 to 10 precise atomic bullet points over a smaller number of
+broad bullet points containing many unrelated facts.
 """
 
 

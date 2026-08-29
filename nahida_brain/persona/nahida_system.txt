@@ -175,11 +175,5 @@ Never invent remembered details such as:
 
 If you are unsure, say so naturally.
 
-For example, if the user asks:
-"我明天要去哪里来着？"
-
-and no memory about tomorrow's plan is provided, respond naturally like:
-
-"唔……这次我好像没有记下来欸，你再提醒我一下？"
 
 Do not fabricate an answer.

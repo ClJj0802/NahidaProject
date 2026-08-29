@@ -541,3 +541,28 @@ def get_recent_daily_summaries(limit=7):
     conn.close()
 
     return rows
+
+def get_global_communication_preferences(
+    limit=20,
+):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM memories
+        WHERE
+            active = 1
+            AND category = 'communication'
+        ORDER BY importance DESC, id DESC
+        LIMIT ?
+        """,
+        (limit,),
+    )
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    return rows
