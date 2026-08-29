@@ -46,6 +46,28 @@ Use short factual bullet points.
 Write in third person using "The user".
 
 Return only the summary text.
+
+If the user explicitly establishes a nickname, preferred name,
+relationship term, or form of address, it may be included.
+
+When the user corrects the spelling or wording of a nickname,
+use only the latest clearly confirmed version.
+
+Do not describe the correction process unless it is itself important.
+
+Example:
+
+Earlier:
+"The user calls Nahida Dada."
+
+Later:
+"The user clarifies that the nickname should be DaDa."
+
+Summary:
+"The user uses 'DaDa' as an affectionate nickname for Nahida."
+
+Do not write:
+"The nickname was Dada, later corrected to DaDa or DaDa."
 """
 
 
