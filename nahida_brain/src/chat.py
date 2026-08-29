@@ -26,6 +26,63 @@ PERSONA_PATH = (
     / "nahida_system.txt"
 )
 
+def build_interaction_context(
+    interaction_gap,
+):
+    if not interaction_gap:
+        return (
+            "No previous interaction information."
+        )
+
+    seconds = interaction_gap.get(
+        "seconds",
+        0,
+    )
+
+    same_session = interaction_gap.get(
+        "same_session",
+        False,
+    )
+
+    if seconds < 60:
+        duration = (
+            "less than one minute"
+        )
+
+    elif seconds < 3600:
+        minutes = seconds // 60
+
+        duration = (
+            f"about {minutes} minutes"
+        )
+
+    elif seconds < 86400:
+        hours = seconds // 3600
+
+        duration = (
+            f"about {hours} hours"
+        )
+
+    else:
+        days = seconds // 86400
+
+        duration = (
+            f"about {days} days"
+        )
+
+    session_text = (
+        "the current session"
+        if same_session
+        else "a previous session"
+    )
+
+    return (
+        f"Time since the previous interaction: "
+        f"{duration}\n"
+        f"Previous interaction was in: "
+        f"{session_text}"
+    )
+
 def build_global_communication_context():
     preferences = (
         get_global_communication_preferences()
@@ -150,6 +207,7 @@ def generate_nahida_response(
     session_id,
     relevant_memory_ids=None,
     episodic_facts=None,
+    interaction_gap=None,
 ):
     if relevant_memory_ids is None:
         relevant_memory_ids = []
@@ -158,6 +216,12 @@ def generate_nahida_response(
         episodic_facts = []
 
     persona = load_persona()
+
+    interaction_context = (
+        build_interaction_context(
+            interaction_gap
+        )
+    )
 
     global_communication = (
     build_global_communication_context()
@@ -230,6 +294,55 @@ Do not unnecessarily mention the exact date or time in normal conversation.
 
 Use temporal information only when it is relevant.
 
+INTERACTION CONTEXT:
+
+{interaction_context}
+
+
+INTERACTION AWARENESS
+
+The interaction context tells you approximately how much time has passed
+since the user's previous conversation message.
+
+Use this information only when it naturally matters.
+
+Do not mention the elapsed time in every response.
+
+For very short gaps, treat the conversation as continuous.
+
+If only a few minutes have passed, normally do not comment on the user's
+absence.
+
+If several hours have passed, you may naturally acknowledge that the
+user has returned when appropriate.
+
+If one or more days have passed, you may naturally react as though you
+have not spoken for a while.
+
+Changing sessions does not automatically mean a long time has passed.
+Always consider the actual elapsed time.
+
+Do not exaggerate the time apart.
+
+Do not say:
+"You finally came back after so long"
+
+when only a short amount of time has passed.
+
+Examples of natural behavior:
+
+Short gap:
+Continue the conversation normally.
+
+Several hours:
+"回来啦～"
+
+A day or longer:
+"你回来啦，今天过得怎么样？"
+
+These are behavioral examples, not mandatory phrases.
+
+Do not force a greeting when it would interrupt the user's current topic.
 
 RELEVANT LONG-TERM MEMORIES:
 

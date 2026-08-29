@@ -10,6 +10,7 @@ from src.database import (
     get_memories,
     get_recent_messages,
     get_recent_daily_summaries,
+    get_latest_message,
 )
 
 from src.memory_filter import (
@@ -73,6 +74,44 @@ def handle_day_rollover(
         current_date,
         False,
     )
+
+def build_interaction_gap(
+    last_message,
+    session_id,
+):
+    if last_message is None:
+        return None
+
+    try:
+        last_time = datetime.fromisoformat(
+            last_message["created_at"]
+        )
+    except (TypeError, ValueError):
+        return None
+
+    now = datetime.now()
+
+    delta = now - last_time
+
+    seconds = max(
+        0,
+        int(delta.total_seconds()),
+    )
+
+    previous_session_id = (
+        last_message["session_id"]
+    )
+
+    return {
+        "seconds": seconds,
+        "same_session": (
+            previous_session_id
+            == session_id
+        ),
+        "last_interaction_at": (
+            last_message["created_at"]
+        ),
+    }
 
 def process_memory(
     text,
@@ -178,6 +217,17 @@ def chat_with_nahida(
     text,
     session_id,
 ):
+    last_message = (
+        get_latest_message()
+    )
+
+    interaction_gap = (
+        build_interaction_gap(
+            last_message=last_message,
+            session_id=session_id,
+        )
+    )
+
     previous_messages = (
         get_recent_messages(
             limit=8,
@@ -240,6 +290,9 @@ def chat_with_nahida(
                 ),
                 episodic_facts=(
                     episodic_facts
+                ),
+                interaction_gap=(
+                    interaction_gap
                 ),
             )
         )
@@ -429,7 +482,7 @@ def main():
     day_dirty = False
 
     print(
-        "Nahida Brain V6.5"
+        "Nahida Brain V6.6"
     )
     print(
         f"Session ID: {session_id}"

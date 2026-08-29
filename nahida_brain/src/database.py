@@ -566,3 +566,22 @@ def get_global_communication_preferences(
     conn.close()
 
     return rows
+
+def get_latest_message():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM messages
+        ORDER BY id DESC
+        LIMIT 1
+        """
+    )
+
+    row = cursor.fetchone()
+
+    conn.close()
+
+    return row
