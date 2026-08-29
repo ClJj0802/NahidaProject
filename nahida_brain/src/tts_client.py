@@ -1,10 +1,10 @@
 import json
-import os
 import re
-import tempfile
+import time
 import urllib.parse
 import urllib.request
-import winsound
+
+import sounddevice as sd
 
 
 class TTSClient:
@@ -113,17 +113,109 @@ class TTSClient:
 
         return text.strip()
 
-    def synthesize(
+    def _choose_split_method(
         self,
         text,
-        output_path,
     ):
-        cleaned_text = (
-            self.clean_text(text)
+        return "cut5"
+
+    def _read_exact(
+        self,
+        response,
+        size,
+    ):
+        chunks = []
+        remaining = size
+
+        while remaining > 0:
+            chunk = response.read(
+                remaining
+            )
+
+            if not chunk:
+                break
+
+            chunks.append(chunk)
+            remaining -= len(chunk)
+
+        return b"".join(chunks)
+
+    def _read_chunk(
+        self,
+        response,
+        size,
+    ):
+        read1 = getattr(
+            response,
+            "read1",
+            None,
+        )
+
+        if callable(read1):
+            return read1(size)
+
+        return response.read(size)
+
+    def _parse_wav_header(
+        self,
+        header,
+    ):
+        if len(header) < 44:
+            raise RuntimeError(
+                "Incomplete WAV stream header."
+            )
+
+        if (
+            header[0:4] != b"RIFF"
+            or header[8:12] != b"WAVE"
+        ):
+            raise RuntimeError(
+                "GPT-SoVITS did not return "
+                "a WAV stream."
+            )
+
+        channels = int.from_bytes(
+            header[22:24],
+            "little",
+        )
+
+        sample_rate = int.from_bytes(
+            header[24:28],
+            "little",
+        )
+
+        bits_per_sample = int.from_bytes(
+            header[34:36],
+            "little",
+        )
+
+        if bits_per_sample != 16:
+            raise RuntimeError(
+                "Only 16-bit PCM streaming "
+                "audio is supported."
+            )
+
+        return (
+            sample_rate,
+            channels,
+        )
+
+    def speak(
+        self,
+        text,
+    ):
+        cleaned_text = self.clean_text(
+            text
         )
 
         if not cleaned_text:
-            return None
+            return
+
+        split_method = (
+            self._choose_split_method(
+                cleaned_text
+            )
+        )
 
         payload = {
             "text": cleaned_text,
@@ -137,17 +229,18 @@ class TTSClient:
             "top_k": 15,
             "top_p": 0.7,
             "temperature": 1,
-            "text_split_method": "cut5",
+            "text_split_method":
+                split_method,
             "batch_size": 1,
             "batch_threshold": 0.75,
             "split_bucket": False,
             "speed_factor": 1.0,
-            "fragment_interval": 0.15,
+            "fragment_interval": 0.05,
             "seed": -1,
             "parallel_infer": False,
             "repetition_penalty": 1.35,
             "media_type": "wav",
-            "streaming_mode": False,
+            "streaming_mode": True,
         }
 
         request = urllib.request.Request(
@@ -162,64 +255,115 @@ class TTSClient:
             method="POST",
         )
 
+        request_start = (
+            time.perf_counter()
+        )
+
         with urllib.request.urlopen(
             request,
             timeout=180,
         ) as response:
-            audio = response.read()
-
-        with open(
-            output_path,
-            "wb",
-        ) as file:
-            file.write(audio)
-
-        return output_path
-
-    def speak(
-        self,
-        text,
-    ):
-        cleaned_text = self.clean_text(
-            text
-        )
-
-        if not cleaned_text:
-            return
-
-        file_descriptor, output_path = (
-            tempfile.mkstemp(
-                prefix="nahida_tts_",
-                suffix=".wav",
-            )
-        )
-
-        os.close(
-            file_descriptor
-        )
-
-        try:
-            result = self.synthesize(
-                cleaned_text,
-                output_path,
+            header = self._read_exact(
+                response,
+                44,
             )
 
-            if result is None:
-                return
-
-            winsound.PlaySound(
-                output_path,
-                winsound.SND_FILENAME,
+            (
+                sample_rate,
+                channels,
+            ) = self._parse_wav_header(
+                header
             )
 
-        finally:
-            if os.path.exists(
-                output_path
+            frame_bytes = (
+                channels * 2
+            )
+
+            prebuffer_bytes = int(
+                sample_rate
+                * frame_bytes
+                * 0.20
+            )
+
+            buffered = bytearray()
+
+            while (
+                len(buffered)
+                < prebuffer_bytes
             ):
-                try:
-                    os.remove(
-                        output_path
+                chunk = self._read_chunk(
+                    response,
+                    8192,
+                )
+
+                if not chunk:
+                    break
+
+                buffered.extend(chunk)
+
+            first_audio_delay = (
+                time.perf_counter()
+                - request_start
+            )
+
+            print(
+                f"[TTS] First audio in "
+                f"{first_audio_delay:.3f}s"
+            )
+
+            carry = b""
+
+            with sd.RawOutputStream(
+                samplerate=sample_rate,
+                channels=channels,
+                dtype="int16",
+                latency="low",
+            ) as stream:
+
+                if buffered:
+                    data = bytes(buffered)
+
+                    aligned_size = (
+                        len(data)
+                        - (
+                            len(data)
+                            % frame_bytes
+                        )
                     )
 
-                except OSError:
-                    pass
+                    if aligned_size:
+                        stream.write(
+                            data[:aligned_size]
+                        )
+
+                    carry = data[
+                        aligned_size:
+                    ]
+
+                while True:
+                    chunk = self._read_chunk(
+                        response,
+                        8192,
+                    )
+
+                    if not chunk:
+                        break
+
+                    data = carry + chunk
+
+                    aligned_size = (
+                        len(data)
+                        - (
+                            len(data)
+                            % frame_bytes
+                        )
+                    )
+
+                    if aligned_size:
+                        stream.write(
+                            data[:aligned_size]
+                        )
+
+                    carry = data[
+                        aligned_size:
+                    ]
