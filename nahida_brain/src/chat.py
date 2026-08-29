@@ -10,6 +10,7 @@ from src.llm_client import (
     chat_completion,
 )
 
+from datetime import datetime
 
 BASE_DIR = (
     Path(__file__)
@@ -24,6 +25,15 @@ PERSONA_PATH = (
     / "nahida_system.txt"
 )
 
+def build_time_context():
+    now = datetime.now().astimezone()
+
+    return (
+        f"Current date: {now.strftime('%Y-%m-%d')}\n"
+        f"Day of week: {now.strftime('%A')}\n"
+        f"Current local time: {now.strftime('%H:%M')}\n"
+        f"Timezone: {now.strftime('%z')}"
+    )
 
 def load_persona():
     return PERSONA_PATH.read_text(
@@ -139,18 +149,42 @@ def generate_nahida_response(
         )
     )
 
-    current_date = (
-        datetime.now()
-        .date()
-        .isoformat()
-    )
+    time_context = build_time_context()
 
     system_context = f"""
 {persona}
 
-CURRENT DATE:
+CURRENT TEMPORAL CONTEXT:
 
-{current_date}
+{time_context}
+
+
+TIME AWARENESS
+
+The temporal context above represents the user's current local date and time.
+
+Use it naturally when the conversation depends on time.
+
+You may use it to understand:
+- today
+- tomorrow
+- yesterday
+- morning
+- afternoon
+- evening
+- tonight
+- the current date
+- the current day of the week
+- the current local time
+
+If the user asks what time it is, answer using the current local time above.
+
+Do not pretend that you cannot know the current time when a current
+local time is provided.
+
+Do not unnecessarily mention the exact date or time in normal conversation.
+
+Use temporal information only when it is relevant.
 
 
 RELEVANT LONG-TERM MEMORIES:

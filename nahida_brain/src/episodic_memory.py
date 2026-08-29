@@ -186,7 +186,28 @@ Output format:
 
 
 def should_check_episodic_memory(text):
-    lowered = text.lower()
+    lowered = text.lower().strip()
+
+    current_time_questions = (
+        "今天几号",
+        "今天是几号",
+        "现在几号",
+        "今天星期几",
+        "今天礼拜几",
+        "现在几点",
+        "几点了",
+        "现在什么时间",
+        "现在是几点",
+        "what time is it",
+        "what date is it",
+        "what day is it",
+    )
+
+    if any(
+        pattern in lowered
+        for pattern in current_time_questions
+    ):
+        return False
 
     return any(
         hint in lowered
