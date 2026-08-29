@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 
 from src.database import (
@@ -5,10 +6,17 @@ from src.database import (
     get_recent_messages,
 )
 
-from src.llm_client import chat_completion
+from src.llm_client import (
+    chat_completion,
+)
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = (
+    Path(__file__)
+    .resolve()
+    .parent
+    .parent
+)
 
 PERSONA_PATH = (
     BASE_DIR
@@ -23,7 +31,9 @@ def load_persona():
     ).strip()
 
 
-def build_memory_context(memory_ids):
+def build_memory_context(
+    memory_ids,
+):
     memories = get_memories_by_ids(
         memory_ids
     )
@@ -40,7 +50,33 @@ def build_memory_context(memory_ids):
             f"- {memory['content']}"
         )
 
-    return "\n".join(lines)
+    return "\n".join(
+        lines
+    )
+
+
+def build_episodic_context(
+    episodic_facts,
+):
+    if not episodic_facts:
+        return (
+            "No relevant episodic memories."
+        )
+
+    lines = []
+
+    for item in episodic_facts:
+        lines.append(
+            f"- Memory date: {item['date']}"
+        )
+
+        lines.append(
+            f"  Fact: {item['fact']}"
+        )
+
+    return "\n".join(
+        lines
+    )
 
 
 def build_recent_conversation(
@@ -76,14 +112,24 @@ def build_recent_conversation(
 def generate_nahida_response(
     session_id,
     relevant_memory_ids=None,
+    episodic_facts=None,
 ):
     if relevant_memory_ids is None:
         relevant_memory_ids = []
+
+    if episodic_facts is None:
+        episodic_facts = []
 
     persona = load_persona()
 
     memories = build_memory_context(
         relevant_memory_ids
+    )
+
+    episodic_context = (
+        build_episodic_context(
+            episodic_facts
+        )
     )
 
     conversation = (
@@ -93,23 +139,93 @@ def generate_nahida_response(
         )
     )
 
+    current_date = (
+        datetime.now()
+        .date()
+        .isoformat()
+    )
+
     system_context = f"""
 {persona}
+
+CURRENT DATE:
+
+{current_date}
+
 
 RELEVANT LONG-TERM MEMORIES:
 
 {memories}
 
-Important:
-Only use these memories if they directly help with the current message.
 
-The recent conversation contains only the current chat session.
+RELEVANT EPISODIC MEMORIES:
 
-Do not bring up earlier topics merely because they appeared recently.
+{episodic_context}
 
-If the user's current message changes the subject, follow the new subject.
 
-For ordinary affectionate or casual messages, a short response is usually better.
+MEMORY USAGE RULES
+
+The relevant memories above are trusted information retrieved from
+Nahida's memory system.
+
+If a relevant episodic memory is provided, use it when answering the
+user's question.
+
+Do NOT say that you forgot something when the answer is directly
+supported by a relevant memory above.
+
+For example, if an episodic memory says:
+
+Memory date: 2026-08-29
+Fact: The user planned to attend a comic convention the following day.
+
+and the current date is 2026-08-29 and the user asks where they plan
+to go tomorrow, then the correct remembered answer is:
+
+The user planned to attend a comic convention.
+
+The phrase "the following day" is relative to the memory date.
+
+Use the memory naturally.
+Do not mention databases, retrieval, summaries, or memory IDs.
+
+
+MEMORY ACCURACY
+
+Only claim to remember something when it is supported by:
+
+1. Relevant long-term memories
+2. Relevant episodic memories
+3. The current session conversation
+
+If supporting information exists, trust and use it.
+
+If no supporting information exists, do not guess.
+
+Never invent unsupported details such as:
+- places
+- activities
+- clothing
+- people
+- food
+- plans
+- dates
+- events
+
+Do not add details that are not present in the supporting information.
+
+Do not bring up unrelated memories merely to show that you remember
+the user.
+
+
+RESPONSE STYLE
+
+Answer the user's current message directly.
+
+For casual conversation, keep responses short and natural.
+
+If the user is asking whether you remember something and a relevant
+memory is available, answer confidently but naturally.
 """.strip()
 
     messages = [
@@ -125,6 +241,6 @@ For ordinary affectionate or casual messages, a short response is usually better
 
     return chat_completion(
         messages=messages,
-        temperature=0.55,
-        max_tokens=180,
+        temperature=0.45,
+        max_tokens=160,
     ).strip()

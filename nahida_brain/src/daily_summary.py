@@ -68,6 +68,31 @@ Summary:
 
 Do not write:
 "The nickname was Dada, later corrected to DaDa or DaDa."
+
+When the user's plan changes during the day, the latest explicit state
+has priority.
+
+Do not summarize an outdated plan as though it is still current.
+
+If an earlier plan and a later decision conflict, combine them into one
+fact that clearly shows the change.
+
+Example:
+
+Earlier:
+"The user plans to attend a convention tomorrow."
+
+Later:
+"The user decides not to attend and will stay home."
+
+Correct summary:
+
+"The user initially planned to attend a convention the following day,
+but later decided to stay home."
+
+Incorrect summary:
+
+"The user plans to attend a convention the following day."
 """
 
 

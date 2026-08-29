@@ -24,6 +24,10 @@ from src.chat import (
     generate_nahida_response,
 )
 
+from src.episodic_memory import (
+    retrieve_relevant_episodic_facts,
+)
+
 
 def process_memory(
     text,
@@ -163,6 +167,32 @@ def chat_with_nahida(
         f"{relevant_memory_ids}"
     )
 
+    try:
+        episodic_facts = (
+            retrieve_relevant_episodic_facts(
+                text
+            )
+        )
+
+    except Exception as exc:
+        print(
+            f"[Episodic] Failed: {exc}"
+        )
+
+        episodic_facts = []
+
+    if episodic_facts:
+        print(
+            "[Episodic] Relevant:"
+        )
+
+        for item in episodic_facts:
+            print(
+                f"  {item['id']} "
+                f"[{item['date']}] "
+                f"{item['fact']}"
+            )
+
     print("[Nahida] Thinking...")
 
     try:
@@ -171,6 +201,9 @@ def chat_with_nahida(
                 session_id=session_id,
                 relevant_memory_ids=(
                     relevant_memory_ids
+                ),
+                episodic_facts=(
+                    episodic_facts
                 ),
             )
         )
@@ -312,7 +345,7 @@ def main():
 
     session_id = create_session()
 
-    print("Nahida Brain V6.1")
+    print("Nahida Brain V6.2")
     print(
         f"Session ID: {session_id}"
     )
