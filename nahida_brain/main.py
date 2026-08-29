@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from voice_input import VoiceInput
+
 from src.database import (
     init_db,
     create_session,
@@ -75,6 +77,7 @@ def handle_day_rollover(
         False,
     )
 
+
 def build_interaction_gap(
     last_message,
     session_id,
@@ -112,6 +115,7 @@ def build_interaction_gap(
             last_message["created_at"]
         ),
     }
+
 
 def process_memory(
     text,
@@ -439,6 +443,7 @@ def auto_update_daily_summary(
 
     return True
 
+
 def show_daily_summaries():
     summaries = (
         get_recent_daily_summaries(7)
@@ -475,6 +480,8 @@ def main():
 
     session_id = create_session()
 
+    voice = VoiceInput()
+
     active_date = (
         get_current_date()
     )
@@ -482,7 +489,7 @@ def main():
     day_dirty = False
 
     print(
-        "Nahida Brain V6.6"
+        "Nahida Brain V6.7"
     )
     print(
         f"Session ID: {session_id}"
@@ -507,11 +514,28 @@ def main():
     )
     print()
 
+    print(
+        "Press Enter for voice input, "
+        "or type normally."
+    )
+    print()
+
     try:
         while True:
             text = input(
                 "You > "
             ).strip()
+
+            if not text:
+                text = voice.listen()
+
+                if not text:
+                    continue
+
+                print()
+                print(
+                    f"You > {text}"
+                )
 
             active_date, day_dirty = (
                 handle_day_rollover(
@@ -543,9 +567,6 @@ def main():
 
             if text == "/summaries":
                 show_daily_summaries()
-                continue
-
-            if not text:
                 continue
 
             day_dirty = True
