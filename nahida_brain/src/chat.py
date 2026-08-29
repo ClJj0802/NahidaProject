@@ -29,7 +29,9 @@ def build_memory_context(memory_ids):
     )
 
     if not memories:
-        return "No relevant long-term memories."
+        return (
+            "No relevant long-term memories."
+        )
 
     lines = []
 
@@ -41,8 +43,14 @@ def build_memory_context(memory_ids):
     return "\n".join(lines)
 
 
-def build_recent_conversation(limit=16):
-    rows = get_recent_messages(limit)
+def build_recent_conversation(
+    session_id,
+    limit=8,
+):
+    rows = get_recent_messages(
+        limit=limit,
+        session_id=session_id,
+    )
 
     messages = []
 
@@ -66,6 +74,7 @@ def build_recent_conversation(limit=16):
 
 
 def generate_nahida_response(
+    session_id,
     relevant_memory_ids=None,
 ):
     if relevant_memory_ids is None:
@@ -77,8 +86,11 @@ def generate_nahida_response(
         relevant_memory_ids
     )
 
-    conversation = build_recent_conversation(
-        limit=16
+    conversation = (
+        build_recent_conversation(
+            session_id=session_id,
+            limit=8,
+        )
     )
 
     system_context = f"""
@@ -89,9 +101,15 @@ RELEVANT LONG-TERM MEMORIES:
 {memories}
 
 Important:
-Only use the memories above when they are genuinely relevant.
-Do not mention memories merely to demonstrate that you remember them.
-Answer the user's current message naturally.
+Only use these memories if they directly help with the current message.
+
+The recent conversation contains only the current chat session.
+
+Do not bring up earlier topics merely because they appeared recently.
+
+If the user's current message changes the subject, follow the new subject.
+
+For ordinary affectionate or casual messages, a short response is usually better.
 """.strip()
 
     messages = [
@@ -101,10 +119,12 @@ Answer the user's current message naturally.
         }
     ]
 
-    messages.extend(conversation)
+    messages.extend(
+        conversation
+    )
 
     return chat_completion(
         messages=messages,
-        temperature=0.7,
-        max_tokens=220,
+        temperature=0.55,
+        max_tokens=180,
     ).strip()

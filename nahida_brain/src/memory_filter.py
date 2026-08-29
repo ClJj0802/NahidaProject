@@ -338,6 +338,40 @@ Category:
 preference
 
 
+COMMUNICATION PREFERENCES
+
+Stable preferences about how Nahida should communicate are valid
+long-term memories.
+
+Examples include:
+- preferred response length
+- preferred tone
+- preferred conversation style
+- whether explanations should be detailed or concise
+
+User:
+"我希望你说话不要太啰嗦，短一点就好。"
+
+ADD:
+
+{
+  "action": "add",
+  "target_memory_id": null,
+  "relevant_memory_ids": [],
+  "category": "preference",
+  "importance": 7,
+  "memory": "The user prefers Nahida to keep everyday responses short and concise.",
+  "reason": "This is a stable communication preference."
+}
+
+User:
+"平时聊天不用解释那么多。"
+
+If the concise-response preference already exists, use UPDATE or IGNORE
+instead of creating a duplicate memory.
+
+Communication preferences should generally have importance 6-8.
+
 --------------------------------------------------
 UPDATE
 --------------------------------------------------

@@ -2,6 +2,8 @@ from datetime import datetime
 
 from src.database import (
     init_db,
+    create_session,
+    end_session,
     save_message,
     save_memory,
     update_memory,
@@ -131,30 +133,46 @@ def process_memory(
     return relevant_memory_ids
 
 
-def chat_with_nahida(text):
-    previous_messages = get_recent_messages(12)
+def chat_with_nahida(
+    text,
+    session_id,
+):
+    previous_messages = (
+        get_recent_messages(
+            limit=8,
+            session_id=session_id,
+        )
+    )
 
     message_id = save_message(
         role="user",
         content=text,
+        session_id=session_id,
     )
 
-    relevant_memory_ids = process_memory(
-        text=text,
-        message_id=message_id,
-        previous_messages=previous_messages,
+    relevant_memory_ids = (
+        process_memory(
+            text=text,
+            message_id=message_id,
+            previous_messages=previous_messages,
+        )
     )
 
     print(
-        f"[Debug] Relevant memory IDs: "
+        "[Debug] Relevant memory IDs: "
         f"{relevant_memory_ids}"
     )
 
     print("[Nahida] Thinking...")
 
     try:
-        response = generate_nahida_response(
-            relevant_memory_ids=relevant_memory_ids,
+        response = (
+            generate_nahida_response(
+                session_id=session_id,
+                relevant_memory_ids=(
+                    relevant_memory_ids
+                ),
+            )
         )
 
     except Exception as exc:
@@ -166,6 +184,7 @@ def chat_with_nahida(text):
     save_message(
         role="assistant",
         content=response,
+        session_id=session_id,
     )
 
     print()
@@ -173,6 +192,7 @@ def chat_with_nahida(text):
         f"Nahida > {response}"
     )
     print()
+
 
 def show_memories():
     memories = get_memories()
@@ -197,7 +217,9 @@ def show_memories():
 
 
 def show_recent_messages():
-    messages = get_recent_messages(30)
+    messages = get_recent_messages(
+        30
+    )
 
     print()
     print("=== Recent Messages ===")
@@ -205,6 +227,8 @@ def show_recent_messages():
     for message in messages:
         print(
             f"{message['created_at']} "
+            f"session="
+            f"{message['session_id']} "
             f"{message['role']}: "
             f"{message['content']}"
         )
@@ -226,7 +250,9 @@ def summarize_today():
 
     try:
         summary = (
-            generate_daily_summary(today)
+            generate_daily_summary(
+                today
+            )
         )
 
     except Exception as exc:
@@ -284,7 +310,12 @@ def show_daily_summaries():
 def main():
     init_db()
 
-    print("Nahida Brain V5")
+    session_id = create_session()
+
+    print("Nahida Brain V6.1")
+    print(
+        f"Session ID: {session_id}"
+    )
     print()
 
     print("Commands:")
@@ -305,33 +336,49 @@ def main():
     )
     print()
 
-    while True:
-        text = input("You > ").strip()
+    try:
+        while True:
+            text = input(
+                "You > "
+            ).strip()
 
-        if text == "/exit":
-            break
+            if text == "/exit":
+                break
 
-        if text == "/memory":
-            show_memories()
-            continue
+            if text == "/memory":
+                show_memories()
+                continue
 
-        if text == "/history":
-            show_recent_messages()
-            continue
+            if text == "/history":
+                show_recent_messages()
+                continue
 
-        if text == "/summary":
-            summarize_today()
-            continue
+            if text == "/summary":
+                summarize_today()
+                continue
 
-        if text == "/summaries":
-            show_daily_summaries()
-            continue
+            if text == "/summaries":
+                show_daily_summaries()
+                continue
 
-        if not text:
-            continue
+            if not text:
+                continue
 
-        chat_with_nahida(text)
+            chat_with_nahida(
+                text=text,
+                session_id=session_id,
+            )
+
+    finally:
+        end_session(
+            session_id
+        )
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+
+    except KeyboardInterrupt:
+        print()
+        print("Nahida Brain stopped.")

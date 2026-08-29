@@ -2,12 +2,16 @@ import sqlite3
 from pathlib import Path
 from datetime import datetime
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "data" / "nahida.db"
 
 
 def get_connection():
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    DB_PATH.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -15,7 +19,11 @@ def get_connection():
     return conn
 
 
-def column_exists(conn, table_name, column_name):
+def column_exists(
+    conn,
+    table_name,
+    column_name,
+):
     cursor = conn.cursor()
 
     cursor.execute(
@@ -36,6 +44,16 @@ def init_db():
 
     cursor.execute(
         """
+        CREATE TABLE IF NOT EXISTS sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            started_at TEXT NOT NULL,
+            ended_at TEXT
+        )
+        """
+    )
+
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             role TEXT NOT NULL,
@@ -44,6 +62,18 @@ def init_db():
         )
         """
     )
+
+    if not column_exists(
+        conn,
+        "messages",
+        "session_id",
+    ):
+        cursor.execute(
+            """
+            ALTER TABLE messages
+            ADD COLUMN session_id INTEGER
+            """
+        )
 
     cursor.execute(
         """
@@ -91,7 +121,61 @@ def init_db():
     conn.close()
 
 
-def save_message(role, content):
+def create_session():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    started_at = datetime.now().isoformat(
+        timespec="seconds"
+    )
+
+    cursor.execute(
+        """
+        INSERT INTO sessions (
+            started_at
+        )
+        VALUES (?)
+        """,
+        (started_at,),
+    )
+
+    session_id = cursor.lastrowid
+
+    conn.commit()
+    conn.close()
+
+    return session_id
+
+
+def end_session(session_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    ended_at = datetime.now().isoformat(
+        timespec="seconds"
+    )
+
+    cursor.execute(
+        """
+        UPDATE sessions
+        SET ended_at = ?
+        WHERE id = ?
+        """,
+        (
+            ended_at,
+            session_id,
+        ),
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def save_message(
+    role,
+    content,
+    session_id=None,
+):
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -104,14 +188,16 @@ def save_message(role, content):
         INSERT INTO messages (
             role,
             content,
-            created_at
+            created_at,
+            session_id
         )
-        VALUES (?, ?, ?)
+        VALUES (?, ?, ?, ?)
         """,
         (
             role,
             content,
             created_at,
+            session_id,
         ),
     )
 
@@ -240,25 +326,46 @@ def deactivate_memory(memory_id):
     return changed > 0
 
 
-def get_recent_messages(limit=20):
+def get_recent_messages(
+    limit=20,
+    session_id=None,
+):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        SELECT *
-        FROM messages
-        ORDER BY id DESC
-        LIMIT ?
-        """,
-        (limit,),
-    )
+    if session_id is None:
+        cursor.execute(
+            """
+            SELECT *
+            FROM messages
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+
+    else:
+        cursor.execute(
+            """
+            SELECT *
+            FROM messages
+            WHERE session_id = ?
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (
+                session_id,
+                limit,
+            ),
+        )
 
     rows = cursor.fetchall()
 
     conn.close()
 
-    return list(reversed(rows))
+    return list(
+        reversed(rows)
+    )
 
 
 def get_memories(limit=100):
@@ -303,6 +410,39 @@ def get_memory(memory_id):
     return row
 
 
+def get_memories_by_ids(memory_ids):
+    if not memory_ids:
+        return []
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    placeholders = ",".join(
+        "?"
+        for _ in memory_ids
+    )
+
+    query = f"""
+        SELECT *
+        FROM memories
+        WHERE
+            active = 1
+            AND id IN ({placeholders})
+        ORDER BY importance DESC
+    """
+
+    cursor.execute(
+        query,
+        memory_ids,
+    )
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    return rows
+
+
 def get_messages_for_date(date_string):
     conn = get_connection()
     cursor = conn.cursor()
@@ -322,6 +462,7 @@ def get_messages_for_date(date_string):
     conn.close()
 
     return rows
+
 
 def save_daily_summary(
     summary_date,
@@ -393,38 +534,6 @@ def get_recent_daily_summaries(limit=7):
         LIMIT ?
         """,
         (limit,),
-    )
-
-    rows = cursor.fetchall()
-
-    conn.close()
-
-    return rows
-
-def get_memories_by_ids(memory_ids):
-    if not memory_ids:
-        return []
-
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    placeholders = ",".join(
-        "?"
-        for _ in memory_ids
-    )
-
-    query = f"""
-        SELECT *
-        FROM memories
-        WHERE
-            active = 1
-            AND id IN ({placeholders})
-        ORDER BY importance DESC
-    """
-
-    cursor.execute(
-        query,
-        memory_ids,
     )
 
     rows = cursor.fetchall()
