@@ -305,6 +305,37 @@ Good examples include:
 - Relationship facts
 - Recurring habits
 - Explicit requests to remember something
+- Stable communication preferences
+- Preferred response length
+- Preferred conversation style
+
+Communication preferences are important long-term preferences.
+
+Examples:
+
+User:
+"我希望你说话短一点。"
+
+ADD:
+
+"The user prefers Nahida to keep everyday responses short and concise."
+
+Category:
+preference
+
+Importance:
+7
+
+
+User:
+"平时跟我聊天不用解释那么多。"
+
+ADD or UPDATE:
+
+"The user prefers concise and casual responses during everyday conversation."
+
+Category:
+preference
 
 
 --------------------------------------------------
