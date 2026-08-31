@@ -28,3 +28,10 @@ dist-ssr
 
 #ignore venv
 **/.venv/
+
+#ignore .pyc and db
+*.pyc
+*.db
+
+Nahida Voice Example/Nahida_Voice_Example.mp4
+Nahida Voice Example/Nahida_Voice_Example.wav
