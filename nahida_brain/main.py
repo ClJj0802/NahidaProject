@@ -1,6 +1,5 @@
+import os
 from datetime import datetime
-
-from voice_input import VoiceInput
 
 from src.database import (
     init_db,
@@ -43,7 +42,55 @@ TTS_REFERENCE_AUDIO = (
 TTS_REFERENCE_TEXT = "不知道干什么的话，要不要我带你去转转呀？"
 
 
+def env_flag(name, default=False):
+    default_value = "1" if default else "0"
+    value = os.getenv(name, default_value)
+
+    return value.strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
+
+
+def create_voice_input():
+    if not env_flag(
+        "NAHIDA_SENSEVOICE_STT",
+        default=False,
+    ):
+        print("[SenseVoice STT] Disabled.")
+        return None
+
+    print("[SenseVoice STT] Starting...")
+
+    try:
+        from voice_input import VoiceInput
+
+        voice = VoiceInput()
+
+        print("[SenseVoice STT] Ready.")
+        return voice
+
+    except Exception as exc:
+        print(
+            f"[SenseVoice STT] Failed: {exc}"
+        )
+        print(
+            "[SenseVoice STT] Falling back "
+            "to keyboard input."
+        )
+        return None
+
+
 def create_tts_client():
+    if not env_flag(
+        "NAHIDA_TTS",
+        default=True,
+    ):
+        print("[TTS] Disabled by configuration.")
+        return None
+
     try:
         tts = TTSClient(
             api_base=TTS_API_BASE,
@@ -504,7 +551,7 @@ def main():
 
     session_id = create_session()
 
-    voice = VoiceInput()
+    voice = create_voice_input()
 
     tts = create_tts_client()
 
@@ -512,7 +559,7 @@ def main():
     day_dirty = False
 
     print(
-        "Nahida Brain V6.8"
+        "Nahida Brain V6.10"
     )
     print(
         f"Session ID: {session_id}"
@@ -537,10 +584,17 @@ def main():
     )
     print()
 
-    print(
-        "Press Enter for voice input, "
-        "or type normally."
-    )
+    if voice is not None:
+        print(
+            "Press Enter for voice input, "
+            "or type normally."
+        )
+    else:
+        print(
+            "SenseVoice STT is disabled "
+            "or unavailable. Type normally."
+        )
+
     print()
 
     try:
@@ -550,7 +604,18 @@ def main():
             ).strip()
 
             if not text:
-                text = voice.listen()
+                if voice is None:
+                    continue
+
+                try:
+                    text = voice.listen()
+
+                except Exception as exc:
+                    print(
+                        f"[Voice Input] Failed: "
+                        f"{exc}"
+                    )
+                    continue
 
                 if not text:
                     continue
