@@ -1,8 +1,17 @@
 # Nahida Pet
 
-A desktop Live2D pet built with **Tauri**, **PixiJS**, and **Live2D Cubism**.
+A desktop Live2D AI companion built with **Tauri**, **PixiJS**, **Live2D Cubism**, local LLM, speech recognition, and voice synthesis.
+
+## Documentation
+
+* **Home** — Project setup and Live2D desktop pet
+* [Services →](docs/services.md) — Nahida Brain, Llama LLM, SenseVoice STT, GPT-SoVITS TTS, and Desktop Pet
+
+---
 
 ## Tech Stack
+
+### Desktop Pet
 
 * Tauri v2
 * TypeScript
@@ -10,6 +19,15 @@ A desktop Live2D pet built with **Tauri**, **PixiJS**, and **Live2D Cubism**.
 * untitled-pixi-live2d-engine
 * Live2D Cubism Core 5
 * Rust
+
+### AI Services
+
+* Nahida Brain
+* llama.cpp
+* Qwen3.5
+* SenseVoiceSmall
+* GPT-SoVITS
+* Python
 
 ---
 
@@ -78,7 +96,7 @@ git clone <repository-url>
 Enter the project directory:
 
 ```bash
-cd nahida-pet
+cd NahidaProject
 ```
 
 Install all Node.js dependencies:
@@ -91,7 +109,7 @@ The required packages, including PixiJS and the Live2D engine, will automaticall
 
 ---
 
-## Run in Development Mode
+## Run the Desktop Pet
 
 Start the Tauri development application:
 
@@ -106,12 +124,16 @@ Tauri will:
 3. Open the desktop application.
 4. Load the Live2D model through PixiJS.
 
+> This command only starts the desktop pet.
+>
+> For the AI backend, STT, TTS, and local LLM, see the [Services documentation](docs/services.md).
+
 ---
 
 ## Project Structure
 
 ```text
-nahida-pet/
+NahidaProject/
 ├── public/
 │   ├── cubism/
 │   │   └── live2dcubismcore.min.js
@@ -130,6 +152,19 @@ nahida-pet/
 │   └── styles.css
 │
 ├── src-tauri/
+│
+├── nahida_brain/
+│   ├── main.py
+│   └── ...
+│
+├── GPT-SoVITS/
+│
+├── stt-compare/
+│   └── .venv/
+│
+├── docs/
+│   └── services.md
+│
 ├── package.json
 └── README.md
 ```
@@ -236,3 +271,11 @@ For Node.js dependencies, normally only this command is required after cloning:
 ```bash
 npm install
 ```
+
+---
+
+## Next
+
+Continue to the service documentation:
+
+### [Nahida Services →](docs/services.md)
