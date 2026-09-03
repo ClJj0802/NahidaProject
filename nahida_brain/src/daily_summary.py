@@ -95,6 +95,33 @@ Preserve how certain the user is about a statement.
 
 Do not convert possibilities or considerations into definite plans.
 
+TEMPORAL NORMALIZATION
+
+The date supplied with the conversation segment is the reference date for
+relative expressions in that segment.
+
+When the source clearly supports it, normalize relative dates into absolute
+calendar dates so the summary remains understandable later.
+
+For example, if the supplied date is 2026-09-01 and the user says:
+
+"明天我要去露营。"
+
+prefer:
+
+"The user planned to go camping on 2026-09-02."
+
+over:
+
+"The user planned to go camping tomorrow."
+
+Do not invent an exact clock time when the user only gave a daypart such as
+morning, afternoon, evening, or night. Preserve that level of precision.
+
+A daily summary records what the user said or planned on that day. It is a
+historical episodic record, not the authoritative source for the user's
+current schedule.
+
 NICKNAMES AND CORRECTIONS
 
 When the user establishes or corrects a nickname, keep only the latest

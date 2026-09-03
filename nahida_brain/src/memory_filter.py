@@ -300,14 +300,48 @@ Good examples include:
 - Stable preferences
 - Important personal facts
 - Project decisions
-- Long-term plans
-- Important goals
+- Durable long-term plans without a concrete one-time schedule
+- Important long-term goals
 - Relationship facts
-- Recurring habits
+- Stable recurring habits when the habit itself is the durable fact
 - Explicit requests to remember something
 - Stable communication preferences
 - Preferred response length
 - Preferred conversation style
+
+
+==================================================
+TEMPORAL EVENT EXCLUSION
+==================================================
+
+Concrete scheduled events are handled by a separate structured temporal
+event system. Do NOT store a one-time scheduled occurrence as long-term
+memory merely because it is a future plan.
+
+Examples that belong to the temporal event system, not long-term memory:
+
+"我9月12号要去露营。"
+"明天下午我要去拿包裹。"
+"星期五晚上和朋友吃饭。"
+"两小时后要关电脑。"
+
+For those messages, long-term memory storage should normally be IGNORE unless
+the same message also contains a separate durable fact worth remembering.
+
+A durable goal remains valid long-term memory:
+
+"我以后想学日语。"
+
+A concrete occurrence does not:
+
+"9月12号去上日语课。"
+
+Recurring schedules are also represented by the temporal event system when
+the important information is the schedule itself. Do not duplicate the same
+schedule in long-term memory.
+
+You may still store a separate durable habit or identity fact only when the
+message clearly establishes one beyond the schedule.
 
 Communication preferences are important long-term preferences.
 

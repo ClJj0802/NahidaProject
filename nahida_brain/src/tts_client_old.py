@@ -1,6 +1,5 @@
 import json
 import re
-import threading
 import time
 import urllib.parse
 import urllib.request
@@ -18,8 +17,6 @@ class TTSClient:
         prompt_text="",
         prompt_lang="zh",
         text_lang="zh",
-        output_device=None,
-        prebuffer_seconds=0.25,
     ):
         self.api_base = api_base.rstrip("/")
         self.gpt_weights = gpt_weights
@@ -28,38 +25,35 @@ class TTSClient:
         self.prompt_text = prompt_text
         self.prompt_lang = prompt_lang
         self.text_lang = text_lang
-        self.output_device = output_device
-        self.prebuffer_seconds = prebuffer_seconds
 
     def _get(
         self,
         endpoint,
         params,
     ):
-        query = urllib.parse.urlencode(params)
-        url = f"{self.api_base}{endpoint}?{query}"
+        query = urllib.parse.urlencode(
+            params
+        )
 
-        start = time.perf_counter()
+        url = (
+            f"{self.api_base}"
+            f"{endpoint}"
+            f"?{query}"
+        )
 
         with urllib.request.urlopen(
             url,
-            timeout=120,
+            timeout=60,
         ) as response:
-            data = response.read()
-
-        elapsed = time.perf_counter() - start
-        print(f"[TTS] {endpoint}: {elapsed:.3f}s")
-
-        return data
+            return response.read()
 
     def configure(self):
-        configure_start = time.perf_counter()
-
         if self.sovits_weights:
             self._get(
                 "/set_sovits_weights",
                 {
-                    "weights_path": self.sovits_weights,
+                    "weights_path":
+                    self.sovits_weights,
                 },
             )
 
@@ -67,12 +61,10 @@ class TTSClient:
             self._get(
                 "/set_gpt_weights",
                 {
-                    "weights_path": self.gpt_weights,
+                    "weights_path":
+                    self.gpt_weights,
                 },
             )
-
-        elapsed = time.perf_counter() - configure_start
-        print(f"[TTS] Configure total: {elapsed:.3f}s")
 
     def clean_text(
         self,
@@ -121,73 +113,11 @@ class TTSClient:
 
         return text.strip()
 
-    def _build_payload(
+    def _choose_split_method(
         self,
         text,
-        streaming_mode,
     ):
-        return {
-            "text": text,
-            "text_lang": self.text_lang,
-            "ref_audio_path": self.ref_audio_path,
-            "prompt_text": self.prompt_text,
-            "prompt_lang": self.prompt_lang,
-            "top_k": 15,
-            "top_p": 0.7,
-            "temperature": 0.7,
-            "text_split_method": "cut5",
-            "batch_size": 1,
-            "batch_threshold": 0.75,
-            "split_bucket": False,
-            "speed_factor": 1.0,
-            "fragment_interval": 0.05,
-            "seed": -1,
-            "parallel_infer": False,
-            "repetition_penalty": 1.35,
-            "media_type": "wav",
-            "streaming_mode": streaming_mode,
-        }
-
-    def _request(
-        self,
-        payload,
-    ):
-        return urllib.request.Request(
-            f"{self.api_base}/tts",
-            data=json.dumps(payload).encode("utf-8"),
-            headers={
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-
-    def warm_up(
-        self,
-        text="嗯。",
-    ):
-        cleaned_text = self.clean_text(text)
-
-        if not cleaned_text:
-            return
-
-        print("[TTS] Warming up...")
-        start = time.perf_counter()
-
-        payload = self._build_payload(
-            cleaned_text,
-            streaming_mode=False,
-        )
-
-        request = self._request(payload)
-
-        with urllib.request.urlopen(
-            request,
-            timeout=180,
-        ) as response:
-            response.read()
-
-        elapsed = time.perf_counter() - start
-        print(f"[TTS] Warm-up complete: {elapsed:.3f}s")
+        return "cut5"
 
     def _read_exact(
         self,
@@ -198,7 +128,9 @@ class TTSClient:
         remaining = size
 
         while remaining > 0:
-            chunk = response.read(remaining)
+            chunk = response.read(
+                remaining
+            )
 
             if not chunk:
                 break
@@ -238,7 +170,8 @@ class TTSClient:
             or header[8:12] != b"WAVE"
         ):
             raise RuntimeError(
-                "GPT-SoVITS did not return a WAV stream."
+                "GPT-SoVITS did not return "
+                "a WAV stream."
             )
 
         channels = int.from_bytes(
@@ -258,32 +191,73 @@ class TTSClient:
 
         if bits_per_sample != 16:
             raise RuntimeError(
-                "Only 16-bit PCM streaming audio is supported."
+                "Only 16-bit PCM streaming "
+                "audio is supported."
             )
 
-        return sample_rate, channels
+        return (
+            sample_rate,
+            channels,
+        )
 
     def speak(
         self,
         text,
-        stop_event=None,
     ):
-        cleaned_text = self.clean_text(text)
+        cleaned_text = self.clean_text(
+            text
+        )
 
         if not cleaned_text:
             return
 
-        if stop_event is None:
-            stop_event = threading.Event()
-
-        payload = self._build_payload(
-            cleaned_text,
-            streaming_mode=True,
+        split_method = (
+            self._choose_split_method(
+                cleaned_text
+            )
         )
 
-        request = self._request(payload)
+        payload = {
+            "text": cleaned_text,
+            "text_lang": self.text_lang,
+            "ref_audio_path":
+                self.ref_audio_path,
+            "prompt_text":
+                self.prompt_text,
+            "prompt_lang":
+                self.prompt_lang,
+            "top_k": 15,
+            "top_p": 0.7,
+            "temperature": 1,
+            "text_split_method":
+                split_method,
+            "batch_size": 1,
+            "batch_threshold": 0.75,
+            "split_bucket": False,
+            "speed_factor": 1.0,
+            "fragment_interval": 0.05,
+            "seed": -1,
+            "parallel_infer": False,
+            "repetition_penalty": 1.35,
+            "media_type": "wav",
+            "streaming_mode": True,
+        }
 
-        request_start = time.perf_counter()
+        request = urllib.request.Request(
+            f"{self.api_base}/tts",
+            data=json.dumps(
+                payload
+            ).encode("utf-8"),
+            headers={
+                "Content-Type":
+                "application/json",
+            },
+            method="POST",
+        )
+
+        request_start = (
+            time.perf_counter()
+        )
 
         with urllib.request.urlopen(
             request,
@@ -294,23 +268,28 @@ class TTSClient:
                 44,
             )
 
-            sample_rate, channels = (
-                self._parse_wav_header(header)
+            (
+                sample_rate,
+                channels,
+            ) = self._parse_wav_header(
+                header
             )
 
-            frame_bytes = channels * 2
+            frame_bytes = (
+                channels * 2
+            )
 
             prebuffer_bytes = int(
                 sample_rate
                 * frame_bytes
-                * self.prebuffer_seconds
+                * 0.20
             )
 
             buffered = bytearray()
 
             while (
-                len(buffered) < prebuffer_bytes
-                and not stop_event.is_set()
+                len(buffered)
+                < prebuffer_bytes
             ):
                 chunk = self._read_chunk(
                     response,
@@ -328,29 +307,19 @@ class TTSClient:
             )
 
             print(
-                f"[TTS] First audio: "
+                f"[TTS] First audio in "
                 f"{first_audio_delay:.3f}s"
             )
 
-            if stop_event.is_set():
-                print("[TTS] Cancelled before playback.")
-                return
-
             carry = b""
 
-            stream_kwargs = {
-                "samplerate": sample_rate,
-                "channels": channels,
-                "dtype": "int16",
-                "latency": "low",
-            }
-
-            if self.output_device is not None:
-                stream_kwargs["device"] = self.output_device
-
             with sd.RawOutputStream(
-                **stream_kwargs
+                samplerate=sample_rate,
+                channels=channels,
+                dtype="int16",
+                latency="low",
             ) as stream:
+
                 if buffered:
                     data = bytes(buffered)
 
@@ -371,7 +340,7 @@ class TTSClient:
                         aligned_size:
                     ]
 
-                while not stop_event.is_set():
+                while True:
                     chunk = self._read_chunk(
                         response,
                         8192,
@@ -398,16 +367,3 @@ class TTSClient:
                     carry = data[
                         aligned_size:
                     ]
-
-        total = time.perf_counter() - request_start
-
-        if stop_event.is_set():
-            print(
-                f"[TTS] Interrupted after "
-                f"{total:.3f}s"
-            )
-        else:
-            print(
-                f"[TTS] Playback stream complete: "
-                f"{total:.3f}s"
-            )

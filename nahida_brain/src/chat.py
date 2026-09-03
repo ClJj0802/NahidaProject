@@ -2,16 +2,12 @@ from datetime import datetime
 from pathlib import Path
 
 from src.database import (
+    get_global_communication_preferences,
     get_memories_by_ids,
     get_recent_messages,
-    get_global_communication_preferences,
 )
+from src.llm_client import chat_completion
 
-from src.llm_client import (
-    chat_completion,
-)
-
-from datetime import datetime
 
 BASE_DIR = (
     Path(__file__)
@@ -25,6 +21,7 @@ PERSONA_PATH = (
     / "persona"
     / "nahida_system.txt"
 )
+
 
 def build_interaction_context(
     interaction_gap,
@@ -83,6 +80,7 @@ def build_interaction_context(
         f"{session_text}"
     )
 
+
 def build_global_communication_context():
     preferences = (
         get_global_communication_preferences()
@@ -102,6 +100,7 @@ def build_global_communication_context():
 
     return "\n".join(lines)
 
+
 def build_time_context():
     now = datetime.now().astimezone()
 
@@ -111,6 +110,7 @@ def build_time_context():
         f"Current local time: {now.strftime('%H:%M')}\n"
         f"Timezone: {now.strftime('%z')}"
     )
+
 
 def load_persona():
     return PERSONA_PATH.read_text(
@@ -173,6 +173,182 @@ def build_episodic_context(
     )
 
 
+def format_event_time(event):
+    start_at = event.get("start_at")
+
+    if not start_at:
+        return "Unknown time"
+
+    try:
+        start = datetime.fromisoformat(
+            start_at
+        )
+    except ValueError:
+        return start_at
+
+    precision = event.get(
+        "time_precision",
+        "exact",
+    )
+
+    if precision == "date":
+        result = start.strftime(
+            "%Y-%m-%d"
+        )
+
+    elif precision == "daypart":
+        daypart = event.get(
+            "time_label"
+        ) or "unspecified daypart"
+
+        result = (
+            f"{start.strftime('%Y-%m-%d')} "
+            f"({daypart})"
+        )
+
+    else:
+        result = start.strftime(
+            "%Y-%m-%d %H:%M"
+        )
+
+    end_at = event.get("end_at")
+
+    if end_at:
+        try:
+            end = datetime.fromisoformat(
+                end_at
+            )
+
+            if precision == "date":
+                end_text = end.strftime(
+                    "%Y-%m-%d"
+                )
+            else:
+                end_text = end.strftime(
+                    "%Y-%m-%d %H:%M"
+                )
+
+            if end_text not in result:
+                result = (
+                    f"{result} to {end_text}"
+                )
+
+        except ValueError:
+            pass
+
+    return result
+
+
+def build_event_context(events):
+    if not events:
+        return "No relevant structured events."
+
+    lines = []
+
+    for event in events:
+        lines.append(
+            f"- {event['title']}"
+        )
+        lines.append(
+            f"  Time: {format_event_time(event)}"
+        )
+        lines.append(
+            f"  Status: {event.get('status', 'scheduled')}"
+        )
+
+        location = event.get("location")
+
+        if location:
+            lines.append(
+                f"  Location: {location}"
+            )
+
+        recurrence = event.get(
+            "recurrence_rule"
+        )
+
+        if recurrence:
+            lines.append(
+                f"  Recurrence: {recurrence}"
+            )
+
+        if event.get("is_override"):
+            lines.append(
+                "  This occurrence was moved from: "
+                f"{event.get('original_occurrence_date')}"
+            )
+
+        description = event.get(
+            "description"
+        )
+
+        if description:
+            lines.append(
+                f"  Details: {description}"
+            )
+
+        exceptions = event.get(
+            "occurrence_exceptions",
+            [],
+        )
+
+        for exception in exceptions:
+            occurrence_date = exception.get(
+                "occurrence_date"
+            )
+            occurrence_status = exception.get(
+                "occurrence_status"
+            )
+            override_start = exception.get(
+                "override_start_at"
+            )
+
+            if occurrence_status:
+                lines.append(
+                    "  Occurrence exception: "
+                    f"{occurrence_date} is "
+                    f"{occurrence_status}"
+                )
+
+            if override_start:
+                try:
+                    moved = datetime.fromisoformat(
+                        override_start
+                    )
+                    moved_text = moved.strftime(
+                        "%Y-%m-%d %H:%M"
+                    )
+                except ValueError:
+                    moved_text = override_start
+
+                lines.append(
+                    "  Occurrence exception: "
+                    f"{occurrence_date} moved to "
+                    f"{moved_text}"
+                )
+
+    return "\n".join(lines)
+
+
+def build_current_event_context(events):
+    if not events:
+        return "No scheduled events are active today."
+
+    return build_event_context(events)
+
+
+def build_proactive_event_context(event):
+    if not event:
+        return (
+            "No proactive event mention is available "
+            "for this turn."
+        )
+
+    return build_event_context(
+        [event]
+    )
+
+
 def build_recent_conversation(
     session_id,
     limit=8,
@@ -208,12 +384,21 @@ def generate_nahida_response(
     relevant_memory_ids=None,
     episodic_facts=None,
     interaction_gap=None,
+    relevant_events=None,
+    current_events=None,
+    proactive_event=None,
 ):
     if relevant_memory_ids is None:
         relevant_memory_ids = []
 
     if episodic_facts is None:
         episodic_facts = []
+
+    if relevant_events is None:
+        relevant_events = []
+
+    if current_events is None:
+        current_events = []
 
     persona = load_persona()
 
@@ -224,8 +409,8 @@ def generate_nahida_response(
     )
 
     global_communication = (
-    build_global_communication_context()
-)
+        build_global_communication_context()
+    )
 
     memories = build_memory_context(
         relevant_memory_ids
@@ -234,6 +419,24 @@ def generate_nahida_response(
     episodic_context = (
         build_episodic_context(
             episodic_facts
+        )
+    )
+
+    relevant_event_context = (
+        build_event_context(
+            relevant_events
+        )
+    )
+
+    current_event_context = (
+        build_current_event_context(
+            current_events
+        )
+    )
+
+    proactive_event_context = (
+        build_proactive_event_context(
+            proactive_event
         )
     )
 
@@ -250,6 +453,8 @@ def generate_nahida_response(
 {persona}
 
 GLOBAL COMMUNICATION RULES
+
+{global_communication}
 
 The communication preferences above are persistent instructions about
 how the user prefers Nahida to communicate.
@@ -293,6 +498,73 @@ local time is provided.
 Do not unnecessarily mention the exact date or time in normal conversation.
 
 Use temporal information only when it is relevant.
+
+
+RELEVANT STRUCTURED EVENTS:
+
+{relevant_event_context}
+
+
+TODAY'S EVENT AWARENESS:
+
+{current_event_context}
+
+
+STRUCTURED EVENT RULES
+
+Structured events are the authoritative source for the user's scheduled
+plans, appointments, deadlines, and recurring activities.
+
+A scheduled event proves that the user planned or scheduled something.
+It does NOT prove that the event actually happened.
+
+Do not say that an event happened unless the current conversation,
+a completed event state, or another trusted memory supports that claim.
+
+Use "tentative" events with uncertain wording. Do not present them as fixed.
+
+If structured event information conflicts with an older episodic summary
+about the current schedule, trust the structured event information for the
+current plan. The episodic summary may still describe what the user had said
+at that earlier time.
+
+Do not mention today's events merely because they are present above.
+They are awareness context, not a command to remind the user.
+
+If the user asks about today's plans, a specific event, a date, a deadline,
+or something directly connected to an event, use the event information
+naturally and accurately.
+
+
+ONE-TIME PROACTIVE EVENT OPPORTUNITY:
+
+{proactive_event_context}
+
+
+PROACTIVE EVENT BEHAVIOR
+
+If a proactive event is provided above, you MAY casually acknowledge it once
+if it fits naturally with the user's current message.
+
+You are not required to mention it.
+
+Do not force it into an unrelated technical or serious conversation.
+
+Prefer a short, natural acknowledgement over a reminder-style message.
+
+Do not interrogate the user about preparation, departure time, packing,
+or other details unless the conversation naturally invites such a question.
+
+Prefer statements such as:
+"今天就是露营的日子了呢～"
+
+over repeatedly asking reminder-like questions.
+
+If no proactive event is provided, do not spontaneously bring up an event
+solely because it appears in today's event awareness.
+
+Never behave like a repetitive calendar notification system.
+
 
 INTERACTION CONTEXT:
 
@@ -363,31 +635,24 @@ If a relevant episodic memory is provided, use it when answering the
 user's question.
 
 Do NOT say that you forgot something when the answer is directly
-supported by a relevant memory above.
+supported by a relevant memory or structured event above.
 
-For example, if an episodic memory says:
+The phrase "the following day" in an episodic memory is relative to that
+memory's date.
 
-Memory date: 2026-08-29
-Fact: The user planned to attend a comic convention the following day.
-
-and the current date is 2026-08-29 and the user asks where they plan
-to go tomorrow, then the correct remembered answer is:
-
-The user planned to attend a comic convention.
-
-The phrase "the following day" is relative to the memory date.
-
-Use the memory naturally.
-Do not mention databases, retrieval, summaries, or memory IDs.
+Use memory naturally.
+Do not mention databases, retrieval, summaries, event IDs, or memory IDs.
 
 
 MEMORY ACCURACY
 
 Only claim to remember something when it is supported by:
 
-1. Relevant long-term memories
-2. Relevant episodic memories
-3. The current session conversation
+1. Relevant structured events
+2. Today's structured event awareness when directly relevant
+3. Relevant long-term memories
+4. Relevant episodic memories
+5. The current session conversation
 
 If supporting information exists, trust and use it.
 
@@ -416,7 +681,7 @@ Answer the user's current message directly.
 For casual conversation, keep responses short and natural.
 
 If the user is asking whether you remember something and a relevant
-memory is available, answer confidently but naturally.
+memory or event is available, answer confidently but naturally.
 """.strip()
 
     messages = [

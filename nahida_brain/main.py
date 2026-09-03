@@ -12,11 +12,20 @@ from src.database import (
     get_recent_messages,
     get_recent_daily_summaries,
     get_latest_message,
+    get_event_candidates,
 )
 
 from src.memory_filter import analyze_memory
 from src.daily_summary import generate_daily_summary
 from src.episodic_memory import retrieve_relevant_episodic_facts
+from src.temporal_memory import (
+    get_event_occurrences_for_date,
+    get_proactive_event_opportunity,
+    get_relevant_events,
+    mark_proactive_event_surfaced,
+    mark_relevant_current_events_acknowledged,
+    process_temporal_memory,
+)
 from src.chat import generate_nahida_response
 from src.tts_client import TTSClient
 
@@ -308,6 +317,58 @@ def chat_with_nahida(
         session_id=session_id,
     )
 
+    relevant_event_ids = (
+        process_temporal_memory(
+            latest_message=text,
+            message_id=message_id,
+            recent_messages=previous_messages,
+        )
+    )
+
+    current_events = (
+        get_event_occurrences_for_date()
+    )
+
+    mark_relevant_current_events_acknowledged(
+        relevant_event_ids=(
+            relevant_event_ids
+        ),
+        current_occurrences=current_events,
+    )
+
+    proactive_event = (
+        get_proactive_event_opportunity(
+            current_events
+        )
+    )
+
+    relevant_events = get_relevant_events(
+        relevant_event_ids
+    )
+
+    if relevant_event_ids:
+        print(
+            "[Debug] Relevant event IDs: "
+            f"{relevant_event_ids}"
+        )
+
+    if current_events:
+        print("[Temporal] Today:")
+
+        for event in current_events:
+            print(
+                f"  #{event['id']} "
+                f"{event['title']} "
+                f"@ {event['start_at']}"
+            )
+
+    if proactive_event:
+        print(
+            "[Temporal] Proactive opportunity: "
+            f"#{proactive_event['id']} "
+            f"{proactive_event['title']}"
+        )
+
     relevant_memory_ids = process_memory(
         text=text,
         message_id=message_id,
@@ -359,6 +420,15 @@ def chat_with_nahida(
                 interaction_gap=(
                     interaction_gap
                 ),
+                relevant_events=(
+                    relevant_events
+                ),
+                current_events=(
+                    current_events
+                ),
+                proactive_event=(
+                    proactive_event
+                ),
             )
         )
 
@@ -373,6 +443,11 @@ def chat_with_nahida(
         content=response,
         session_id=session_id,
     )
+
+    if proactive_event:
+        mark_proactive_event_surfaced(
+            proactive_event
+        )
 
     print()
     print(
@@ -515,6 +590,60 @@ def auto_update_daily_summary(
     return True
 
 
+def show_events():
+    events = get_event_candidates(
+        limit=50
+    )
+
+    print()
+    print("=== Structured Events ===")
+
+    if not events:
+        print("No events.")
+        print()
+        return
+
+    for event in events:
+        print()
+        print(
+            f"#{event['id']} "
+            f"[{event['status']}] "
+            f"{event['title']}"
+        )
+        print(
+            f"  start: {event['start_at']}"
+        )
+
+        if event["end_at"]:
+            print(
+                f"  end:   {event['end_at']}"
+            )
+
+        if event["time_precision"] != "exact":
+            print(
+                "  precision: "
+                f"{event['time_precision']}"
+            )
+
+        if event["time_label"]:
+            print(
+                f"  daypart: {event['time_label']}"
+            )
+
+        if event["location"]:
+            print(
+                f"  location: {event['location']}"
+            )
+
+        if event["recurrence_rule"]:
+            print(
+                "  recurrence: "
+                f"{event['recurrence_rule']}"
+            )
+
+    print()
+
+
 def show_daily_summaries():
     summaries = (
         get_recent_daily_summaries(7)
@@ -559,7 +688,7 @@ def main():
     day_dirty = False
 
     print(
-        "Nahida Brain V6.10"
+        "Nahida Brain V6.11"
     )
     print(
         f"Session ID: {session_id}"
@@ -578,6 +707,9 @@ def main():
     )
     print(
         "/summaries  Show summaries"
+    )
+    print(
+        "/events     Show structured events"
     )
     print(
         "/exit       Exit"
@@ -653,6 +785,10 @@ def main():
 
             if text == "/summaries":
                 show_daily_summaries()
+                continue
+
+            if text == "/events":
+                show_events()
                 continue
 
             day_dirty = True

@@ -360,13 +360,6 @@ if not exist "%BRAIN_DIR%\main.py" (
 
     findstr /C:"Nahida Brain V6.10" "%BRAIN_DIR%\main.py" >nul 2>&1
 
-    if errorlevel 1 (
-        echo [ERROR] main.py is not Nahida Brain V6.10.
-        echo [ERROR] Replace it with the new main_v6_10_sensevoice.py.
-        set "PREFLIGHT_FAILED=1"
-    ) else (
-        echo [OK] Brain version: V6.10
-    )
 )
 
 if "%STT_SELECTED%"=="1" (
