@@ -2,10 +2,12 @@ from datetime import datetime
 from pathlib import Path
 
 from src.database import (
+    get_core_memories,
     get_global_communication_preferences,
     get_memories_by_ids,
     get_recent_messages,
 )
+from src.active_context import format_active_context
 from src.llm_client import chat_completion
 
 
@@ -116,6 +118,24 @@ def load_persona():
     return PERSONA_PATH.read_text(
         encoding="utf-8"
     ).strip()
+
+
+def build_core_memory_context():
+    memories = get_core_memories()
+
+    if not memories:
+        return "No core long-term memories."
+
+    return "\n".join(
+        f"- {memory['content']}"
+        for memory in memories
+    )
+
+
+def build_active_context(active_context):
+    return format_active_context(
+        active_context or {}
+    )
 
 
 def build_memory_context(
@@ -387,6 +407,7 @@ def generate_nahida_response(
     relevant_events=None,
     current_events=None,
     proactive_event=None,
+    active_context=None,
 ):
     if relevant_memory_ids is None:
         relevant_memory_ids = []
@@ -410,6 +431,16 @@ def generate_nahida_response(
 
     global_communication = (
         build_global_communication_context()
+    )
+
+    core_memories = (
+        build_core_memory_context()
+    )
+
+    active_context_text = (
+        build_active_context(
+            active_context
+        )
     )
 
     memories = build_memory_context(
@@ -616,7 +647,42 @@ These are behavioral examples, not mandatory phrases.
 
 Do not force a greeting when it would interrupt the user's current topic.
 
-RELEVANT LONG-TERM MEMORIES:
+ACTIVE CONVERSATION CONTEXT:
+
+{active_context_text}
+
+
+ACTIVE CONTEXT RULES
+
+The active conversation context is the authoritative short-lived map of the
+current topic and currently discussed entities.
+
+Use it to resolve pronouns and references such as:
+- 她
+- 他
+- 那个人
+- 之前那个同事
+- 刚刚说的项目
+
+If the active context explicitly resolves the latest reference to an entity,
+do not silently switch that reference to another entity just because another
+person has a similar role or appears nearby in the conversation.
+
+Different entity keys represent different people/entities. Keep them distinct.
+
+
+CORE LONG-TERM MEMORIES:
+
+{core_memories}
+
+
+CORE MEMORY RULES
+
+Core memories are a very small set of durable, frequently useful facts.
+They are always available, but do not bring them up unless relevant.
+
+
+RELEVANT LONG-TERM / RECENT MEMORIES:
 
 {memories}
 

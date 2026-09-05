@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from src.tts_worker import TTSWorker
 
 from src.database import (
@@ -14,8 +14,14 @@ from src.database import (
     get_recent_daily_summaries,
     get_latest_message,
     get_event_candidates,
+    cleanup_expired_memories,
+    save_session_context,
 )
 
+from src.active_context import (
+    active_context_to_json,
+    empty_active_context,
+)
 from src.memory_filter import analyze_memory
 from src.daily_summary import generate_daily_summary
 from src.episodic_memory import retrieve_relevant_episodic_facts
@@ -198,12 +204,24 @@ def build_interaction_gap(
     }
 
 
+def build_memory_expiry(ttl_days):
+    if ttl_days is None:
+        return None
+
+    return (
+        datetime.now()
+        + timedelta(days=ttl_days)
+    ).isoformat(timespec="seconds")
+
+
 def process_memory(
     text,
     message_id,
     previous_messages,
+    active_context,
+    session_id,
 ):
-    existing_memories = get_memories(100)
+    existing_memories = get_memories(150)
 
     print("[Memory] Analyzing...")
 
@@ -212,13 +230,14 @@ def process_memory(
             latest_message=text,
             recent_messages=previous_messages,
             existing_memories=existing_memories,
+            active_context=active_context,
         )
 
     except Exception as exc:
         print(
             f"[Memory] Analysis failed: {exc}"
         )
-        return []
+        return [], active_context
 
     relevant_memory_ids = (
         decision.relevant_memory_ids
@@ -230,77 +249,106 @@ def process_memory(
             f"{relevant_memory_ids}"
         )
 
-    if decision.action == "ignore":
-        print("[Memory] IGNORE")
-        return relevant_memory_ids
+    active_context = decision.active_context
 
-    if decision.action == "add":
-        if (
-            not decision.category
-            or not decision.content
-        ):
-            return relevant_memory_ids
-
-        memory_id = save_memory(
-            category=decision.category,
-            content=decision.content,
-            importance=decision.importance,
-            source_message_id=message_id,
+    try:
+        save_session_context(
+            session_id=session_id,
+            context_json=active_context_to_json(
+                active_context
+            ),
         )
-
+    except Exception as exc:
         print(
-            f"[Memory] ADD #{memory_id}: "
-            f"{decision.content}"
+            f"[Active Context] Save failed: {exc}"
         )
 
-        return relevant_memory_ids
+    latest_reference = active_context.get(
+        "latest_reference"
+    )
 
-    if decision.action == "update":
-        if decision.target_memory_id is None:
-            return relevant_memory_ids
+    if latest_reference:
+        print(
+            "[Active Context] "
+            f"{latest_reference['surface']} -> "
+            f"{latest_reference['entity_key']}"
+        )
+    elif active_context.get("topic"):
+        print(
+            "[Active Context] Topic: "
+            f"{active_context['topic']}"
+        )
 
-        valid_ids = {
-            memory["id"]
-            for memory in existing_memories
-        }
+    if not decision.operations:
+        print("[Memory] IGNORE")
+        return relevant_memory_ids, active_context
 
-        if (
-            decision.target_memory_id
-            not in valid_ids
-        ):
-            return relevant_memory_ids
+    valid_ids = {
+        int(memory["id"])
+        for memory in existing_memories
+    }
 
-        if (
-            not decision.category
-            or not decision.content
-        ):
-            return relevant_memory_ids
+    for operation in decision.operations:
+        expires_at = build_memory_expiry(
+            operation.ttl_days
+        )
+
+        if operation.action == "add":
+            memory_id = save_memory(
+                category=operation.category,
+                content=operation.content,
+                importance=operation.importance,
+                source_message_id=message_id,
+                memory_type=operation.memory_type,
+                confidence=operation.confidence,
+                expires_at=expires_at,
+                is_core=operation.is_core,
+            )
+
+            print(
+                f"[Memory] ADD #{memory_id} "
+                f"[{operation.memory_type}/"
+                f"{operation.category}]: "
+                f"{operation.content}"
+            )
+
+            continue
+
+        if operation.target_memory_id not in valid_ids:
+            continue
 
         success = update_memory(
-            memory_id=decision.target_memory_id,
-            category=decision.category,
-            content=decision.content,
-            importance=decision.importance,
+            memory_id=operation.target_memory_id,
+            category=operation.category,
+            content=operation.content,
+            importance=operation.importance,
             source_message_id=message_id,
+            memory_type=operation.memory_type,
+            confidence=operation.confidence,
+            expires_at=expires_at,
+            is_core=operation.is_core,
         )
 
         if success:
             print(
                 f"[Memory] UPDATE "
-                f"#{decision.target_memory_id}: "
-                f"{decision.content}"
+                f"#{operation.target_memory_id} "
+                f"[{operation.memory_type}/"
+                f"{operation.category}]: "
+                f"{operation.content}"
             )
 
-        return relevant_memory_ids
-
-    return relevant_memory_ids
+    return relevant_memory_ids, active_context
 
 
 def chat_with_nahida(
     text,
     session_id,
     tts=None,
+    active_context=None,
 ):
+    if active_context is None:
+        active_context = empty_active_context()
     last_message = get_latest_message()
 
     interaction_gap = build_interaction_gap(
@@ -371,10 +419,12 @@ def chat_with_nahida(
             f"{proactive_event['title']}"
         )
 
-    relevant_memory_ids = process_memory(
+    relevant_memory_ids, active_context = process_memory(
         text=text,
         message_id=message_id,
         previous_messages=previous_messages,
+        active_context=active_context,
+        session_id=session_id,
     )
 
     print(
@@ -431,6 +481,9 @@ def chat_with_nahida(
                 proactive_event=(
                     proactive_event
                 ),
+                active_context=(
+                    active_context
+                ),
             )
         )
 
@@ -438,7 +491,7 @@ def chat_with_nahida(
         print(
             f"[Nahida] Failed: {exc}"
         )
-        return
+        return active_context
 
     save_message(
         role="assistant",
@@ -463,6 +516,8 @@ def chat_with_nahida(
             interrupt=True,
         )
 
+    return active_context
+
 
 def show_memories():
     memories = get_memories()
@@ -475,12 +530,30 @@ def show_memories():
         return
 
     for memory in memories:
+        memory_type = (
+            memory["memory_type"]
+            if "memory_type" in memory.keys()
+            else "fixed"
+        )
+
+        expires_at = (
+            memory["expires_at"]
+            if "expires_at" in memory.keys()
+            else None
+        )
+
         print(
             f"#{memory['id']} "
-            f"[{memory['category']}] "
+            f"[{memory_type}/"
+            f"{memory['category']}] "
             f"importance="
             f"{memory['importance']}"
         )
+
+        if expires_at:
+            print(
+                f"expires: {expires_at}"
+            )
 
         print(
             memory["content"]
@@ -676,7 +749,15 @@ def show_daily_summaries():
 def main():
     init_db()
 
+    expired_count = cleanup_expired_memories()
+    if expired_count:
+        print(
+            f"[Memory] Expired {expired_count} "
+            "short-term memories."
+        )
+
     session_id = create_session()
+    active_context = empty_active_context()
 
     voice = create_voice_input()
 
@@ -699,7 +780,7 @@ def main():
     day_dirty = False
 
     print(
-        "Nahida Brain V6.13"
+        "Nahida Brain V6.14 Phase 1"
     )
     print(
         f"Session ID: {session_id}"
@@ -818,10 +899,11 @@ def main():
                         "still releasing GPU."
                     )
 
-            chat_with_nahida(
+            active_context = chat_with_nahida(
                 text=text,
                 session_id=session_id,
                 tts=tts,
+                active_context=active_context,
             )
 
     finally:

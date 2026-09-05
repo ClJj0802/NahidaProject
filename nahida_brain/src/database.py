@@ -105,6 +105,45 @@ def init_db():
             """
         )
 
+    memory_columns = {
+        "memory_type": "TEXT NOT NULL DEFAULT 'fixed'",
+        "confidence": "REAL NOT NULL DEFAULT 1.0",
+        "source_type": "TEXT NOT NULL DEFAULT 'user_explicit'",
+        "expires_at": "TEXT",
+        "valid_from": "TEXT",
+        "valid_until": "TEXT",
+        "is_core": "INTEGER NOT NULL DEFAULT 0",
+        "status": "TEXT NOT NULL DEFAULT 'active'",
+        "last_confirmed_at": "TEXT",
+        "superseded_by": "INTEGER",
+        "metadata_json": "TEXT",
+    }
+
+    for column_name, column_type in memory_columns.items():
+        if not column_exists(
+            conn,
+            "memories",
+            column_name,
+        ):
+            cursor.execute(
+                f"""
+                ALTER TABLE memories
+                ADD COLUMN {column_name} {column_type}
+                """
+            )
+
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS session_contexts (
+            session_id INTEGER PRIMARY KEY,
+            context_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            FOREIGN KEY (session_id)
+                REFERENCES sessions(id)
+        )
+        """
+    )
+
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS daily_summaries (
@@ -198,6 +237,20 @@ def init_db():
         """
         CREATE INDEX IF NOT EXISTS idx_event_occurrence_date
         ON event_occurrence_state(occurrence_date)
+        """
+    )
+
+    cursor.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_memories_type_active
+        ON memories(memory_type, active, status)
+        """
+    )
+
+    cursor.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_memories_expiry
+        ON memories(expires_at)
         """
     )
 
@@ -298,6 +351,14 @@ def save_memory(
     content,
     importance,
     source_message_id=None,
+    memory_type="fixed",
+    confidence=1.0,
+    source_type="user_explicit",
+    expires_at=None,
+    valid_from=None,
+    valid_until=None,
+    is_core=False,
+    metadata_json=None,
 ):
     conn = get_connection()
     cursor = conn.cursor()
@@ -314,9 +375,19 @@ def save_memory(
             importance,
             source_message_id,
             created_at,
-            updated_at
+            updated_at,
+            memory_type,
+            confidence,
+            source_type,
+            expires_at,
+            valid_from,
+            valid_until,
+            is_core,
+            status,
+            last_confirmed_at,
+            metadata_json
         )
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)
         """,
         (
             category,
@@ -325,6 +396,15 @@ def save_memory(
             source_message_id,
             now,
             now,
+            memory_type,
+            confidence,
+            source_type,
+            expires_at,
+            valid_from,
+            valid_until,
+            1 if is_core else 0,
+            now,
+            metadata_json,
         ),
     )
 
@@ -342,12 +422,65 @@ def update_memory(
     content,
     importance,
     source_message_id=None,
+    memory_type=None,
+    confidence=None,
+    expires_at=None,
+    is_core=None,
 ):
     conn = get_connection()
     cursor = conn.cursor()
 
     updated_at = datetime.now().isoformat(
         timespec="seconds"
+    )
+
+    current = cursor.execute(
+        "SELECT * FROM memories WHERE id = ?",
+        (memory_id,),
+    ).fetchone()
+
+    if current is None:
+        conn.close()
+        return False
+
+    current_keys = set(current.keys())
+
+    next_memory_type = (
+        memory_type
+        if memory_type is not None
+        else current["memory_type"]
+        if "memory_type" in current_keys
+        else "fixed"
+    )
+
+    next_confidence = (
+        confidence
+        if confidence is not None
+        else current["confidence"]
+        if "confidence" in current_keys
+        else 1.0
+    )
+
+    if memory_type is not None:
+        if memory_type == "short_term_episode":
+            next_expires_at = expires_at
+        else:
+            next_expires_at = None
+    elif expires_at is not None:
+        next_expires_at = expires_at
+    else:
+        next_expires_at = (
+            current["expires_at"]
+            if "expires_at" in current_keys
+            else None
+        )
+
+    next_is_core = (
+        1 if is_core else 0
+        if is_core is not None
+        else current["is_core"]
+        if "is_core" in current_keys
+        else 0
     )
 
     cursor.execute(
@@ -359,7 +492,13 @@ def update_memory(
             importance = ?,
             source_message_id = ?,
             updated_at = ?,
-            active = 1
+            memory_type = ?,
+            confidence = ?,
+            expires_at = ?,
+            is_core = ?,
+            status = 'active',
+            active = 1,
+            last_confirmed_at = ?
         WHERE id = ?
         """,
         (
@@ -367,6 +506,11 @@ def update_memory(
             content,
             importance,
             source_message_id,
+            updated_at,
+            next_memory_type,
+            next_confidence,
+            next_expires_at,
+            next_is_core,
             updated_at,
             memory_id,
         ),
@@ -460,11 +604,20 @@ def get_memories(limit=100):
         """
         SELECT *
         FROM memories
-        WHERE active = 1
+        WHERE
+            active = 1
+            AND status = 'active'
+            AND (
+                expires_at IS NULL
+                OR expires_at > ?
+            )
         ORDER BY importance DESC, id DESC
         LIMIT ?
         """,
-        (limit,),
+        (
+            datetime.now().isoformat(timespec="seconds"),
+            limit,
+        ),
     )
 
     rows = cursor.fetchall()
@@ -511,13 +664,23 @@ def get_memories_by_ids(memory_ids):
         FROM memories
         WHERE
             active = 1
+            AND status = 'active'
+            AND (
+                expires_at IS NULL
+                OR expires_at > ?
+            )
             AND id IN ({placeholders})
         ORDER BY importance DESC
     """
 
+    params = [
+        datetime.now().isoformat(timespec="seconds"),
+        *memory_ids,
+    ]
+
     cursor.execute(
         query,
-        memory_ids,
+        params,
     )
 
     rows = cursor.fetchall()
@@ -1252,3 +1415,116 @@ def get_event_occurrence_states_for_event_ids(
     conn.close()
 
     return rows
+
+
+def cleanup_expired_memories():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    now = datetime.now().isoformat(
+        timespec="seconds"
+    )
+
+    cursor.execute(
+        """
+        UPDATE memories
+        SET
+            active = 0,
+            status = 'expired',
+            updated_at = ?
+        WHERE
+            active = 1
+            AND status = 'active'
+            AND expires_at IS NOT NULL
+            AND expires_at <= ?
+        """,
+        (now, now),
+    )
+
+    changed = cursor.rowcount
+    conn.commit()
+    conn.close()
+
+    return changed
+
+
+def get_core_memories(limit=20):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    now = datetime.now().isoformat(
+        timespec="seconds"
+    )
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM memories
+        WHERE
+            active = 1
+            AND status = 'active'
+            AND is_core = 1
+            AND memory_type = 'fixed'
+            AND category != 'communication'
+            AND (
+                expires_at IS NULL
+                OR expires_at > ?
+            )
+        ORDER BY importance DESC, id DESC
+        LIMIT ?
+        """,
+        (now, limit),
+    )
+
+    rows = cursor.fetchall()
+    conn.close()
+    return rows
+
+
+def save_session_context(
+    session_id,
+    context_json,
+):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    now = datetime.now().isoformat(
+        timespec="seconds"
+    )
+
+    cursor.execute(
+        """
+        INSERT INTO session_contexts (
+            session_id,
+            context_json,
+            updated_at
+        )
+        VALUES (?, ?, ?)
+        ON CONFLICT(session_id)
+        DO UPDATE SET
+            context_json = excluded.context_json,
+            updated_at = excluded.updated_at
+        """,
+        (session_id, context_json, now),
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def get_session_context(session_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT *
+        FROM session_contexts
+        WHERE session_id = ?
+        """,
+        (session_id,),
+    )
+
+    row = cursor.fetchone()
+    conn.close()
+    return row
