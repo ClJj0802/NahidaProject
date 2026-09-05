@@ -19,7 +19,8 @@ class TTSClient:
         prompt_lang="zh",
         text_lang="zh",
         output_device=None,
-        prebuffer_seconds=0.25,
+        prebuffer_seconds=0.12,
+        parallel_infer=True,
     ):
         self.api_base = api_base.rstrip("/")
         self.gpt_weights = gpt_weights
@@ -30,6 +31,7 @@ class TTSClient:
         self.text_lang = text_lang
         self.output_device = output_device
         self.prebuffer_seconds = prebuffer_seconds
+        self.parallel_infer = parallel_infer
 
     def _get(
         self,
@@ -142,7 +144,7 @@ class TTSClient:
             "speed_factor": 1.0,
             "fragment_interval": 0.05,
             "seed": -1,
-            "parallel_infer": False,
+            "parallel_infer": self.parallel_infer,
             "repetition_penalty": 1.35,
             "media_type": "wav",
             "streaming_mode": streaming_mode,
@@ -163,19 +165,19 @@ class TTSClient:
 
     def warm_up(
         self,
-        text="嗯。",
+        text="嗯，我在这里。",
     ):
         cleaned_text = self.clean_text(text)
 
         if not cleaned_text:
             return
 
-        print("[TTS] Warming up...")
+        print("[TTS] Streaming warm-up...")
         start = time.perf_counter()
 
         payload = self._build_payload(
             cleaned_text,
-            streaming_mode=False,
+            streaming_mode=True,
         )
 
         request = self._request(payload)
@@ -184,10 +186,14 @@ class TTSClient:
             request,
             timeout=180,
         ) as response:
-            response.read()
+            while response.read(8192):
+                pass
 
         elapsed = time.perf_counter() - start
-        print(f"[TTS] Warm-up complete: {elapsed:.3f}s")
+        print(
+            f"[TTS] Streaming warm-up complete: "
+            f"{elapsed:.3f}s"
+        )
 
     def _read_exact(
         self,
@@ -276,14 +282,20 @@ class TTSClient:
         if stop_event is None:
             stop_event = threading.Event()
 
+        print(
+            f"[TTS] Text chars: "
+            f"{len(cleaned_text)}"
+        )
+
         payload = self._build_payload(
             cleaned_text,
             streaming_mode=True,
         )
 
         request = self._request(payload)
-
         request_start = time.perf_counter()
+
+        total_written_bytes = 0
 
         with urllib.request.urlopen(
             request,
@@ -292,6 +304,11 @@ class TTSClient:
             header = self._read_exact(
                 response,
                 44,
+            )
+
+            header_delay = (
+                time.perf_counter()
+                - request_start
             )
 
             sample_rate, channels = (
@@ -322,18 +339,24 @@ class TTSClient:
 
                 buffered.extend(chunk)
 
-            first_audio_delay = (
+            playable_delay = (
                 time.perf_counter()
                 - request_start
             )
 
             print(
-                f"[TTS] First audio: "
-                f"{first_audio_delay:.3f}s"
+                f"[TTS] Header ready: "
+                f"{header_delay:.3f}s"
+            )
+            print(
+                f"[TTS] First playable audio: "
+                f"{playable_delay:.3f}s"
             )
 
             if stop_event.is_set():
-                print("[TTS] Cancelled before playback.")
+                print(
+                    "[TTS] Cancelled before playback."
+                )
                 return
 
             carry = b""
@@ -346,7 +369,9 @@ class TTSClient:
             }
 
             if self.output_device is not None:
-                stream_kwargs["device"] = self.output_device
+                stream_kwargs["device"] = (
+                    self.output_device
+                )
 
             with sd.RawOutputStream(
                 **stream_kwargs
@@ -365,6 +390,9 @@ class TTSClient:
                     if aligned_size:
                         stream.write(
                             data[:aligned_size]
+                        )
+                        total_written_bytes += (
+                            aligned_size
                         )
 
                     carry = data[
@@ -394,20 +422,50 @@ class TTSClient:
                         stream.write(
                             data[:aligned_size]
                         )
+                        total_written_bytes += (
+                            aligned_size
+                        )
 
                     carry = data[
                         aligned_size:
                     ]
 
-        total = time.perf_counter() - request_start
+        total_wall = (
+            time.perf_counter()
+            - request_start
+        )
+
+        bytes_per_second = (
+            sample_rate
+            * channels
+            * 2
+        )
+
+        audio_seconds = (
+            total_written_bytes
+            / bytes_per_second
+            if bytes_per_second
+            else 0.0
+        )
+
+        if audio_seconds > 0:
+            wall_to_audio = (
+                total_wall
+                / audio_seconds
+            )
+        else:
+            wall_to_audio = 0.0
 
         if stop_event.is_set():
             print(
-                f"[TTS] Interrupted after "
-                f"{total:.3f}s"
+                f"[TTS] Interrupted: "
+                f"wall={total_wall:.3f}s, "
+                f"played={audio_seconds:.3f}s"
             )
         else:
             print(
-                f"[TTS] Playback stream complete: "
-                f"{total:.3f}s"
+                f"[TTS] Complete: "
+                f"wall={total_wall:.3f}s, "
+                f"audio={audio_seconds:.3f}s, "
+                f"wall/audio={wall_to_audio:.2f}x"
             )

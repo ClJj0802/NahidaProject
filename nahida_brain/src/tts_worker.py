@@ -11,6 +11,8 @@ class TTSWorker:
         self._queue = queue.Queue()
         self._shutdown = threading.Event()
         self._current_stop = None
+        self._idle_event = threading.Event()
+        self._idle_event.set()
 
         self._thread = threading.Thread(
             target=self._run,
@@ -29,9 +31,9 @@ class TTSWorker:
             return
 
         if interrupt:
-            self.interrupt()
-            self._clear_pending()
+            self.cancel_all()
 
+        self._idle_event.clear()
         self._queue.put(text)
 
     def interrupt(self):
@@ -39,6 +41,34 @@ class TTSWorker:
 
         if current_stop is not None:
             current_stop.set()
+
+    def clear_pending(self):
+        self._clear_pending()
+
+    def cancel_all(self):
+        self.interrupt()
+        self._clear_pending()
+
+        if self._current_stop is None:
+            self._idle_event.set()
+
+    def wait_until_idle(
+        self,
+        timeout=None,
+    ):
+        return self._idle_event.wait(
+            timeout=timeout,
+        )
+
+    def cancel_and_wait(
+        self,
+        timeout=3.0,
+    ):
+        self.cancel_all()
+
+        return self.wait_until_idle(
+            timeout=timeout,
+        )
 
     def _clear_pending(self):
         while True:
@@ -57,11 +87,15 @@ class TTSWorker:
             except queue.Empty:
                 continue
 
+            self._idle_event.clear()
+
             stop_event = threading.Event()
             self._current_stop = stop_event
 
             try:
-                print("[TTS] Speaking in background...")
+                print(
+                    "[TTS] Speaking in background..."
+                )
 
                 self.client.speak(
                     text,
@@ -77,13 +111,15 @@ class TTSWorker:
                 self._current_stop = None
                 self._queue.task_done()
 
+                if self._queue.empty():
+                    self._idle_event.set()
+
     def shutdown(
         self,
         wait=False,
     ):
         self._shutdown.set()
-        self.interrupt()
-        self._clear_pending()
+        self.cancel_all()
 
         if wait:
             self._thread.join(

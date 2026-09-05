@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from src.tts_worker import TTSWorker
 
 from src.database import (
     init_db,
@@ -112,6 +113,7 @@ def create_tts_client():
         )
 
         tts.configure()
+        tts.warm_up()
 
         print("[TTS] Nahida voice ready.")
         return tts
@@ -456,14 +458,10 @@ def chat_with_nahida(
     print()
 
     if tts is not None:
-        try:
-            print("[TTS] Speaking...")
-            tts.speak(response)
-
-        except Exception as exc:
-            print(
-                f"[TTS] Failed: {exc}"
-            )
+        tts.submit(
+            response,
+            interrupt=True,
+        )
 
 
 def show_memories():
@@ -682,13 +680,26 @@ def main():
 
     voice = create_voice_input()
 
-    tts = create_tts_client()
+    tts_client = create_tts_client()
+
+    tts = (
+        TTSWorker(tts_client)
+        if tts_client is not None
+        else None
+    )
+    if (
+        voice is not None
+        and tts is not None
+    ):
+        voice.set_on_speech_start(
+            tts.cancel_all
+        )
 
     active_date = get_current_date()
     day_dirty = False
 
     print(
-        "Nahida Brain V6.11"
+        "Nahida Brain V6.13"
     )
     print(
         f"Session ID: {session_id}"
@@ -792,6 +803,20 @@ def main():
                 continue
 
             day_dirty = True
+            if tts is not None:
+                tts.cancel_all()
+
+                tts_released = (
+                    tts.wait_until_idle(
+                        timeout=3.0,
+                    )
+                )
+
+                if not tts_released:
+                    print(
+                        "[TTS] Previous request is "
+                        "still releasing GPU."
+                    )
 
             chat_with_nahida(
                 text=text,
@@ -804,7 +829,8 @@ def main():
             auto_update_daily_summary(
                 active_date
             )
-
+        if tts is not None:
+            tts.shutdown(wait=False)
         end_session(
             session_id
         )

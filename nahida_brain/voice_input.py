@@ -41,6 +41,7 @@ class VoiceInput:
         silence_duration=1.5,
         max_duration=20.0,
         wait_timeout=10.0,
+        on_speech_start=None,
     ):
         self.sample_rate = sample_rate
         self.channels = channels
@@ -52,6 +53,7 @@ class VoiceInput:
         self.silence_duration = silence_duration
         self.max_duration = max_duration
         self.wait_timeout = wait_timeout
+        self.on_speech_start = on_speech_start
 
         self.last_raw_text = ""
         self.last_tags = []
@@ -99,6 +101,12 @@ class VoiceInput:
         )
 
         self._warm_up()
+
+    def set_on_speech_start(
+        self,
+        callback,
+    ):
+        self.on_speech_start = callback
 
     def _is_valid_input_device(
         self,
@@ -450,6 +458,14 @@ class VoiceInput:
                         "[Voice] "
                         "Audio buffer overflow."
                     )
+                    if self.on_speech_start is not None:
+                        try:
+                            self.on_speech_start()
+                        except Exception as exc:
+                            print(
+                                "[Voice] Speech-start "
+                                f"callback failed: {exc}"
+                            )
 
                 rms = self._calculate_rms(
                     audio
