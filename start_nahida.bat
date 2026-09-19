@@ -582,12 +582,12 @@ echo ============================================================
 echo   Venv    : %VENV_DIR%
 echo   Model   : %MODEL%
 echo   Address : http://127.0.0.1:8080
-echo   Context : 8192
+echo   Context : 16384
 echo   Started : %date% %time%
 echo ============================================================
 echo.
 
-llama serve -m "%MODEL%" -ngl 99 -c 8192 --reasoning off --host 127.0.0.1 --port 8080
+llama serve -m "%MODEL%" -ngl 99 -c 16384 -np 1 --reasoning off --host 127.0.0.1 --port 8080
 
 set "SERVICE_EXIT=%ERRORLEVEL%"
 

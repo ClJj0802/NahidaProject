@@ -19,8 +19,8 @@ class TTSClient:
         prompt_lang="zh",
         text_lang="zh",
         output_device=None,
-        prebuffer_seconds=0.12,
-        parallel_infer=True,
+        prebuffer_seconds=0.06,
+        parallel_infer=False,
     ):
         self.api_base = api_base.rstrip("/")
         self.gpt_weights = gpt_weights
@@ -177,7 +177,7 @@ class TTSClient:
 
         payload = self._build_payload(
             cleaned_text,
-            streaming_mode=True,
+            streaming_mode=1,
         )
 
         request = self._request(payload)
@@ -286,10 +286,14 @@ class TTSClient:
             f"[TTS] Text chars: "
             f"{len(cleaned_text)}"
         )
+        print(
+            f"[TTS] Streaming mode: 1, "
+            f"prebuffer={self.prebuffer_seconds:.3f}s"
+        )
 
         payload = self._build_payload(
             cleaned_text,
-            streaming_mode=True,
+            streaming_mode=1,
         )
 
         request = self._request(payload)
