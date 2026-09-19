@@ -6,7 +6,7 @@ rem ============================================================
 rem Nahida Service Launcher
 rem ============================================================
 
-set "LAUNCHER_VERSION=2026-08-31-V6-SENSEVOICE"
+set "LAUNCHER_VERSION=2026-09-19-V7.1-MODEL-SELECT-FIX"
 
 set "ROOT=D:\Users\User\Desktop\NahidaProject"
 set "GPT_DIR=%ROOT%\GPT-SoVITS"
@@ -17,7 +17,10 @@ set "VENV_DIR=%ROOT%\stt-compare\.venv"
 set "VENV_ACTIVATE=%VENV_DIR%\Scripts\activate.bat"
 set "VENV_PYTHON=%VENV_DIR%\Scripts\python.exe"
 
-set "MODEL=%ROOT%\Qwen3.5-9B-heretic.Q6_K.gguf"
+rem GGUF files live in the models directory (subfolders are supported).
+set "MODELS_DIR=%ROOT%\models"
+set "DEFAULT_MODEL=%MODELS_DIR%\Qwen3.5-9B-heretic.Q6_K.gguf"
+set "MODEL=%DEFAULT_MODEL%"
 set "GPT_ENV=GPTSoVits"
 
 set "TTS_ENABLED=1"
@@ -32,7 +35,10 @@ rem Worker dispatch
 rem ============================================================
 
 if /I "%~1"=="--worker-gpt" goto WORKER_GPT
-if /I "%~1"=="--worker-llm" goto WORKER_LLM
+if /I "%~1"=="--worker-llm" (
+    if not "%~2"=="" set "MODEL=%~2"
+    goto WORKER_LLM
+)
 if /I "%~1"=="--worker-brain" goto WORKER_BRAIN
 if /I "%~1"=="--worker-pet" goto WORKER_PET
 
@@ -41,14 +47,17 @@ rem Interactive menu
 rem ============================================================
 
 title Nahida Service Launcher
+set "NAHIDA_MENU_PRESELECT_MASK="
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$items=@('GPT-SoVITS API       127.0.0.1:9880','Llama LLM            127.0.0.1:8080','Nahida Brain         main.py','Nahida Desktop Pet   Tauri + Live2D','SenseVoice STT       Brain voice input');$selected=@($true,$true,$true,$true,$true);$pos=0;[Console]::CursorVisible=$false;try{while($true){[Console]::Clear();Write-Host '';Write-Host '  Nahida Service Launcher';Write-Host '  =======================';Write-Host '';Write-Host '  Up / Down : Move';Write-Host '  Space     : Select / Unselect';Write-Host '  Enter     : Start';Write-Host '  Esc       : Exit';Write-Host '';for($i=0;$i-lt$items.Count;$i++){if($i-eq$pos){$cursor='>'}else{$cursor=' '};if($selected[$i]){$check='[X]'}else{$check='[ ]'};Write-Host ('  '+$cursor+' '+$check+' '+$items[$i])};$key=[Console]::ReadKey($true);if($key.Key-eq[ConsoleKey]::UpArrow){$pos--;if($pos-lt0){$pos=$items.Count-1}}elseif($key.Key-eq[ConsoleKey]::DownArrow){$pos++;if($pos-ge$items.Count){$pos=0}}elseif($key.Key-eq[ConsoleKey]::Spacebar){$selected[$pos]=-not$selected[$pos]}elseif($key.Key-eq[ConsoleKey]::Enter){$mask=0;if($selected[0]){$mask+=1};if($selected[1]){$mask+=2};if($selected[2]){$mask+=4};if($selected[3]){$mask+=8};if($selected[4]){$mask+=16};exit(100+$mask)}elseif($key.Key-eq[ConsoleKey]::Escape){exit 200}}}finally{[Console]::CursorVisible=$true}"
+:MAIN_MENU
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$items=@('GPT-SoVITS API       127.0.0.1:9880','Llama LLM            127.0.0.1:8080','Nahida Brain         main.py','Nahida Desktop Pet   Tauri + Live2D','SenseVoice STT       Brain voice input','Choose other model to start');$selected=@($true,$true,$true,$true,$true,$false);if($env:NAHIDA_MENU_PRESELECT_MASK){$m=[int]$env:NAHIDA_MENU_PRESELECT_MASK;for($i=0;$i -lt $selected.Count;$i++){$selected[$i]=[bool]($m -band (1 -shl $i))}};$pos=0;[Console]::CursorVisible=$false;try{while($true){[Console]::Clear();Write-Host '';Write-Host '  Nahida Service Launcher';Write-Host '  =======================';Write-Host '';Write-Host '  Up / Down : Move';Write-Host '  Space     : Select / Unselect';Write-Host '  Enter     : Continue';Write-Host '  Esc       : Exit';Write-Host '';for($i=0;$i-lt$items.Count;$i++){if($i-eq$pos){$cursor='>'}else{$cursor=' '};if($selected[$i]){$check='[X]'}else{$check='[ ]'};Write-Host ('  '+$cursor+' '+$check+' '+$items[$i])};$key=[Console]::ReadKey($true);if($key.Key-eq[ConsoleKey]::UpArrow){$pos--;if($pos-lt0){$pos=$items.Count-1}}elseif($key.Key-eq[ConsoleKey]::DownArrow){$pos++;if($pos-ge$items.Count){$pos=0}}elseif($key.Key-eq[ConsoleKey]::Spacebar){$selected[$pos]=-not$selected[$pos]}elseif($key.Key-eq[ConsoleKey]::Enter){$mask=0;for($i=0;$i -lt $selected.Count;$i++){if($selected[$i]){$mask += [int][math]::Pow(2,$i)}};exit(100+$mask)}elseif($key.Key-eq[ConsoleKey]::Escape){exit 200}}}finally{[Console]::CursorVisible=$true}"
 
 set "MENU_CODE=%ERRORLEVEL%"
+set "NAHIDA_MENU_PRESELECT_MASK="
 
 if "%MENU_CODE%"=="200" exit /b 0
 if %MENU_CODE% LSS 100 goto MENU_ERROR
-if %MENU_CODE% GTR 131 goto MENU_ERROR
+if %MENU_CODE% GTR 163 goto MENU_ERROR
 
 set /a "MASK=MENU_CODE-100"
 set /a "GPT_SELECTED=MASK & 1"
@@ -56,6 +65,41 @@ set /a "LLM_SELECTED=(MASK >> 1) & 1"
 set /a "BRAIN_SELECTED=(MASK >> 2) & 1"
 set /a "PET_SELECTED=(MASK >> 3) & 1"
 set /a "STT_SELECTED=(MASK >> 4) & 1"
+set /a "OTHER_MODEL_SELECTED=(MASK >> 5) & 1"
+
+set "MODEL=%DEFAULT_MODEL%"
+if "%OTHER_MODEL_SELECTED%"=="1" (
+    set "NAHIDA_MODEL_DIR=%MODELS_DIR%"
+    set "MODEL_PICK_FILE=%TEMP%\nahida_model_%RANDOM%_%RANDOM%.txt"
+    set "NAHIDA_MODEL_PICK_FILE=!MODEL_PICK_FILE!"
+    if exist "!MODEL_PICK_FILE!" del /q "!MODEL_PICK_FILE!" >nul 2>&1
+    call :CHOOSE_MODEL
+    set "MODEL_MENU_CODE=!ERRORLEVEL!"
+    if "!MODEL_MENU_CODE!"=="200" (
+        if exist "!MODEL_PICK_FILE!" del /q "!MODEL_PICK_FILE!" >nul 2>&1
+        set "NAHIDA_MENU_PRESELECT_MASK=%MASK%"
+        goto MAIN_MENU
+    )
+    if not "!MODEL_MENU_CODE!"=="0" (
+        echo.
+        echo [ERROR] Model selection failed. No service was started.
+        if exist "!MODEL_PICK_FILE!" del /q "!MODEL_PICK_FILE!" >nul 2>&1
+        pause
+        exit /b 1
+    )
+    if not exist "!MODEL_PICK_FILE!" (
+        echo [ERROR] Model selection returned no file. No service was started.
+        pause
+        exit /b 1
+    )
+    for /f "usebackq delims=" %%M in ("!MODEL_PICK_FILE!") do set "MODEL=%%M"
+    del /q "!MODEL_PICK_FILE!" >nul 2>&1
+    if not exist "!MODEL!" (
+        echo [ERROR] Selected model is no longer available: !MODEL!
+        pause
+        exit /b 1
+    )
+)
 
 cls
 echo.
@@ -71,11 +115,13 @@ echo [DEBUG] LLM_SELECTED     : %LLM_SELECTED%
 echo [DEBUG] BRAIN_SELECTED   : %BRAIN_SELECTED%
 echo [DEBUG] PET_SELECTED     : %PET_SELECTED%
 echo [DEBUG] STT_SELECTED     : %STT_SELECTED%
+echo [DEBUG] OTHER_MODEL      : %OTHER_MODEL_SELECTED%
+echo [DEBUG] Model            : %MODEL%
 echo [DEBUG] VENV             : %VENV_DIR%
 echo [DEBUG] TTS output       : %TTS_ENABLED%
 echo.
 
-if "%MASK%"=="0" (
+if "%GPT_SELECTED%%LLM_SELECTED%%BRAIN_SELECTED%%PET_SELECTED%%STT_SELECTED%"=="00000" (
     echo [INFO] Nothing selected.
     timeout /t 2 /nobreak >nul
     exit /b 0
@@ -130,8 +176,10 @@ if not "%GPT_SELECTED%"=="0" (
 if not "%LLM_SELECTED%"=="0" (
     if "%LLM_ALREADY_RUNNING%"=="1" (
         echo [SKIP] Llama is already listening on port 8080.
+        echo [WARN] The selected model cannot replace a running Llama server.
+        echo [WARN] Stop the existing Llama server to load this model.
     ) else (
-        call :LAUNCH_SERVICE "Llama LLM" "--worker-llm"
+        call :LAUNCH_LLM
     )
 )
 
@@ -160,6 +208,7 @@ if "%STT_SELECTED%"=="1" (
     echo   SenseVoice STT : disabled
 )
 echo   TTS output     : enabled
+if not "%LLM_SELECTED%"=="0" echo   Llama model    : %MODEL%
 echo ============================================================
 echo.
 
@@ -169,6 +218,10 @@ exit /b 0
 rem ============================================================
 rem Menu error
 rem ============================================================
+
+:CHOOSE_MODEL
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop';$dir=$env:NAHIDA_MODEL_DIR;$out=$env:NAHIDA_MODEL_PICK_FILE;if([string]::IsNullOrWhiteSpace($out)){Write-Host '[ERROR] Model selection output path is missing.';exit 5};if(-not [IO.Directory]::Exists($dir)){Write-Host ('[ERROR] Models directory not found: '+$dir);exit 2};try{$models=@(Get-ChildItem -LiteralPath $dir -File -Filter '*.gguf' -Recurse -ErrorAction Stop | Sort-Object FullName)}catch{Write-Host ('[ERROR] Cannot scan models: '+$_);exit 4};if($models.Count -eq 0){Write-Host ('[ERROR] No .gguf models found in: '+$dir);exit 3};$pos=0;[Console]::CursorVisible=$false;try{while($true){[Console]::Clear();Write-Host '';Write-Host '  Choose a GGUF model';Write-Host '  ===================';Write-Host '';Write-Host ('  Models folder: '+$dir);Write-Host ('  Models found : '+$models.Count);Write-Host '';Write-Host '  Up / Down : Move';Write-Host '  Enter     : Choose model';Write-Host '  Esc       : Back to main menu';Write-Host '';for($i=0;$i -lt $models.Count;$i++){if($i -eq $pos){$cursor='>'}else{$cursor=' '};$name=$models[$i].FullName.Substring($dir.Length).TrimStart([char]92);Write-Host ('  '+$cursor+' '+$name)};$key=[Console]::ReadKey($true);if($key.Key -eq [ConsoleKey]::UpArrow){$pos--;if($pos -lt 0){$pos=$models.Count-1}}elseif($key.Key -eq [ConsoleKey]::DownArrow){$pos++;if($pos -ge $models.Count){$pos=0}}elseif($key.Key -eq [ConsoleKey]::Enter){try{[IO.File]::WriteAllText($out,$models[$pos].FullName,([System.Text.UTF8Encoding]::new($false)));exit 0}catch{Write-Host ('[ERROR] Cannot save selected model: '+$_);exit 6}}elseif($key.Key -eq [ConsoleKey]::Escape){exit 200}}}finally{[Console]::CursorVisible=$true}"
+exit /b %ERRORLEVEL%
 
 :MENU_ERROR
 cls
@@ -310,7 +363,7 @@ if not exist "%MODEL%" (
     echo         %MODEL%
     set "PREFLIGHT_FAILED=1"
 ) else (
-    echo [OK] Model file found.
+    echo [OK] Model file found: %MODEL%
 )
 
 if exist "%VENV_ACTIVATE%" call "%VENV_ACTIVATE%" >nul 2>&1
@@ -337,6 +390,7 @@ if errorlevel 1 (
 ) else (
     echo [INFO] Port 8080 is already listening.
     echo [INFO] A duplicate Llama server will not be started.
+    echo [WARN] An existing server may have a different model loaded.
     set "LLM_ALREADY_RUNNING=1"
     call :SHOW_PORT_OWNER 8080
 )
@@ -506,6 +560,21 @@ if "%USE_WINDOWS_TERMINAL%"=="1" (
     start "%SERVICE_TITLE%" "%ComSpec%" /d /k call "%~f0" %SERVICE_ARGS%
 )
 
+exit /b 0
+
+rem ============================================================
+rem Llama launcher - pass chosen path to the new CMD process
+rem ============================================================
+
+:LAUNCH_LLM
+if "%USE_WINDOWS_TERMINAL%"=="1" (
+    echo [TAB] Llama LLM
+    wt.exe -w "%WT_WINDOW%" new-tab --title "Llama LLM" cmd.exe /d /k call "%~f0" --worker-llm "%MODEL%"
+    timeout /t 1 /nobreak >nul
+) else (
+    echo [CMD] Llama LLM
+    start "Llama LLM" "%ComSpec%" /d /k call "%~f0" --worker-llm "%MODEL%"
+)
 exit /b 0
 
 rem ============================================================
