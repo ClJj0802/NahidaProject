@@ -122,6 +122,42 @@ A daily summary records what the user said or planned on that day. It is a
 historical episodic record, not the authoritative source for the user's
 current schedule.
 
+TIME PRESERVATION
+
+Every meaningful bullet must preserve the clock time of the message that
+supports that fact.
+
+Use the format:
+
+- HH:MM — The user ...
+
+Use the timestamp provided with each message.
+
+For example, if the source message is:
+
+2026-10-01T07:52:18 USER: 我待会还要去上班
+
+write:
+
+- 07:52 — The user said they still needed to go to work.
+
+Do not invent or estimate clock times.
+
+Do not round a time to a different hour or minute.
+
+When a fact comes from a user message, use that user's message timestamp.
+
+Do not use the assistant response timestamp for a fact stated by the user.
+
+If several user messages describe separate meaningful events, preserve their
+separate timestamps.
+
+If several messages describe the same evolving fact, use the timestamp of the
+latest message that establishes the final state.
+
+Do not convert assistant suggestions into user plans, actions, intentions, or
+decisions unless the user explicitly agrees with them.
+
 NICKNAMES AND CORRECTIONS
 
 When the user establishes or corrects a nickname, keep only the latest
