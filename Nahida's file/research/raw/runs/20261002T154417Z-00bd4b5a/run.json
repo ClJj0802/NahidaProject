@@ -1,0 +1,54 @@
+{
+  "id": "20261002T154417Z-00bd4b5a",
+  "started_at": "2026-10-02T23:44:17+08:00",
+  "topic": "GPT-SoVITS speed optimization",
+  "stage": "all",
+  "status": "failed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "48c25b66-52eb-4022-9f12-7ec695965273",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 115,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "6d4cce049043862a9502d8cb0d3c70561c2ba243e0bdd586b3cd021459534592",
+    "11232d3d55f9e60017d2dece658316b1565244c1bb4b0e91b86e6115c4cf74ab"
+  ],
+  "browser_retries": [
+    {
+      "stage": "discovery",
+      "reason": "page load timeout",
+      "attempt": 1
+    }
+  ],
+  "error": "Discovery selection was not grounded in browser candidates",
+  "finished_at": "2026-10-02T23:45:17+08:00",
+  "browser_calls": 9,
+  "cleanup_failed": []
+}

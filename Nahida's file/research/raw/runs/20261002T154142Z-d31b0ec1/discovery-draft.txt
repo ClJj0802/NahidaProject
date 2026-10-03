@@ -1,0 +1,1 @@
+[{"ref": "e23", "title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion"}, {"ref": "e36", "title": "Windows 24H2 update causes slow inference / windows 24H2 更新导致推理慢"}]

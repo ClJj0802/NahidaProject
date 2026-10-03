@@ -1,0 +1,59 @@
+# Title
+about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion
+
+# URL
+https://github.com/RVC-Boss/GPT-SoVITS/issues/2579
+
+# Source type
+GitHub issue comment
+
+# Observed claims
+- Reported RTF: 0.028 (RTX 4060 Ti), 0.014 (RTX 4090), 0.526 (M4 CPU) for 1400 words (~4 min).
+- User report: First response 0.3–0.4 seconds after splitting Korean sentences and sending to `api_v2`.
+- Measured stats: First response 0.443s, total processing 1.363s, total audio 0.89s; RTF 1.531.
+- Another test: API response 0.442s, audio 0.89s; average RTF 0.497.
+- Third test: First response 0.339s, total processing 1.668s, audio 0.97s; RTF 1.719; average RTF 0.685.
+- Question: Is this normal on RTX 3090 before CUDA Graph for Korean?
+
+# Relevant configuration
+- `batch_size=4`, `parallel_infer=True`, `streaming_mode=False`.
+- `sample_steps=32`, `temperature=1`, `top_k=5`, `top_p=1`.
+- `split_bucket=True`, `speed_factor=1.0`.
+- Input: Korean text via `api_v2`.
+
+# Measured performance numbers
+- 0.028 RTF (4060 Ti); 0.014 RTF (4090); 0.526 RTF (M4 CPU) [claimed, no detailed log].
+- 1.531 RTF (total processing 1.363s / audio 0.89s).
+- 0.497 average RTF (API 0.442s / audio 0.89s).
+- 0.685 average RTF (API 0.664s / audio 0.97s).
+- First response times: 0.3–0.4s, 0.443s, 0.339s.
+
+# Hardware mentioned
+- NVIDIA RTX 4060 Ti, RTX 4090, M4 CPU, RTX 3090.
+
+# Software/version mentioned
+- GPT-SoVITS v2 ProPlus, `api_v2.py`, HuggingFace demo (H200).
+
+# Evidence level
+- Mixed: Some numbers include detailed logs; others are unverified claims. Logs show token decoding speeds (~145–151 it/s) but no explicit RTF derivation for the logged run.
+
+# Useful paraphrases
+- End-to-end Korean TTS latency (first response) ~340–440 ms.
+- Overall RTF varies widely (0.497–1.719) depending on test conditions.
+- High-end GPU inference is reported as extremely fast (RTF < 0.02).
+
+# Confidence
+- Medium. Reported numbers conflict; logs do not confirm the claimed RTF values.
+
+# Unresolved questions
+- How were RTF values calculated in the first set (4060 Ti/4090/M4)?
+- What exact environment produced the 1.531, 0.497, and 0.685 RTF results?
+- Does CUDA Graph application reduce latency on RTX 3090?
+
+# Last Updated
+2026-10-02T22:58:31+08:00
+
+Extraction: 4000 characters; truncated=True.
+Evidence SHA256: b1ec80e1dbab6ce190563b9b83ddac53f40ae6d4968a5f0a0337d64fe8784f34
+Evidence file: research/raw/runs/20261002T145746Z-e50c14a2/source1-evidence.json
+Review status: unreviewed raw evidence.

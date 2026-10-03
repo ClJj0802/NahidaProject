@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "targetId": "D4E19F2872C1552C5A067776C18A33C1",
+  "url": "https://api.open-meteo.com/v1/forecast?latitude=3.0&longitude=101.61667&current=temperature_2m%2Capparent_temperature%2Crelative_humidity_2m%2Cweather_code%2Cprecipitation%2Cwind_speed_10m&timezone=auto&forecast_days=1",
+  "text": "{\"latitude\":2.9876976,\"longitude\":101.5942,\"generationtime_ms\":0.13339519500732422,\"utc_offset_seconds\":28800,\"timezone\":\"Asia/Kuala_Lumpur\",\"timezone_abbreviation\":\"GMT+8\",\"elevation\":37.0,\"current_units\":{\"time\":\"iso8601\",\"interval\":\"seconds\",\"temperature_2m\":\"°C\",\"apparent_temperature\":\"°C\",\"relative_humidity_2m\":\"%\",\"weather_code\":\"wmo code\",\"precipitation\":\"mm\",\"wind_speed_10m\":\"km/h\"},\"current\":{\"time\":\"2026-10-03T09:15\",\"interval\":900,\"temperature_2m\":25.0,\"apparent_temperature\":30.6,\"relative_humidity_2m\":93,\"weather_code\":51,\"precipitation\":0.10,\"wind_speed_10m\":1.8}}",
+  "truncated": false,
+  "captured_at": "2026-10-03T09:23:34+08:00",
+  "source_title": ""
+}

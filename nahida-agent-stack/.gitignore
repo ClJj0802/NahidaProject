@@ -1,0 +1,6 @@
+/openclaw.json
+/openclaw-src/
+/state/
+/config/
+/logs/
+**/__pycache__/

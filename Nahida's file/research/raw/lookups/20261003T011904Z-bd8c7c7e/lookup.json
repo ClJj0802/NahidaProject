@@ -1,0 +1,66 @@
+{
+  "id": "20261003T011904Z-bd8c7c7e",
+  "started_at": "2026-10-03T09:19:04+08:00",
+  "topic": "restaurants Puchong Malaysia",
+  "prefix": "live",
+  "stage": "live",
+  "status": "ok",
+  "stages": [],
+  "pages_visited": [
+    "https://www.bing.com/search?q=restaurants+Puchong+Malaysia",
+    "https://www.zhihu.com/question/2031458671385911868",
+    "https://www.zhihu.com/question/383293941"
+  ],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "browser_calls": 18,
+    "page_chars": 4000,
+    "sources": 2,
+    "run_seconds": 110,
+    "llm_tool_calls": 0,
+    "model_turns": 0
+  },
+  "kind": "search",
+  "query": "restaurants Puchong Malaysia",
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "747066ab8b900735e3ce09f93c0187cf21b85d2fe34ddf8cc9638aaebfe037a1"
+  ],
+  "finished_at": "2026-10-03T09:19:38+08:00",
+  "browser_calls": 17,
+  "cleanup_failed": [],
+  "result": {
+    "status": "ok",
+    "kind": "search",
+    "results": [
+      {
+        "title": "zhihu.com/question/2031458671385911868",
+        "url": "https://www.zhihu.com/question/2031458671385911868",
+        "excerpt": "{\"error\":{\"message\":\"您当前请求存在异常，暂时限制本次访问。如有疑问，您可以通过手机摇一摇或登录后私信知乎小管家反馈。c78fea4128337976b958c300d10ba593\",\"code\":40362}}\n",
+        "captured_at": "2026-10-03T09:19:27+08:00",
+        "truncated": true
+      },
+      {
+        "title": "zhihu.com/question/383293941",
+        "url": "https://www.zhihu.com/question/383293941",
+        "excerpt": "{\"error\":{\"message\":\"您当前请求存在异常，暂时限制本次访问。如有疑问，您可以通过手机摇一摇或登录后私信知乎小管家反馈。8f4fbf0b84ed64003c85b5d0c2a319b3\",\"code\":40362}}\n",
+        "captured_at": "2026-10-03T09:19:37+08:00",
+        "truncated": true
+      }
+    ],
+    "captured_at": "2026-10-03T09:19:37+08:00",
+    "sources": [
+      "https://www.zhihu.com/question/2031458671385911868",
+      "https://www.zhihu.com/question/383293941"
+    ]
+  }
+}

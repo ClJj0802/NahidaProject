@@ -1,0 +1,59 @@
+# about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion
+
+**Title**
+about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion
+
+**URL**
+https://github.com/RVC-Boss/GPT-SoVITS/issues/2579
+
+**Source type**
+GitHub Issue discussion (unverified contributor)
+
+**Observed claims**
+*   **JHP0124:** Reported inference speeds (RTF) of 0.028 (RTX 4060 Ti), 0.014 (RTX 4090), and 0.526 (M4 CPU) for 1400-word samples (~3.36s inference).
+*   **JHP0124:** Stated first reaction times of 0.3–0.4s for Korean sentence processing using `api_v2`.
+*   **JHP0124:** Provided specific measurement logs showing RTF values of 1.531, 0.497, 0.685, and 1.719, with associated processing and audio length times.
+*   **JHP0124:** Requested confirmation if RTX 3090 performance (pre-cuda_graph) without CUDA graphs is normal for Korean language tasks.
+
+**Relevant configuration**
+*   **Parameters:** `top_k=5`, `top_p=1`, `temperature=1`, `batch_size=4`, `parallel_infer=True`, `streaming_mode=False`, `sample_steps=32`.
+*   **Environment:** RTX 3090 (implied context), `api_v2.py`.
+*   **Task:** Short Korean sentence inference via text segmentation and BERT feature extraction.
+
+**Measured performance numbers**
+*   **RTF (4060 Ti):** 0.028
+*   **RTF (4090):** 0.014
+*   **RTF (M4 CPU):** 0.526
+*   **First Response Time:** 0.339s – 0.443s
+*   **Total Processing Time:** 1.363s – 1.668s
+*   **RTF (Specific Logs):** 0.497, 0.685, 1.531, 1.719
+*   **Throughput (Logs):** 48.14 it/s (BERT), ~145–151 it/s (T2S Decoding)
+
+**Hardware mentioned**
+*   NVIDIA GeForce RTX 4060 Ti
+*   NVIDIA GeForce RTX 4090
+*   Apple M4 CPU
+*   NVIDIA GeForce RTX 3090
+
+**Software/version mentioned**
+*   GPT-SoVITS v2 ProPlus
+*   `api_v2.py`
+
+**Evidence level**
+User-provided measurements and logs from GitHub issue (unverified contributor).
+
+**Useful paraphrases**
+*   Inference speed varies significantly by GPU architecture and CPU.
+*   Short Korean sentences yield sub-0.5s first response times in optimized setups.
+*   High RTF values (>1.0) observed in specific log runs despite low RTF claims elsewhere.
+*   T2S decoding rates observed around 150 tokens/second.
+
+**Confidence**
+Low (unverified user claims and inconsistent metrics across posts).
+
+**Unresolved questions**
+*   Does the discrepancy between 0.028 RTF and 1.531 RTF stem from different text lengths, batching strategies, or hardware states?
+*   How does performance change after applying CUDA graph optimizations on RTX 3090 for Korean?
+
+**Last Updated**
+2026-10-02T23:05:39+08:00

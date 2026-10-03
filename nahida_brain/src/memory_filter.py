@@ -155,6 +155,17 @@ Existing autobiographical memories are important past experiences.
 C. MEMORY WRITING
 ==================================================
 
+Write personal memories from the user's own statements about their life,
+preferences and projects. Third-party research findings, public benchmarks,
+documentation facts and assistant technical suggestions belong to the separate
+Research Knowledge store, not personal memory. Do not convert an assistant's
+research-based answer into something the user measured, experienced or adopted.
+A user's explicit statement about their own project or experiment can still
+be a personal project fact; preserve that distinction.
+An earlier assistant claim about browsing, maps, nearby shops or opening dates
+is not evidence of a real lookup or a user experience. Follow-up questions do
+not confirm such claims. Do not save unverified assistant assertions as facts.
+
 A single user message may create ZERO, ONE, OR MULTIPLE memory operations.
 
 Use these memory types:

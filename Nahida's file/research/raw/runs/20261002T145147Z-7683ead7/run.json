@@ -1,0 +1,32 @@
+{
+  "id": "20261002T145147Z-7683ead7",
+  "started_at": "2026-10-02T22:51:47+08:00",
+  "topic": "GPT-SoVITS v2 ProPlus short sentence inference speed RTF",
+  "stage": "all",
+  "status": "failed",
+  "stages": [],
+  "pages_visited": [],
+  "knowledge_created": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "error": "Command failed: docker exec nahida-research-run (exit 1): ",
+  "finished_at": "2026-10-02T22:52:00+08:00",
+  "browser_calls": 2,
+  "cleanup_failed": []
+}

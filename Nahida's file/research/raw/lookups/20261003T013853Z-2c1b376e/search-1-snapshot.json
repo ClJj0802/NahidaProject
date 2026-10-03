@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "format": "ai",
+  "targetId": "3F0B186ADA17DE7DD16C879ED0A995A6",
+  "url": "https://www.mojeek.com/search?q=restaurants+near+Puchong+Malaysia",
+  "snapshot": "- link \"contact us\" [ref=e1]",
+  "refs": {
+    "e1": {
+      "role": "link",
+      "name": "contact us"
+    }
+  },
+  "stats": {
+    "lines": 1,
+    "chars": 28,
+    "refs": 1,
+    "interactive": 1
+  }
+}

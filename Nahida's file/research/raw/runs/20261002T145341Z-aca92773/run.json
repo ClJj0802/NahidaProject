@@ -1,0 +1,45 @@
+{
+  "id": "20261002T145341Z-aca92773",
+  "started_at": "2026-10-02T22:53:41+08:00",
+  "topic": "GPT-SoVITS speed optimization",
+  "stage": "discovery",
+  "status": "failed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "9744dc75-c48e-4aa7-babd-475f1220ec38",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 14,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [],
+  "knowledge_created": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "33683858ab5a76c01aba7d619de7a18c0796f354085e8bace7dd78112e732ac1"
+  ],
+  "error": "Selected issue no longer has one unambiguous link",
+  "finished_at": "2026-10-02T22:54:09+08:00",
+  "browser_calls": 9,
+  "cleanup_failed": []
+}

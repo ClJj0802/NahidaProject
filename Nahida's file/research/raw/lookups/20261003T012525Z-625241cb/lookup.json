@@ -1,0 +1,44 @@
+{
+  "id": "20261003T012525Z-625241cb",
+  "started_at": "2026-10-03T09:25:25+08:00",
+  "topic": "restaurants Puchong Malaysia",
+  "prefix": "live",
+  "stage": "live",
+  "status": "failed",
+  "stages": [],
+  "pages_visited": [
+    "https://html.duckduckgo.com/html/?q=restaurants+Puchong+Malaysia"
+  ],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "browser_calls": 18,
+    "page_chars": 4000,
+    "sources": 2,
+    "run_seconds": 110,
+    "llm_tool_calls": 0,
+    "model_turns": 0
+  },
+  "kind": "search",
+  "query": "restaurants Puchong Malaysia",
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "0a755e5e1325ba4275a5e89e5faeed03d741a4be9355453f31ea79d15773cdc5"
+  ],
+  "error": "Search page has no usable results or is blocked",
+  "finished_at": "2026-10-03T09:25:41+08:00",
+  "browser_calls": 7,
+  "cleanup_failed": [],
+  "result": {
+    "status": "failed",
+    "message": "联网查询未完成，不能提供未经核实的结果。"
+  }
+}

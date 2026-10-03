@@ -1,0 +1,10 @@
+Source type | GitHub Issue discussion (closed #2278) on RVC-Boss repository |
+| Observed claims | Windows 11 24H2 causes severe performance regression for GPT-SoVITS inference on RTX 4090; GPU utilization drops below 30%; downgrading to 23H2 or using Linux restores normal performance; setting Python process priority to HIGH_PRIORITY_CLASS via psutil resolves the throttling |
+| Relevant configuration | GPT-SoVITS v2/v3 inference using `inference_webui.py`; PyTorch 2.0.0 + cu118; cuDNN 8.7.0; CUDA 11.8/12.8; Drivers 537.58–572.83; AMP (autocast, fp16) enabled; Windows 11 24H2 (problematic) vs 23H2 (normal) |
+| Measured performance numbers | RTX 4090: ~30% GPU utilization (24H2) vs ~90% after priority fix; inference slower than expected (worse than RTX 4070 on 24H2) |
+| Hardware mentioned | NVIDIA RTX 4090, NVIDIA RTX 4070 |
+| Software/version mentioned | Windows 11 24H2, Windows 11 23H2, Ubuntu 20.04/22.04, PyTorch 2.0.0, cu118, cu124, cuDNN 8.7.0, psutil |
+| Evidence level | User-reported benchmarking via `nvidia-smi` and WebUI timing; verified workaround by multiple contributors |
+| Useful paraphrases | On Windows 11 24H2, GPT-SoVITS inference on high-end GPUs suffers from power throttling; elevating process priority with `psutil.nice()` forces full Tensor Core utilization |
+| Confidence | Moderate; issue marked closed with confirmed fix, but root cause remains unverified |
+| Unresolved questions | Whether the issue stems from scheduler interaction with NVIDIA power management or Windows kernel scheduling under 24H2 |

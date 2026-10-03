@@ -1,0 +1,67 @@
+# Title
+Windows 24H2 update causes slow inference / windows 24H2更新导致推理慢
+
+# URL
+https://github.com/RVC-Boss/GPT-SoVITS/issues/2278
+
+# Source type
+GitHub issue report and workaround discussion in RVC-Boss repository.
+
+# Observed claims
+Windows 11 24H2 causes severe GPU underutilization (<30%) and slow inference for GPT-SoVITS v2/v3 on RTX 4090 with PyTorch AMP.
+Linux and Windows 11 23H2 perform normally.
+Setting Python process priority to HIGH_PRIORITY_CLASS restores GPU usage to ~90% and normalizes inference speed.
+Multiple NVIDIA driver versions (537.58–572.83) and CUDA versions (11.8–12.1) tested without resolving the issue.
+
+# Relevant configuration
+```python
+import psutil
+import os
+
+def set_high_priority():
+    if os.name != "nt":
+        return
+    p = psutil.Process(os.getpid())
+    try:
+        p.nice(psutil.HIGH_PRIORITY_CLASS)
+    except psutil.AccessDenied:
+        print("Run as admin")
+
+set_high_priority()
+```
+
+# Measured performance numbers
+RTX 4090 on Windows 11 24H2: GPU utilization ~30% before fix; ~90% after priority change.
+Inference time significantly reduced after applying the workaround.
+RTX 4070 on Windows 11 23H2: Performed better than RTX 4090 on 24H2 under identical conditions.
+
+# Hardware mentioned
+NVIDIA RTX 4090, NVIDIA RTX 4070.
+
+# Software/version mentioned
+Windows 11 24H2, Windows 11 23H2, Ubuntu 20.04/22.04.
+PyTorch 2.0.0 + cu118 (also tested 2.5.1+cu124).
+cuDNN 8.7.0.
+NVIDIA drivers 537.58, 551.61, 572.70, 572.83.
+GPT-SoVITS v2, v3.
+
+# Evidence level
+Community-reported measurements and self-verified workaround by users on GitHub.
+
+# Useful paraphrases
+Lowering Python process priority on Windows 11 24H2 appears to trigger power/thermal throttling or scheduler limits affecting tensor core usage in inference.
+
+# Confidence
+Moderate; based on consistent user reports and successful workaround application, though root cause (OS scheduler vs. driver vs. PyTorch AMP) remains unverified.
+
+# Unresolved questions
+Whether the issue persists with PyTorch 2.5.1+cu124.
+If other inference frameworks or applications exhibit similar behavior on Windows 11 24H2 with RTX 4090.
+
+# Last Updated
+2026-10-02T23:47:52+08:00
+
+Extraction: 3994 characters; truncated=True.
+Evidence SHA256: 1ed48bfd44db211c5b0cb44ad77d516c1f71def2dd77e4b9ac5e9e737789158c
+Evidence file: research/raw/runs/20261002T154631Z-25c6a42b/source2-evidence.json
+Review status: unreviewed raw evidence.

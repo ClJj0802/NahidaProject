@@ -1,0 +1,45 @@
+{
+  "id": "20261002T145537Z-dff7a4fe",
+  "started_at": "2026-10-02T22:55:37+08:00",
+  "topic": "GPT-SoVITS v2 ProPlus short sentence inference speed RTF",
+  "stage": "all",
+  "status": "failed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "e43069fe-e711-413c-83d4-fe359c974afa",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 26,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [],
+  "knowledge_created": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "142d99d8b0d9ad9d9696e4958881f2d109946fdda61183b91e33c4360a8e964e"
+  ],
+  "error": "Selected issue no longer has one unambiguous link: Inference speed issue of ProPlus version.",
+  "finished_at": "2026-10-02T22:56:05+08:00",
+  "browser_calls": 10,
+  "cleanup_failed": []
+}

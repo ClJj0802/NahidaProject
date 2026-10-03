@@ -1,0 +1,14 @@
+# Windows 24H2 Update Causes Slow Inference
+
+**URL**: https://github.com/RVC-Boss/GPT-SoVITS/issues/2278  
+**Source type**: GitHub Issue thread  
+**Observed claims**: RTX 4090 GPU utilization drops below 30% on Windows 11 24H2 during GPT-SoVITS inference with PyTorch AMP; Linux and Windows 23H2 perform normally.  
+**Relevant configuration**: PyTorch 2.0.0 + cu118, CUDA 11.8/12.8, cuDNN 8.7.0, Windows 11 24H2 vs 23H2, GPT-SoVITS v2/v3, AMP enabled.  
+**Measured performance numbers**: Windows 24H2: ~30% GPU utilization, slower than RTX 4070. Windows 23H2: ~100% GPU utilization, near full Tensor Core usage.  
+**Hardware mentioned**: NVIDIA RTX 4090, RTX 4070.  
+**Software/version mentioned**: Windows 11 24H2, 23H2, Ubuntu 20.04/22.04, PyTorch 2.0.0, CUDA 11.8/12.8, cuDNN 8.7.0, GPT-SoVITS v2/v3, `psutil`.  
+**Evidence level**: User-reported benchmarks; workaround tested by multiple contributors.  
+**Useful paraphrases**: Task priority adjustment mitigates inference slowdown on Windows 24H2.  
+**Confidence**: Moderate (unverified maintainer; single-machine tests).  
+**Unresolved questions**: Root cause of Windows 24H2 interaction with PyTorch AMP.  
+**Last Updated**: 2026-10-02T23:27:35+08:00

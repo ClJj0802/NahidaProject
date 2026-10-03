@@ -1,0 +1,1 @@
+[{"ref": "e23", "title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion"}, {"ref": "e50", "title": "在同参数下，多次测试，api比webui中的推理产生的音频噪音要大"}]

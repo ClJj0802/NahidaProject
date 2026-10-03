@@ -1,0 +1,46 @@
+{
+  "id": "20261002T154142Z-d31b0ec1",
+  "started_at": "2026-10-02T23:41:42+08:00",
+  "topic": "GPT-SoVITS speed optimization",
+  "stage": "all",
+  "status": "failed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "eb686822-f6a3-4f00-8850-43a9ab8f0d12",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 184,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "af3d3a23495bf23b5c20a8f32169b480487c6b83413ff0d7131f283b82761631"
+  ],
+  "error": "Discovery candidate title was invented",
+  "finished_at": "2026-10-02T23:42:19+08:00",
+  "browser_calls": 5,
+  "cleanup_failed": []
+}

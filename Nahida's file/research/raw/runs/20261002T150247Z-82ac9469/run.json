@@ -1,0 +1,57 @@
+{
+  "id": "20261002T150247Z-82ac9469",
+  "started_at": "2026-10-02T23:02:47+08:00",
+  "topic": "GPT-SoVITS v2 ProPlus short sentence inference speed RTF",
+  "stage": "all",
+  "status": "failed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "7fe01e55-de4d-4caa-a49a-3fea8b8fea09",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 161,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "source1",
+      "session_id": "2edd82b0-2d85-4878-8c85-97958ead43eb",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 2169,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [
+    "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579"
+  ],
+  "knowledge_created": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "2bde92dd84f5af621175f6c2ce67fa83dbaa2da63a12cbb3f36f7d7b39d9f96a",
+    "881ad35e4df27527f7c78026623cd14ff221077af96400931718e73a9b98808e"
+  ],
+  "error": "Model artifact is missing a required heading: Title",
+  "finished_at": "2026-10-02T23:03:53+08:00",
+  "browser_calls": 17,
+  "cleanup_failed": []
+}

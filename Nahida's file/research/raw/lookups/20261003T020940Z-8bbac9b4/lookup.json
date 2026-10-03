@@ -1,0 +1,48 @@
+{
+  "id": "20261003T020940Z-8bbac9b4",
+  "started_at": "2026-10-03T10:09:40+08:00",
+  "topic": "restaurants near 哪里吗",
+  "prefix": "live",
+  "stage": "live",
+  "status": "failed",
+  "stages": [],
+  "pages_visited": [
+    "https://www.mojeek.com/search?q=restaurants+near+%E5%93%AA%E9%87%8C%E5%90%97",
+    "https://www.bing.com/search?q=restaurants+near+%E5%93%AA%E9%87%8C%E5%90%97&setlang=en&mkt=en-MY&cc=MY"
+  ],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "browser_calls": 18,
+    "page_chars": 4000,
+    "sources": 2,
+    "run_seconds": 110,
+    "llm_tool_calls": 0,
+    "model_turns": 0
+  },
+  "kind": "search",
+  "query": "restaurants near 哪里吗",
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "44441b57e774ff742907021eacff776837d9d8ca9528fcd110d62c64ebf8e61f"
+  ],
+  "error": "Search page has no usable results or is blocked",
+  "finished_at": "2026-10-03T10:10:02+08:00",
+  "browser_calls": 10,
+  "cleanup_failed": [],
+  "result": {
+    "status": "failed",
+    "message": "已尝试联网，但页面受限、没有相关结果或服务不可用，未取得可核实的内容。",
+    "lookup_id": "20261003T020940Z-8bbac9b4",
+    "performed": true,
+    "record": "research/raw/lookups/20261003T020940Z-8bbac9b4/lookup.json"
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "ok": true,
+  "format": "ai",
+  "targetId": "7B1EC05DED56BA1F5B0B7651D2D91E3D",
+  "url": "https://www.bing.com/search?q=restaurants+Puchong+Malaysia&rdr=1&rdrig=1C0053F909814DBB936A1F2E9CBDCAFD",
+  "snapshot": "- link \"zhihu.com\" [ref=e1]\n- link \"登录codex的时候弹出电话号码验证怎么办？ - 知乎\" [ref=e2]\n- link \"zhihu.com\" [ref=e3] [nth=1]\n- link \"怎样才能安装永久免费的office软件？ - 知乎\" [ref=e4]\n- link \"baidu.com\" [ref=e5]\n- link \"怎样在whatsapp中加好友-百度经验\" [ref=e6]\n- link \"zhihu.com\" [ref=e7] [nth=2]\n- link \"国内如何使用whatsapp？ - 知乎\" [ref=e8]\n- link \"zhihu.com\" [ref=e9] [nth=3]\n- link \"做外贸，用WhatsApp还是Facebook？ - 知乎\" [ref=e10]\n- link \"zhihu.com\" [ref=e11] [nth=4]\n- link \"美国人用什么聊天软件？ - 知乎\" [ref=e12]\n- link \"zhihu.com\" [ref=e13] [nth=5]\n- link \"whatsapp messenger - 知乎\" [ref=e14]\n- link \"zhihu.com\" [ref=e15] [nth=6]\n- link \"Whatsapp，怎么迅速知道对方有没有注册？ - 知乎\" [ref=e16]\n- link \"zhihu.com\" [ref=e17] [nth=7]\n- link \"Whatsapp安卓版怎么下载？ - 知乎\" [ref=e18]\n- link \"zhihu.com\" [ref=e19] [nth=8]\n- link \"WhatsApp被封号？如何申请解封？ - 知乎\" [ref=e20]\n- link \"Page 2\" [ref=e21]\n- link \"Page 3\" [ref=e22]\n- link \"Next page\" [ref=e23]",
+  "refs": {
+    "e1": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 0
+    },
+    "e2": {
+      "role": "link",
+      "name": "登录codex的时候弹出电话号码验证怎么办？ - 知乎"
+    },
+    "e3": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 1
+    },
+    "e4": {
+      "role": "link",
+      "name": "怎样才能安装永久免费的office软件？ - 知乎"
+    },
+    "e5": {
+      "role": "link",
+      "name": "baidu.com"
+    },
+    "e6": {
+      "role": "link",
+      "name": "怎样在whatsapp中加好友-百度经验"
+    },
+    "e7": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 2
+    },
+    "e8": {
+      "role": "link",
+      "name": "国内如何使用whatsapp？ - 知乎"
+    },
+    "e9": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 3
+    },
+    "e10": {
+      "role": "link",
+      "name": "做外贸，用WhatsApp还是Facebook？ - 知乎"
+    },
+    "e11": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 4
+    },
+    "e12": {
+      "role": "link",
+      "name": "美国人用什么聊天软件？ - 知乎"
+    },
+    "e13": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 5
+    },
+    "e14": {
+      "role": "link",
+      "name": "whatsapp messenger - 知乎"
+    },
+    "e15": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 6
+    },
+    "e16": {
+      "role": "link",
+      "name": "Whatsapp，怎么迅速知道对方有没有注册？ - 知乎"
+    },
+    "e17": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 7
+    },
+    "e18": {
+      "role": "link",
+      "name": "Whatsapp安卓版怎么下载？ - 知乎"
+    },
+    "e19": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 8
+    },
+    "e20": {
+      "role": "link",
+      "name": "WhatsApp被封号？如何申请解封？ - 知乎"
+    },
+    "e21": {
+      "role": "link",
+      "name": "Page 2"
+    },
+    "e22": {
+      "role": "link",
+      "name": "Page 3"
+    },
+    "e23": {
+      "role": "link",
+      "name": "Next page"
+    }
+  },
+  "stats": {
+    "lines": 23,
+    "chars": 858,
+    "refs": 23,
+    "interactive": 23
+  }
+}

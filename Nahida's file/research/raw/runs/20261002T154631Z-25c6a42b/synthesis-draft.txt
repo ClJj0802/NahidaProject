@@ -1,0 +1,27 @@
+# Summary
+GPT-SoVITS v2 inference speed varies heavily by hardware and environment. Real-Time Factor (RTF) ranges from 0.014 on high-end GPUs to over 0.5 on CPU-only setups. Windows 11 24H2 specifically triggers severe GPU underutilization, resolved by raising Python process priority [S2].
+
+# Confirmed Findings
+Inference speed is highly dependent on hardware configuration [S1]. RTX 4090 achieved an RTF of 0.014 (approx. 7x speed), while 4060 Ti recorded 0.028 and M4 CPU hit 0.526 [S1]. On Windows 11 24H2, RTX 4090 GPU utilization drops below 30% compared to 90% on prior builds or Linux, linked to power/thermal throttling [S2].
+
+# Likely Findings
+`api_v2` with sentence splitting reduces initial latency to under 0.4 seconds [S1]. Batch processing (`batch_size: 4`) and parallel inference (`parallel_infer: True`) are active in reported configurations [S1].
+
+# User Reports
+Windows 11 24H2 causes severe slowdowns on RTX 4090, appearing to impact tensor core usage [S2]. RTX 3090 showed inconsistent results, with RTF fluctuating between 1.531 and lower values depending on test conditions [S1].
+
+# Recommended Experiments
+Proposed: Test Python priority elevation via `HIGH_PRIORITY_CLASS` on Windows 11 24H2 to restore GPU utilization [S2].
+Proposed: Compare inference RTF across `cuda_graph` enabled/disabled states on RTX 3090 [S1].
+
+# Hardware Relevance
+RTX 4090: High performance (RTF 0.014) on Linux; degraded on Windows 11 24H2 without priority fix [S1][S2].
+RTX 4060 Ti: RTF 0.028 [S1].
+M4 CPU: RTF 0.526 [S1].
+RTX 5060 Ti (Host): Not explicitly tested; RTX 40-series behavior may not translate directly.
+
+# Confidence
+Low to Medium. Benchmarks are self-reported by community members without standardized validation [S1].
+
+# Evidence level
+Mixed. Includes user logs and self-verified workarounds, but lacks independent third-party verification [S1][S2].

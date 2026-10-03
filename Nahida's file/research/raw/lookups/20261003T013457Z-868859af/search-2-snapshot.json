@@ -1,0 +1,152 @@
+{
+  "ok": true,
+  "format": "ai",
+  "targetId": "910E833B84575A6E864E96933130EA7F",
+  "url": "https://www.bing.com/search?q=restaurants+near+Puchong+Malaysia&setlang=en&mkt=en-MY&cc=MY&rdr=1&rdrig=3090E2562E8D4DA69AD6BBE527E6F24B",
+  "snapshot": "- link \"shopee.com.my\" [ref=e1]\n- link \"Login now to access your seller features! | Shopee Seller Center …\" [ref=e2]\n- link \"shopee.com.my\" [ref=e3] [nth=1]\n- link \"Shopee\" [ref=e4]\n- link \"shopee.com.my\" [ref=e5] [nth=2]\n- link \"Shopee - Seller Centre\" [ref=e6]\n- link \"shopee.com.my\" [ref=e7] [nth=3]\n- button \"Actions for this site\" [ref=e8]\n- link \"Shopee\" [ref=e9] [nth=1]\n- link \"shopee.com.my\" [ref=e10] [nth=4]\n- link \"accounts.shopee.com.my\" [ref=e11]\n- link \"shopee.com.my\" [ref=e12] [nth=5]\n- button \"Actions for this site\" [ref=e13] [nth=1]\n- link \"Shopee\" [ref=e14] [nth=2]\n- link \"shopee.co.th\" [ref=e15]\n- button \"Actions for this site\" [ref=e16] [nth=2]\n- link \"Shopee Seller Centre\" [ref=e17]\n- link \"shopee.com.my\" [ref=e18] [nth=6]\n- button \"Actions for this site\" [ref=e19] [nth=3]\n- link \"accounts.shopee.com.my\" [ref=e20] [nth=1]\n- link \"shopee.com\" [ref=e21]\n- button \"Actions for this site\" [ref=e22] [nth=4]\n- link \"sla_title_login_to_shopee - account.seller.shopee.com\" [ref=e23]\n- link \"shopee.com\" [ref=e24] [nth=1]\n- link \"sla_title_login_to_shopee - account.seller.shopee.com\" [ref=e25] [nth=1]\n- link \"Page 2\" [ref=e26]\n- link \"Page 3\" [ref=e27]\n- link \"Page 4\" [ref=e28]\n- link \"Next page\" [ref=e29]",
+  "refs": {
+    "e1": {
+      "role": "link",
+      "name": "shopee.com.my",
+      "nth": 0
+    },
+    "e2": {
+      "role": "link",
+      "name": "Login now to access your seller features! | Shopee Seller Center …"
+    },
+    "e3": {
+      "role": "link",
+      "name": "shopee.com.my",
+      "nth": 1
+    },
+    "e4": {
+      "role": "link",
+      "name": "Shopee",
+      "nth": 0
+    },
+    "e5": {
+      "role": "link",
+      "name": "shopee.com.my",
+      "nth": 2
+    },
+    "e6": {
+      "role": "link",
+      "name": "Shopee - Seller Centre"
+    },
+    "e7": {
+      "role": "link",
+      "name": "shopee.com.my",
+      "nth": 3
+    },
+    "e8": {
+      "role": "button",
+      "name": "Actions for this site",
+      "nth": 0
+    },
+    "e9": {
+      "role": "link",
+      "name": "Shopee",
+      "nth": 1
+    },
+    "e10": {
+      "role": "link",
+      "name": "shopee.com.my",
+      "nth": 4
+    },
+    "e11": {
+      "role": "link",
+      "name": "accounts.shopee.com.my",
+      "nth": 0
+    },
+    "e12": {
+      "role": "link",
+      "name": "shopee.com.my",
+      "nth": 5
+    },
+    "e13": {
+      "role": "button",
+      "name": "Actions for this site",
+      "nth": 1
+    },
+    "e14": {
+      "role": "link",
+      "name": "Shopee",
+      "nth": 2
+    },
+    "e15": {
+      "role": "link",
+      "name": "shopee.co.th"
+    },
+    "e16": {
+      "role": "button",
+      "name": "Actions for this site",
+      "nth": 2
+    },
+    "e17": {
+      "role": "link",
+      "name": "Shopee Seller Centre"
+    },
+    "e18": {
+      "role": "link",
+      "name": "shopee.com.my",
+      "nth": 6
+    },
+    "e19": {
+      "role": "button",
+      "name": "Actions for this site",
+      "nth": 3
+    },
+    "e20": {
+      "role": "link",
+      "name": "accounts.shopee.com.my",
+      "nth": 1
+    },
+    "e21": {
+      "role": "link",
+      "name": "shopee.com",
+      "nth": 0
+    },
+    "e22": {
+      "role": "button",
+      "name": "Actions for this site",
+      "nth": 4
+    },
+    "e23": {
+      "role": "link",
+      "name": "sla_title_login_to_shopee - account.seller.shopee.com",
+      "nth": 0
+    },
+    "e24": {
+      "role": "link",
+      "name": "shopee.com",
+      "nth": 1
+    },
+    "e25": {
+      "role": "link",
+      "name": "sla_title_login_to_shopee - account.seller.shopee.com",
+      "nth": 1
+    },
+    "e26": {
+      "role": "link",
+      "name": "Page 2"
+    },
+    "e27": {
+      "role": "link",
+      "name": "Page 3"
+    },
+    "e28": {
+      "role": "link",
+      "name": "Page 4"
+    },
+    "e29": {
+      "role": "link",
+      "name": "Next page"
+    }
+  },
+  "stats": {
+    "lines": 29,
+    "chars": 1231,
+    "refs": 29,
+    "interactive": 29
+  }
+}

@@ -1,0 +1,43 @@
+# GPT-SoVITS v2 ProPlus Short Sentence Inference Speed
+
+## Topic
+Inference speed (RTF) of GPT-SoVITS v2 ProPlus for short sentences, specifically RTX 5060 Ti 16GB and Ryzen 5 7500X3D relevance.
+
+## Summary
+Two GitHub issues report conflicting RTF benchmarks for GPT-SoVITS v2 ProPlus. High-end GPU tests claim 0.014–0.028 RTF, while RTX 3090 short-sentence tests show 0.497–1.719 RTF. No data exists for RTX 5060 Ti or Ryzen 7500X3D.
+
+## Confirmed Findings
+*   JHP0124 reported 0.028 RTF (RTX 4060 Ti) and 0.014 RTF (RTX 4090) for 1400-word samples [S1].
+*   JHP0124 measured 1.531 and 0.497 RTF for Chinese short sentences on an RTX 3090 [S1].
+*   Aleksandar-Lazarevic corroborated 0.028 RTF (RTX 4060 Ti) and 0.526 RTF (M4 CPU) for 1400-word references [S2].
+*   JHP0124 observed 0.339s–0.443s first response times using `api_v2` [S1].
+
+## Likely Findings
+*   Short-sentence performance varies significantly between high-end (4060 Ti/4090) and older cards (3090), with 3090 showing higher latency [S1].
+*   RTF metrics may exclude BERT reference generation time, contributing to discrepancies [S2].
+*   CUDA Graph acceleration is mentioned but not confirmed as default or fully optimized [S2].
+
+## User Reports
+*   Confusion exists regarding how to achieve 0.028 RTF given 1.5–1.7 RTF short-sentence logs [S1].
+*   Questions remain on whether CUDA Graphs are enabled by default for Korean/Chinese tasks [S2].
+
+## Recommended Experiments
+*   **Proposal:** Benchmark RTX 5060 Ti 16GB vs. RTX 3090 on identical short-sentence tasks to isolate architecture impact.
+*   **Proposal:** Measure total time including BERT reference generation vs. T2S decoding only.
+*   **Proposal:** Test with and without explicit CUDA Graph activation.
+
+## Hardware Relevance
+Host RTX 5060 Ti 16GB and Ryzen 7500X3D have no explicit benchmark data in provided sources. Performance is unknown relative to the cited 4060 Ti/3090/M4 configurations.
+
+## Confidence
+Low (unverified user claims, inconsistent metric boundaries, no host hardware data) [S1][S2].
+
+## Evidence level
+User-provided logs and GitHub issue discussions (unverified contributors) [S1][S2].
+
+## Sources
+1. https://github.com/RVC-Boss/GPT-SoVITS/issues/2579
+2. https://github.com/RVC-Boss/GPT-SoVITS/issues/2571
+
+## Last Updated
+2026-10-02T23:06:26+08:00

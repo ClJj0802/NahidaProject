@@ -34,6 +34,7 @@ from src.temporal_memory import (
     process_temporal_memory,
 )
 from src.chat import generate_nahida_response
+from src.live_lookup import enabled as live_lookup_enabled
 from src.tts_client import TTSClient
 
 
@@ -463,6 +464,7 @@ def chat_with_nahida(
         response = (
             generate_nahida_response(
                 session_id=session_id,
+                latest_message=text,
                 relevant_memory_ids=(
                     relevant_memory_ids
                 ),
@@ -785,6 +787,8 @@ def main():
     print(
         f"Session ID: {session_id}"
     )
+    print("[Live] Lookup routing " + ("enabled; current weather and public pages available, web search may be restricted."
+                                       if live_lookup_enabled() else "disabled by NAHIDA_LIVE_LOOKUP."))
     print()
 
     print("Commands:")

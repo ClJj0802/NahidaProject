@@ -1,0 +1,47 @@
+> Review status: DRAFT — requires evidence review before reuse as knowledge.
+
+# GPT-SoVITS v2 ProPlus: Short Sentence Inference Speed (RTF)
+
+## Topic
+GPT-SoVITS v2 ProPlus short sentence inference speed and Real-Time Factor (RTF) performance.
+
+## Summary
+User reports for GPT-SoVITS v2 ProPlus show wide RTF variance (0.014–1.719). High-end GPUs (RTX 4090) report 0.014 RTF for long references, while RTX 3090 tests yield 0.497–1.719 RTF for short sentences. Conflicting metrics suggest RTF definitions or boundaries vary across measurements.
+
+## Confirmed Findings
+*   JHP0124 reported 0.028 RTF on RTX 4060 Ti, 0.014 RTF on RTX 4090, and 0.526 RTF on M4 CPU for 1400-word samples [S1].
+*   JHP0124 provided logs showing RTF values of 1.531, 0.497, 0.685, and 1.719 for short Korean sentences on RTX 3090 [S1].
+*   Aleksandar-Lazarevic reported 0.028 RTF on 4060 Ti and 0.526 RTF on M4 for ProPlus [S2].
+*   Aleksandar-Lazarevic noted 1.1s–1.8s total inference time on RTX 3090, questioning consistency with 0.028 RTF [S2].
+
+## Likely Findings
+*   Short sentence RTF may differ significantly from long reference generation RTF.
+*   RTX 3090 performance without CUDA graphs may be higher (worse RTF) than reported optimal values.
+*   First response times (0.3–0.4s) are distinct from total audio generation times.
+
+## User Reports
+*   Discrepancy between 0.028 RTF claims and 1.531 RTF logs on 3090 [S1].
+*   Uncertainty on whether RTF includes BERT reference generation [S2].
+
+## Recommended Experiments
+*   **Proposal:** Compare RTF with/without CUDA graphs enabled on RTX 3090.
+*   **Proposal:** Isolate BERT feature extraction time from T2S decoding time.
+*   **Proposal:** Test short vs. long reference generation to determine boundary effects.
+
+## Hardware Relevance
+*   RTX 3090: Reported 0.497–1.719 RTF [S1].
+*   RTX 4060 Ti/4090: Reported 0.014–0.028 RTF for long refs [S1].
+*   *Host Hardware (RTX 5060 Ti/7500X3D):* No explicit benchmarks found for this specific hardware combination.
+
+## Confidence
+Low. Metrics conflict and RTF boundaries are undefined in reports [S1][S2].
+
+## Evidence level
+User-provided logs and GitHub issues (unverified) [S1][S2].
+
+## Sources
+1.  https://github.com/RVC-Boss/GPT-SoVITS/issues/2579
+2.  https://github.com/RVC-Boss/GPT-SoVITS/issues/2571
+
+## Last Updated
+2026-10-02T23:09:17+08:00

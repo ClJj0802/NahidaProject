@@ -1,0 +1,39 @@
+Source type: GitHub Issue #2579, RVC-Boss repo
+
+Observed claims:
+- GPT-SoVITS v2 ProPlus RTF reported as 0.028 (4060Ti), 0.014 (4090), 0.526 (M4 CPU) by JHP0124
+- First reaction time achieved: 0.3–0.4s via long Korean sentence streaming to api_v2
+- Author notes H200 demo available for high-speed inference
+- User queries RTX 3090 pre-cuda_graph behavior; log shows BERT 48 it/s, T2S 151 it/s
+
+Relevant configuration:
+- `batch_size`: 4, `parallel_infer`: True, `speed_factor`: 1.0
+- `top_k`: 5, `top_p`: 1, `temperature`: 1
+- `sample_steps`: 32, `streaming_mode`: False
+
+Measured performance numbers:
+- First response: 0.339–0.443 s; Total processing: 1.363–1.668 s
+- Audio length: 0.89–0.97 s
+- RTF reported: 0.497 (avg), 0.685 (avg), 1.531 (total)
+- Inference log: 127.0.0.1; TTS endpoint 200 OK
+
+Hardware mentioned:
+- RTX 4060 Ti, RTX 4090, Apple M4 CPU, H200 (demo), RTX 3090 (query)
+
+Software/version mentioned:
+- GPT-SoVITS v2 ProPlus, `api_v2.py`, HuggingFace demo
+
+Evidence level:
+- User measurement and issue description; logs included but contributor not verified maintainer
+
+Useful paraphrases:
+- Streaming Korean sentences to API v2 can yield first-response latency under 0.4 s.
+- RTF varies widely across devices; 4090 outperforms 4060 Ti significantly.
+- Parameter tuning (batching, parallel inference) may impact inference throughput.
+
+Confidence:
+- Low–Medium: measurements self-reported, conditions not fully controlled.
+
+Unresolved questions:
+- Are the 0.028/0.014 RTF values reproducible under identical batch/streaming setups?
+- Does `streaming_mode=False` limit real-time utility?

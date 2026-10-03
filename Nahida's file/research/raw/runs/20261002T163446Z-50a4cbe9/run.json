@@ -1,0 +1,131 @@
+{
+  "id": "20261002T163446Z-50a4cbe9",
+  "started_at": "2026-10-03T00:34:46+08:00",
+  "topic": "GPT-SoVITS speed optimization",
+  "prefix": "review_v2_smoke",
+  "stage": "all",
+  "status": "completed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "23cbd7dc-1ae3-48ed-b2d1-b773e13db033",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 111,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "source1",
+      "session_id": "67b80748-9923-4d10-ad6c-750c3bc44557",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 2167,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "source2",
+      "session_id": "8a9669fd-ed50-455a-97e0-d8eba9b44742",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 1707,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "synthesis",
+      "session_id": "446f4afb-b749-4313-86e5-82ba07df113d",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 2178,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [
+    "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+    "https://github.com/RVC-Boss/GPT-SoVITS/issues/2571"
+  ],
+  "knowledge_created": [],
+  "knowledge_drafts": [
+    "research/knowledge/drafts/review_v2_smoke_speed.md"
+  ],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "f8f9daa2fc8410dbb68a191a11947354e9fd960589fb8c00aab43da04bb84429",
+    "5693f7286fc83033b2c0c068d367fcb8e11ce0e3c02e98f3b34771b581c6ffe4",
+    "f8b8d3f144a1c3e40ceeb6a53644f86cdf6ec837cab5ac751d962226d6f77f0e"
+  ],
+  "navigation_checks": [
+    {
+      "target": "t35",
+      "expected_title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion",
+      "expected_url": null,
+      "observations": [
+        {
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+          "title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion · Issue #2579 · RVC-Boss/GPT-SoVITS"
+        }
+      ],
+      "status": "matched"
+    },
+    {
+      "target": "t35",
+      "expected_title": "Inference speed issue of ProPlus version.",
+      "expected_url": null,
+      "observations": [
+        {
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2571",
+          "title": "Inference speed issue of ProPlus version. · Issue #2571 · RVC-Boss/GPT-SoVITS"
+        }
+      ],
+      "status": "matched"
+    },
+    {
+      "target": "t36",
+      "expected_title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion",
+      "expected_url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+      "observations": [
+        {
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+          "title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion · Issue #2579 · RVC-Boss/GPT-SoVITS"
+        }
+      ],
+      "status": "matched"
+    },
+    {
+      "target": "t37",
+      "expected_title": "Inference speed issue of ProPlus version.",
+      "expected_url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2571",
+      "observations": [
+        {
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2571",
+          "title": "Inference speed issue of ProPlus version. · Issue #2571 · RVC-Boss/GPT-SoVITS"
+        }
+      ],
+      "status": "matched"
+    }
+  ],
+  "finished_at": "2026-10-03T00:36:46+08:00",
+  "browser_calls": 22,
+  "cleanup_failed": [],
+  "review_packet": "research/reviews/20261002T163446Z-50a4cbe9/packet.json"
+}

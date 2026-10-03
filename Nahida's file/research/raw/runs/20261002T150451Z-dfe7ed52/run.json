@@ -1,0 +1,78 @@
+{
+  "id": "20261002T150451Z-dfe7ed52",
+  "started_at": "2026-10-02T23:04:51+08:00",
+  "topic": "GPT-SoVITS v2 ProPlus short sentence inference speed RTF",
+  "stage": "all",
+  "status": "completed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "4ad6824b-adad-4671-a59d-9e58edd301bb",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 161,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "source1",
+      "session_id": "15d71230-ddd4-45aa-83b3-63b586d044fb",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 2515,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "source2",
+      "session_id": "143e7c26-4804-4cb7-b2e0-f3a28ee50f3c",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 1497,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "synthesis",
+      "session_id": "eb5507b7-9521-40ed-aeb6-dcb12ec1a9ec",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 2298,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [
+    "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+    "https://github.com/RVC-Boss/GPT-SoVITS/issues/2571"
+  ],
+  "knowledge_created": [
+    "research\\knowledge\\core_v1_smoke_speed.md"
+  ],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "5adcd46aa70b9079865c05a51b49b6c48700527e840c0e1fb9db4f646061c494",
+    "f2b3b4f16c269d084639d75397ee0866890e11329704e81b9201818bec2e9a1a",
+    "822a2a4e3f1d64703417ca4a0e1b59dba4d4e9d5673eceb63e363d303df77e00"
+  ],
+  "finished_at": "2026-10-02T23:06:45+08:00",
+  "browser_calls": 23,
+  "cleanup_failed": []
+}

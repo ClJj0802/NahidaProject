@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from pathlib import Path
 
 from src.database import (
@@ -8,7 +9,10 @@ from src.database import (
     get_recent_messages,
 )
 from src.active_context import format_active_context
-from src.llm_client import chat_completion
+from src.external_grounding import CAPABILITY_RULES, guard_chat_reply, reply_without_live_lookup
+from src.live_lookup import try_live_reply
+from src.llm_client import chat_completion, research_prompt_fits
+from src.research_knowledge import RESEARCH_RULES, lookup_research, render_research_answer, selection_format, source_message
 
 
 BASE_DIR = (
@@ -408,6 +412,7 @@ def generate_nahida_response(
     current_events=None,
     proactive_event=None,
     active_context=None,
+    latest_message=None,
 ):
     if relevant_memory_ids is None:
         relevant_memory_ids = []
@@ -748,7 +753,7 @@ For casual conversation, keep responses short and natural.
 
 If the user is asking whether you remember something and a relevant
 memory or event is available, answer confidently but naturally.
-""".strip()
+""".strip() + "\n\n" + CAPABILITY_RULES
 
     messages = [
         {
@@ -761,8 +766,34 @@ memory or event is available, answer confidently but naturally.
         conversation
     )
 
-    return chat_completion(
-        messages=messages,
-        temperature=0.45,
-        max_tokens=160,
-    ).strip()
+    if latest_message is None:
+        latest_message = next((m["content"] for m in reversed(conversation) if m["role"] == "user"), "")
+    live_reply = try_live_reply(session_id, latest_message, conversation)
+    if live_reply is not None:
+        return live_reply
+    grounded_reply = reply_without_live_lookup(latest_message, conversation)
+    if grounded_reply is not None:
+        print("[Research] Live web/maps not called; no verified live result.")
+        return grounded_reply
+    research = lookup_research(latest_message, active_context)
+    research_used = False
+    if research and conversation and conversation[-1]["role"] == "user":
+        candidate = [
+            {"role": "system", "content": system_context + "\n\n" + RESEARCH_RULES},
+            *conversation[:-1],
+            source_message(research),
+            conversation[-1],
+        ]
+        if research_prompt_fits(candidate, max_tokens=256):
+            messages = candidate
+            research_used = True
+
+    if research_used:
+        try:
+            reply = chat_completion(messages=messages, temperature=0.1, max_tokens=256,
+                                    response_format=selection_format(research)).strip()
+        except (RuntimeError, OSError, ValueError, KeyError, TypeError) as error:
+            logging.getLogger(__name__).warning("Research selection unavailable (%s).", type(error).__name__)
+            reply = ""  # Approved-text fallback; do not make a second inference or show failed model prose.
+        return render_research_answer(reply, research, latest_message)
+    return guard_chat_reply(chat_completion(messages=messages, temperature=0.45, max_tokens=160).strip())

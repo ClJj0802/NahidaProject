@@ -157,6 +157,9 @@ latest message that establishes the final state.
 
 Do not convert assistant suggestions into user plans, actions, intentions, or
 decisions unless the user explicitly agrees with them.
+Do not turn assistant claims about web searches, maps, nearby shops or opening
+dates into facts about the user. An assistant message is not a verified lookup;
+the user's follow-up question does not confirm it.
 
 NICKNAMES AND CORRECTIONS
 

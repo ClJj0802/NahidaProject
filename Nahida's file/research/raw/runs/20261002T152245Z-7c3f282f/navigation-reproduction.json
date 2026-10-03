@@ -1,0 +1,105 @@
+[
+  {
+    "command": "tabs",
+    "response": {
+      "tabs": [
+        {
+          "targetId": "FF11B51E55315F48E7A483AFE3B5704F",
+          "title": "about:blank",
+          "url": "about:blank",
+          "type": "page",
+          "suggestedTargetId": "t4",
+          "tabId": "t4"
+        }
+      ]
+    }
+  },
+  {
+    "command": "open",
+    "response": {
+      "targetId": "0F00DE4B555143911D299F1E8D4422CD",
+      "title": "Issues · RVC-Boss/GPT-SoVITS · GitHub",
+      "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues?q=is%3Aissue%20inference%20speed",
+      "type": "page",
+      "ownership": {
+        "status": "durable",
+        "nativeTargetId": "0F00DE4B555143911D299F1E8D4422CD",
+        "profileFingerprint": "sha256:07ea50784158f651a74e801d972c78a559918a02a68041107a669cf0fe21fcac",
+        "browserInstanceFingerprint": "sha256:ec87a6c3284b3a57654608926d0646df2385863cb435a62e94b18b6806a38027"
+      },
+      "suggestedTargetId": "t18",
+      "tabId": "t18",
+      "resolvedProfile": "research"
+    }
+  },
+  {
+    "command": "click",
+    "response": {
+      "ok": true,
+      "targetId": "0F00DE4B555143911D299F1E8D4422CD",
+      "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues?q=is%3Aissue%20inference%20speed"
+    }
+  },
+  {
+    "command": "tabs",
+    "response": {
+      "tabs": [
+        {
+          "targetId": "FF11B51E55315F48E7A483AFE3B5704F",
+          "title": "about:blank",
+          "url": "about:blank",
+          "type": "page",
+          "suggestedTargetId": "t4",
+          "tabId": "t4"
+        },
+        {
+          "targetId": "0F00DE4B555143911D299F1E8D4422CD",
+          "title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion · Issue #2579 · RVC-Boss/GPT-SoVITS",
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+          "type": "page",
+          "suggestedTargetId": "t18",
+          "tabId": "t18"
+        }
+      ]
+    }
+  },
+  {
+    "command": "navigate",
+    "response": {
+      "ok": true,
+      "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues?q=is%3Aissue%20inference%20speed",
+      "targetId": "0F00DE4B555143911D299F1E8D4422CD"
+    }
+  },
+  {
+    "command": "click",
+    "response": {
+      "ok": true,
+      "targetId": "0F00DE4B555143911D299F1E8D4422CD",
+      "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues?q=is%3Aissue%20inference%20speed"
+    }
+  },
+  {
+    "command": "tabs",
+    "response": {
+      "tabs": [
+        {
+          "targetId": "FF11B51E55315F48E7A483AFE3B5704F",
+          "title": "about:blank",
+          "url": "about:blank",
+          "type": "page",
+          "suggestedTargetId": "t4",
+          "tabId": "t4"
+        },
+        {
+          "targetId": "0F00DE4B555143911D299F1E8D4422CD",
+          "title": "Inference speed issue of ProPlus version. · Issue #2571 · RVC-Boss/GPT-SoVITS",
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2571",
+          "type": "page",
+          "suggestedTargetId": "t18",
+          "tabId": "t18"
+        }
+      ]
+    }
+  }
+]

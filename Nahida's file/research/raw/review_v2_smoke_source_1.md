@@ -1,0 +1,65 @@
+# Title
+about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion
+
+# URL
+https://github.com/RVC-Boss/GPT-SoVITS/issues/2579
+
+# Source type
+GitHub issue thread on RVC-Boss repository regarding GPT-SoVITS v2 ProPlus.
+
+# Observed claims
+*   **Hardware benchmarks:** RTF (Real-time Factor) of 0.028 on RTX 4060 Ti, 0.014 on RTX 4090, and 0.526 on M4 CPU.
+*   **Streaming latency:** First reaction times between 0.3 and 0.4 seconds.
+*   **Parameter impact:** Claims that specific parameter settings (e.g., `text_split_method`, `batch_size`) can reduce first response to 0.339–0.443 seconds.
+*   **RTF variance:** Reported Total RTF ranges from 1.363 to 1.719 depending on processing load, while Average RTF drops to ~0.497–0.685.
+*   **Inference logs:** Mentions token prediction speeds around 150 it/s and audio generation steps taking roughly 0.2–0.3 seconds.
+
+# Relevant configuration
+*   `text_split_method`: "cut0"
+*   `batch_size`: 4
+*   `parallel_infer`: "True"
+*   `streaming_mode`: "False"
+*   `speed_factor`: 1.0
+*   `sample_steps`: 32
+
+# Measured performance numbers
+*   **RTF (Real-time Factor):** 0.014 (RTX 4090) to 0.526 (M4 CPU).
+*   **First Response Time:** 0.339s to 0.443s.
+*   **Total Processing Time:** 1.363s to 1.668s.
+*   **Token Prediction Speed:** ~151.66 it/s.
+*   **Audio Generation Latency:** ~0.2s per step.
+
+# Hardware mentioned
+*   NVIDIA RTX 4090
+*   NVIDIA RTX 4060 Ti
+*   Apple M4 CPU
+*   NVIDIA RTX 3090 (mentioned in context of CUDA graph testing)
+
+# Software/version mentioned
+*   GPT-SoVITS v2 ProPlus
+*   api_v2.py
+*   CUDA Graphs
+
+# Evidence level
+Mixed. Includes specific hardware benchmarks and API log snippets, but relies heavily on unverified user experiments and specific Korean sentence processing scenarios.
+
+# Useful paraphrases
+*   High-end GPUs (4090) achieve near-real-time inference (RTF 0.014).
+*   First response latency can be optimized to under 0.45s with proper parameter tuning.
+*   Token prediction speeds hover around 150 iterations per second.
+
+# Confidence
+Low to Medium. Claims are anecdotal and tied to specific, unverified test environments.
+
+# Unresolved questions
+*   How stable are these RTF numbers under continuous load?
+*   Do these results apply to non-Korean languages?
+*   What is the impact of enabling `streaming_mode`?
+
+# Last Updated
+2026-10-03T00:35:43+08:00
+
+Extraction: 4000 characters; truncated=True.
+Evidence SHA256: b1ec80e1dbab6ce190563b9b83ddac53f40ae6d4968a5f0a0337d64fe8784f34
+Evidence file: research/raw/runs/20261002T163446Z-50a4cbe9/source1-evidence.json
+Review status: unreviewed raw evidence.

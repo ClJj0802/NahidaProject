@@ -1,0 +1,36 @@
+{
+  "id": "20261002T153537Z-dc5959f4",
+  "started_at": "2026-10-02T23:35:37+08:00",
+  "topic": "GPT-SoVITS speed optimization",
+  "stage": "all",
+  "status": "failed",
+  "stages": [],
+  "pages_visited": [],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "d4284630c299796607270ac5420ed6589c8788cccaaa180e11ca492fdefb0842"
+  ],
+  "error": "Command failed: docker exec nahida-research-run (exit 1): [openclaw] The CLI command failed.\n[openclaw] Reason: TimeoutError: page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to \"https://github.com/RVC-Boss/GPT-SoVITS/issues?q=is%3Aissue%20inference%20speed\", waiting until \"load\"\n[openclaw] Debug: set OPENCLAW_DEBUG=1 to include the stack trace.\n[openclaw] Try: openclaw doctor\n[openclaw] Help: openclaw --help\n{\"type\": \"cli_error\", \"message\": \"TimeoutError: page.goto: Timeout 30000ms exceeded.\\nCall log:\\n  - navigating to \\\"https://github.com/RVC-Boss/GPT-SoVITS/issues?q=is%3Aissue%20inference%20speed\\\", waiting until \\\"load\\\"\"}",
+  "finished_at": "2026-10-02T23:36:18+08:00",
+  "browser_calls": 4,
+  "cleanup_failed": []
+}

@@ -1,0 +1,105 @@
+[
+  {
+    "command": "tabs",
+    "response": {
+      "tabs": [
+        {
+          "targetId": "61329DFDAA85DE3E2776B7697F043A73",
+          "title": "about:blank",
+          "url": "about:blank",
+          "type": "page",
+          "suggestedTargetId": "t4",
+          "tabId": "t4"
+        }
+      ]
+    }
+  },
+  {
+    "command": "open",
+    "response": {
+      "targetId": "649645CF742F1E28B74E9CAE1F81D084",
+      "title": "Issues · RVC-Boss/GPT-SoVITS · GitHub",
+      "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues?q=is%3Aissue%20inference%20speed",
+      "type": "page",
+      "ownership": {
+        "status": "durable",
+        "nativeTargetId": "649645CF742F1E28B74E9CAE1F81D084",
+        "profileFingerprint": "sha256:07ea50784158f651a74e801d972c78a559918a02a68041107a669cf0fe21fcac",
+        "browserInstanceFingerprint": "sha256:1dd9b5e20245fcfefeff32288fe2865a9855021b2841802edfa6da9266cbadbd"
+      },
+      "suggestedTargetId": "t17",
+      "tabId": "t17",
+      "resolvedProfile": "research"
+    }
+  },
+  {
+    "command": "click",
+    "response": {
+      "ok": true,
+      "targetId": "649645CF742F1E28B74E9CAE1F81D084",
+      "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues?q=is%3Aissue%20inference%20speed"
+    }
+  },
+  {
+    "command": "tabs",
+    "response": {
+      "tabs": [
+        {
+          "targetId": "61329DFDAA85DE3E2776B7697F043A73",
+          "title": "about:blank",
+          "url": "about:blank",
+          "type": "page",
+          "suggestedTargetId": "t4",
+          "tabId": "t4"
+        },
+        {
+          "targetId": "649645CF742F1E28B74E9CAE1F81D084",
+          "title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion · Issue #2579 · RVC-Boss/GPT-SoVITS",
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+          "type": "page",
+          "suggestedTargetId": "t17",
+          "tabId": "t17"
+        }
+      ]
+    }
+  },
+  {
+    "command": "navigate",
+    "response": {
+      "ok": true,
+      "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues?q=is%3Aissue%20inference%20speed",
+      "targetId": "649645CF742F1E28B74E9CAE1F81D084"
+    }
+  },
+  {
+    "command": "click",
+    "response": {
+      "ok": true,
+      "targetId": "649645CF742F1E28B74E9CAE1F81D084",
+      "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues?q=is%3Aissue%20inference%20speed"
+    }
+  },
+  {
+    "command": "tabs",
+    "response": {
+      "tabs": [
+        {
+          "targetId": "61329DFDAA85DE3E2776B7697F043A73",
+          "title": "about:blank",
+          "url": "about:blank",
+          "type": "page",
+          "suggestedTargetId": "t4",
+          "tabId": "t4"
+        },
+        {
+          "targetId": "649645CF742F1E28B74E9CAE1F81D084",
+          "title": "Windows 24H2 update causes slow inference / windows 24H2更新导致推理慢 · Issue #2278 · RVC-Boss/GPT-SoVITS · GitHub",
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2278",
+          "type": "page",
+          "suggestedTargetId": "t17",
+          "tabId": "t17"
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,68 @@
+{
+  "id": "20261002T145746Z-e50c14a2",
+  "started_at": "2026-10-02T22:57:46+08:00",
+  "topic": "GPT-SoVITS v2 ProPlus short sentence inference speed RTF",
+  "stage": "all",
+  "status": "failed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "c16280b4-c38c-4aae-b2b3-b4e71f095c88",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 26,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "source1",
+      "session_id": "6ad0a0df-6ffd-4ea8-8914-a68484683d62",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 2214,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "source2",
+      "session_id": "da5d0e56-e26f-4207-b5d2-22d89d2e61b0",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 1160,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [
+    "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+    "https://github.com/RVC-Boss/GPT-SoVITS/issues/2278"
+  ],
+  "knowledge_created": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "050de8a3fca1f0da56b2f2d1a01a2fe5194c771ee0c281ca26e4cdebfe205892",
+    "beb65f712a46fe1ecd735831f3b1460dd7b4451223cc4a65f93dafec5ab27e8b",
+    "a0ee3c3a78f609b45e51598a1aa913ce062bbb101787331a86520103515ac938"
+  ],
+  "error": "Model artifact is missing a required heading: Title",
+  "finished_at": "2026-10-02T22:59:17+08:00",
+  "browser_calls": 22,
+  "cleanup_failed": []
+}

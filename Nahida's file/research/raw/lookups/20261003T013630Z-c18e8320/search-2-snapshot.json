@@ -1,0 +1,117 @@
+{
+  "ok": true,
+  "format": "ai",
+  "targetId": "F4313F4B45C50091E9C62929889E84B8",
+  "url": "https://www.bing.com/search?q=restaurants+near+Puchong+Malaysia&setlang=en&mkt=en-MY&cc=MY&rdr=1&rdrig=3E413DD5CA434B538C8A7813001595FB",
+  "snapshot": "- link \"google.com\" [ref=e1]\n- link \"YouTube TV Help\" [ref=e2]\n- link \"zhihu.com\" [ref=e3]\n- link \"如何在中国大陆用「合法」的方式观看到youtube上面的「有价值」的 …\" [ref=e4]\n- link \"google.com\" [ref=e5] [nth=1]\n- link \"上傳 YouTube 影片\" [ref=e6]\n- link \"zhihu.com\" [ref=e7] [nth=1]\n- link \"youTube? - 知乎\" [ref=e8]\n- link \"google.com\" [ref=e9] [nth=2]\n- link \"YouTube-video's uploaden - Computer - YouTube Help - Google Help\" [ref=e10]\n- link \"google.com\" [ref=e11] [nth=3]\n- link \"YouTube ความช่วยเหลือ\" [ref=e12]\n- link \"google.com\" [ref=e13] [nth=4]\n- link \"YouTube Trợ giúp\" [ref=e14]\n- link \"google.com\" [ref=e15] [nth=5]\n- link \"Βοήθεια YouTube\" [ref=e16]\n- link \"google.com\" [ref=e17] [nth=6]\n- link \"YouTube Premium & YouTube Music Premium supported devices\" [ref=e18]\n- link \"google.com\" [ref=e19] [nth=7]\n- link \"Manage your home area or current location for YouTube TV\" [ref=e20]\n- link \"Page 2\" [ref=e21]\n- link \"Page 3\" [ref=e22]\n- link \"Next page\" [ref=e23]",
+  "refs": {
+    "e1": {
+      "role": "link",
+      "name": "google.com",
+      "nth": 0
+    },
+    "e2": {
+      "role": "link",
+      "name": "YouTube TV Help"
+    },
+    "e3": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 0
+    },
+    "e4": {
+      "role": "link",
+      "name": "如何在中国大陆用「合法」的方式观看到youtube上面的「有价值」的 …"
+    },
+    "e5": {
+      "role": "link",
+      "name": "google.com",
+      "nth": 1
+    },
+    "e6": {
+      "role": "link",
+      "name": "上傳 YouTube 影片"
+    },
+    "e7": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 1
+    },
+    "e8": {
+      "role": "link",
+      "name": "youTube? - 知乎"
+    },
+    "e9": {
+      "role": "link",
+      "name": "google.com",
+      "nth": 2
+    },
+    "e10": {
+      "role": "link",
+      "name": "YouTube-video's uploaden - Computer - YouTube Help - Google Help"
+    },
+    "e11": {
+      "role": "link",
+      "name": "google.com",
+      "nth": 3
+    },
+    "e12": {
+      "role": "link",
+      "name": "YouTube ความช่วยเหลือ"
+    },
+    "e13": {
+      "role": "link",
+      "name": "google.com",
+      "nth": 4
+    },
+    "e14": {
+      "role": "link",
+      "name": "YouTube Trợ giúp"
+    },
+    "e15": {
+      "role": "link",
+      "name": "google.com",
+      "nth": 5
+    },
+    "e16": {
+      "role": "link",
+      "name": "Βοήθεια YouTube"
+    },
+    "e17": {
+      "role": "link",
+      "name": "google.com",
+      "nth": 6
+    },
+    "e18": {
+      "role": "link",
+      "name": "YouTube Premium & YouTube Music Premium supported devices"
+    },
+    "e19": {
+      "role": "link",
+      "name": "google.com",
+      "nth": 7
+    },
+    "e20": {
+      "role": "link",
+      "name": "Manage your home area or current location for YouTube TV"
+    },
+    "e21": {
+      "role": "link",
+      "name": "Page 2"
+    },
+    "e22": {
+      "role": "link",
+      "name": "Page 3"
+    },
+    "e23": {
+      "role": "link",
+      "name": "Next page"
+    }
+  },
+  "stats": {
+    "lines": 23,
+    "chars": 939,
+    "refs": 23,
+    "interactive": 23
+  }
+}

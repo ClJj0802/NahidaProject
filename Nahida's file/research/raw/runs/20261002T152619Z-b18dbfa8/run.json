@@ -1,0 +1,119 @@
+{
+  "id": "20261002T152619Z-b18dbfa8",
+  "started_at": "2026-10-02T23:26:19+08:00",
+  "topic": "GPT-SoVITS speed optimization",
+  "stage": "all",
+  "status": "failed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "b65b04ff-23a8-45cc-9db7-d0355d25d51d",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 201,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "source1",
+      "session_id": "cf76e83c-044c-48ad-9d07-1024236b0d28",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 1524,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    },
+    {
+      "stage": "source2",
+      "session_id": "a7f58aa1-f1ae-41e8-8a97-89100de6d2d4",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 1207,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [
+    "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+    "https://github.com/RVC-Boss/GPT-SoVITS/issues/2278"
+  ],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "4ac9f1f1f5c0deb8bb7f62d1e986145a2514af2c5947b281d068d7f36e75aff8",
+    "8705a6ae6bceaf29e343c223f463b011a21587203a92190c7505cc2abfb24012",
+    "c79ac27eb639b70a8eec8c452829f3c4ab2c3442df389023321358b0125cadbc"
+  ],
+  "navigation_checks": [
+    {
+      "target": "t21",
+      "expected_title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion",
+      "expected_url": null,
+      "observations": [
+        {
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+          "title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion · Issue #2579 · RVC-Boss/GPT-SoVITS"
+        }
+      ],
+      "status": "matched"
+    },
+    {
+      "target": "t21",
+      "expected_title": "Windows 24H2 update causes slow inference / windows 24H2更新导致推理慢",
+      "expected_url": null,
+      "observations": [
+        {
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2278",
+          "title": "Windows 24H2 update causes slow inference / windows 24H2更新导致推理慢 · Issue #2278 · RVC-Boss/GPT-SoVITS"
+        }
+      ],
+      "status": "matched"
+    },
+    {
+      "target": "t22",
+      "expected_title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion",
+      "expected_url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+      "observations": [
+        {
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+          "title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion · Issue #2579 · RVC-Boss/GPT-SoVITS"
+        }
+      ],
+      "status": "matched"
+    },
+    {
+      "target": "t23",
+      "expected_title": "Windows 24H2 update causes slow inference / windows 24H2更新导致推理慢",
+      "expected_url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2278",
+      "observations": [
+        {
+          "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2278",
+          "title": "Windows 24H2 update causes slow inference / windows 24H2更新导致推理慢 · Issue #2278 · RVC-Boss/GPT-SoVITS"
+        }
+      ],
+      "status": "matched"
+    }
+  ],
+  "error": "Model artifact is missing a required heading: Title",
+  "finished_at": "2026-10-02T23:27:50+08:00",
+  "browser_calls": 22,
+  "cleanup_failed": []
+}

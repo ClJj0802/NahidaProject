@@ -1,0 +1,13 @@
+Title: Windows 24H2 update causes slow inference
+URL: https://github.com/RVC-Boss/GPT-SoVITS/issues/2278
+Source type: GitHub issue discussion
+Observed claims: Windows 11 24H2 triggers low GPU usage and slow inference on RTX 4090; Linux and Windows 11 23H2 perform normally.
+Relevant configuration: PyTorch 2.0.0 + cu118, cuDNN 8.7.0, CUDA 11.8/12.8, Drivers 537.58–572.83, AMP enabled (fp16).
+Measured performance numbers: GPU utilization <30% on 24H2 vs ~100% on 23H2/Linux; inference slower than RTX 4070 on 24H2.
+Hardware mentioned: NVIDIA RTX 4090, RTX 4070.
+Software/version mentioned: Windows 11 24H2, 23H2, PyTorch 2.0.0, cuDNN 8.7.0, GPT-SoVITS v2/v3, inference_webui.py.
+Evidence level: Single-user empirical testing; workaround verified by original reporter.
+Useful paraphrases: Windows 11 24H2 inference slowdown; GPT-SoVITS high GPU utilization fix; Python process priority workaround.
+Confidence: Low to moderate—depends on user environment and workaround success.
+Unresolved questions: Root cause (kernel fallback, scheduler, or power management); reproducibility across other models; long-term stability of priority fix.
+Last Updated: 2026-10-02

@@ -1,0 +1,28 @@
+FROM nahida-sandbox-browser:2026.9.2
+
+USER root
+
+RUN python3 - <<'PY'
+path = "/usr/local/bin/openclaw-sandbox-browser"
+
+with open(path, "r", encoding="utf-8") as f:
+    content = f.read()
+
+needle = '  "--use-mock-keychain"\n'
+
+replacement = (
+    needle
+    + '  "--proxy-server=http://172.30.50.30:3128"\n'
+    + '  "--proxy-bypass-list=<-loopback>"\n'
+)
+
+if needle not in content:
+    raise RuntimeError("Could not find Chromium argument insertion point")
+
+content = content.replace(needle, replacement, 1)
+
+with open(path, "w", encoding="utf-8") as f:
+    f.write(content)
+PY
+
+USER sandbox

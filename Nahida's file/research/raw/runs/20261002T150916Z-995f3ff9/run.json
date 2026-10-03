@@ -1,0 +1,44 @@
+{
+  "id": "20261002T150916Z-995f3ff9",
+  "started_at": "2026-10-02T23:09:16+08:00",
+  "topic": "GPT-SoVITS v2 ProPlus short sentence inference speed RTF",
+  "stage": "synthesis",
+  "status": "completed",
+  "stages": [
+    {
+      "stage": "synthesis",
+      "session_id": "e0e2bfe3-9db2-449b-8d36-d47c9080bac8",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 2253,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [],
+  "knowledge_created": [],
+  "knowledge_drafts": [
+    "research/knowledge/drafts/core_v1_smoke_speed.md"
+  ],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "finished_at": "2026-10-02T23:09:36+08:00",
+  "browser_calls": 0,
+  "cleanup_failed": []
+}

@@ -1,0 +1,1 @@
+[{"ref": "e23", "title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion"}, {"ref": "e25", "title": "Inference speed issue of ProPlus version."}]

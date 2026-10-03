@@ -1,0 +1,46 @@
+{
+  "id": "20261002T151753Z-f38298c3",
+  "started_at": "2026-10-02T23:17:53+08:00",
+  "topic": "GPT-SoVITS speed optimization",
+  "stage": "all",
+  "status": "failed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "95e41fcb-1522-4b60-ae53-81bc128e7a41",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 179,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "434ef3bedafd0bd73ad62d9ed7a4ff814802a5e8c2fee7faf1933259f2db3654"
+  ],
+  "error": "Selected issue URL/title could not be verified after navigation",
+  "finished_at": "2026-10-02T23:18:22+08:00",
+  "browser_calls": 7,
+  "cleanup_failed": []
+}

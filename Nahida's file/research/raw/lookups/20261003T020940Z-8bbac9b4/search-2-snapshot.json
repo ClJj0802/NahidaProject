@@ -1,0 +1,121 @@
+{
+  "ok": true,
+  "format": "ai",
+  "targetId": "57B679DD13FE0B98007EA3B5C4076D17",
+  "url": "https://www.bing.com/search?q=restaurants+near+%E5%93%AA%E9%87%8C%E5%90%97&setlang=en&mkt=en-MY&cc=MY&rdr=1&rdrig=DE709406A0A64C90A206894567B7B500",
+  "snapshot": "- link \"tgv.com.my\" [ref=e1]\n- link \"TGV TASEK CENTRAL | TGV Cinemas\" [ref=e2]\n- link \"tgv.com.my\" [ref=e3] [nth=1]\n- link \"TGV TEBRAU CITY | TGV Cinemas\" [ref=e4]\n- link \"tgv.com.my\" [ref=e5] [nth=2]\n- link \"General Enquiries\" [ref=e6]\n- link \"tgv.com.my\" [ref=e7] [nth=3]\n- link \"TGV 1 UTAMA | TGV Cinemas\" [ref=e8]\n- link \"tgv.com.my\" [ref=e9] [nth=4]\n- link \"TGV KEPONG | TGV Cinemas\" [ref=e10]\n- link \"tgv.com.my\" [ref=e11] [nth=5]\n- link \"TGV Events | Fan Parties, Live Viewings & Cinema Gatherings\" [ref=e12]\n- link \"tgv.com.my\" [ref=e13] [nth=6]\n- link \"TGV Cinemas | Movieclub - Exclusive Rewards & Discounts\" [ref=e14]\n- link \"tgv.com.my\" [ref=e15] [nth=7]\n- link \"TGV Cinemas\" [ref=e16]\n- link \"tgv.com.my\" [ref=e17] [nth=8]\n- link \"TGV SUNWAY SQUARE (NEW) | TGV Cinemas\" [ref=e18]\n- link \"tgv.com.my\" [ref=e19] [nth=9]\n- link \"TGV SUNWAY PUTRA | TGV Cinemas\" [ref=e20]\n- link \"Page 2\" [ref=e21]\n- link \"Page 3\" [ref=e22]\n- link \"Page 4\" [ref=e23]\n- link \"Next page\" [ref=e24]",
+  "refs": {
+    "e1": {
+      "role": "link",
+      "name": "tgv.com.my",
+      "nth": 0
+    },
+    "e2": {
+      "role": "link",
+      "name": "TGV TASEK CENTRAL | TGV Cinemas"
+    },
+    "e3": {
+      "role": "link",
+      "name": "tgv.com.my",
+      "nth": 1
+    },
+    "e4": {
+      "role": "link",
+      "name": "TGV TEBRAU CITY | TGV Cinemas"
+    },
+    "e5": {
+      "role": "link",
+      "name": "tgv.com.my",
+      "nth": 2
+    },
+    "e6": {
+      "role": "link",
+      "name": "General Enquiries"
+    },
+    "e7": {
+      "role": "link",
+      "name": "tgv.com.my",
+      "nth": 3
+    },
+    "e8": {
+      "role": "link",
+      "name": "TGV 1 UTAMA | TGV Cinemas"
+    },
+    "e9": {
+      "role": "link",
+      "name": "tgv.com.my",
+      "nth": 4
+    },
+    "e10": {
+      "role": "link",
+      "name": "TGV KEPONG | TGV Cinemas"
+    },
+    "e11": {
+      "role": "link",
+      "name": "tgv.com.my",
+      "nth": 5
+    },
+    "e12": {
+      "role": "link",
+      "name": "TGV Events | Fan Parties, Live Viewings & Cinema Gatherings"
+    },
+    "e13": {
+      "role": "link",
+      "name": "tgv.com.my",
+      "nth": 6
+    },
+    "e14": {
+      "role": "link",
+      "name": "TGV Cinemas | Movieclub - Exclusive Rewards & Discounts"
+    },
+    "e15": {
+      "role": "link",
+      "name": "tgv.com.my",
+      "nth": 7
+    },
+    "e16": {
+      "role": "link",
+      "name": "TGV Cinemas"
+    },
+    "e17": {
+      "role": "link",
+      "name": "tgv.com.my",
+      "nth": 8
+    },
+    "e18": {
+      "role": "link",
+      "name": "TGV SUNWAY SQUARE (NEW) | TGV Cinemas"
+    },
+    "e19": {
+      "role": "link",
+      "name": "tgv.com.my",
+      "nth": 9
+    },
+    "e20": {
+      "role": "link",
+      "name": "TGV SUNWAY PUTRA | TGV Cinemas"
+    },
+    "e21": {
+      "role": "link",
+      "name": "Page 2"
+    },
+    "e22": {
+      "role": "link",
+      "name": "Page 3"
+    },
+    "e23": {
+      "role": "link",
+      "name": "Page 4"
+    },
+    "e24": {
+      "role": "link",
+      "name": "Next page"
+    }
+  },
+  "stats": {
+    "lines": 24,
+    "chars": 987,
+    "refs": 24,
+    "interactive": 24
+  }
+}

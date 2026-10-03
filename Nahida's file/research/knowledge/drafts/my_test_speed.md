@@ -1,0 +1,39 @@
+> Review status: DRAFT — requires evidence review before reuse as knowledge.
+
+# Topic
+GPT-SoVITS speed optimization
+
+# Summary
+GPT-SoVITS v2 ProPlus demonstrates high inference speed on specific hardware configurations but suffers significant performance regression on Windows 11 24H2 for RTX 4090 users. Reported Real-Time Factors (RTF) range from 0.014 to 0.526 depending on hardware and OS.
+
+# Confirmed Findings
+RTF of 0.014–0.028 is achievable on RTX 4090/4060 Ti with CUDA Graph optimizations enabled [S1]. Windows 11 24H2 causes severe throttling on RTX 4090, dropping GPU utilization below 30% and slowing performance below an RTX 4070 [S2]. Linux and Windows 11 23H2 maintain normal GPU utilization (90%+) on RTX 4090 [S2].
+
+# Likely Findings
+High inference speeds correlate with specific configurations: `parallel_infer=True`, `streaming_mode=False`, and `batch_size=4` [S1]. Windows 11 24H2 scheduling conflicts with PyTorch inference processes on newer NVIDIA GPUs [S2].
+
+# User Reports
+Users report first reaction times of 0.339–0.443 seconds on optimized setups [S1]. API overheads contribute to total processing times of 1.36–1.67 seconds [S1]. Downgrading from 24H2 to 23H2 or switching to Linux resolves the 24H2 performance regression [S2].
+
+# Recommended Experiments
+**Proposal:** Test `HIGH_PRIORITY_CLASS` process priority using `psutil` before inference on Windows 11 24H2 to mitigate throttling [S2].
+**Proposal:** Benchmark Korean input on RTX 3090 with and without CUDA Graph optimization to verify latency requirements [S1].
+
+# Hardware Relevance
+RTX 4090: Highly variable performance; excellent on Linux/23H2, poor on 24H2 [S1][S2].
+RTX 4060 Ti: Achieves RTF 0.028 with proper configuration [S1].
+M4 CPU: Significant bottleneck with RTF 0.526 [S1].
+*Host Hardware:* Your RTX 5060 Ti 16GB and Ryzen 5 7500X3D are not explicitly tested in sources [S1][S2].
+
+# Confidence
+Low to medium. Data relies on user benchmarks and unverified code patches [S1][S2].
+
+# Evidence level
+Moderate. User-contributed data with some code verification [S1][S2].
+
+# Sources
+- [S1] https://github.com/RVC-Boss/GPT-SoVITS/issues/2579
+- [S2] https://github.com/RVC-Boss/GPT-SoVITS/issues/2278
+
+# Last Updated
+2026-10-03T00:11:55+08:00

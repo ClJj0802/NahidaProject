@@ -1,0 +1,76 @@
+{
+  "id": "20261003T012318Z-1593814f",
+  "started_at": "2026-10-03T09:23:18+08:00",
+  "topic": "puchong",
+  "prefix": "live",
+  "stage": "live",
+  "status": "ok",
+  "stages": [],
+  "pages_visited": [
+    "https://geocoding-api.open-meteo.com/v1/search?name=puchong&count=5&language=en&format=json",
+    "https://api.open-meteo.com/v1/forecast?latitude=3.0&longitude=101.61667&current=temperature_2m%2Capparent_temperature%2Crelative_humidity_2m%2Cweather_code%2Cprecipitation%2Cwind_speed_10m&timezone=auto&forecast_days=1"
+  ],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "browser_calls": 18,
+    "page_chars": 4000,
+    "sources": 2,
+    "run_seconds": 110,
+    "llm_tool_calls": 0,
+    "model_turns": 0
+  },
+  "kind": "weather",
+  "query": "puchong",
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "4286060da1da0f4ce47fe3159cb97cdde10a55ab09e14b59b242d63b2c648aa9"
+  ],
+  "finished_at": "2026-10-03T09:23:35+08:00",
+  "browser_calls": 7,
+  "cleanup_failed": [],
+  "result": {
+    "status": "ok",
+    "kind": "weather",
+    "location": {
+      "name": "Puchong",
+      "admin1": "Selangor",
+      "country": "Malaysia"
+    },
+    "current": {
+      "time": "2026-10-03T09:15",
+      "interval": 900,
+      "temperature_2m": 25.0,
+      "apparent_temperature": 30.6,
+      "relative_humidity_2m": 93,
+      "weather_code": 51,
+      "precipitation": 0.1,
+      "wind_speed_10m": 1.8
+    },
+    "units": {
+      "time": "iso8601",
+      "interval": "seconds",
+      "temperature_2m": "°C",
+      "apparent_temperature": "°C",
+      "relative_humidity_2m": "%",
+      "weather_code": "wmo code",
+      "precipitation": "mm",
+      "wind_speed_10m": "km/h"
+    },
+    "timezone": "Asia/Kuala_Lumpur",
+    "captured_at": "2026-10-03T09:23:34+08:00",
+    "evidence_type": "weather_model_estimate",
+    "sources": [
+      "https://geocoding-api.open-meteo.com/v1/search?name=puchong&count=5&language=en&format=json",
+      "https://api.open-meteo.com/v1/forecast?latitude=3.0&longitude=101.61667&current=temperature_2m%2Capparent_temperature%2Crelative_humidity_2m%2Cweather_code%2Cprecipitation%2Cwind_speed_10m&timezone=auto&forecast_days=1"
+    ]
+  }
+}

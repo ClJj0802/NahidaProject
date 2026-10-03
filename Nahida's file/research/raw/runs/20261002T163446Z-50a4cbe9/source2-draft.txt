@@ -1,0 +1,29 @@
+# Source type
+GitHub issue discussion on the RVC-Boss repository regarding GPT-SoVITS v2 ProPlus performance.
+
+# Observed claims
+RTF (Real-Time Factor) of 0.028 was claimed for an RTX 4060 Ti and 0.014 for an RTX 4090. Total inference times for Chinese sentences were reported as 3.36s to 1.8s depending on hardware. CUDA Graphs are suggested as a simple acceleration method, though implementation details are not publicly documented yet.
+
+# Relevant configuration
+GPT-SoVITS v2 ProPlus model version. Hardware includes RTX 4060 Ti, RTX 4090, M4 CPU, and RTX 3090. A Hugging Face demo using an H200 GPU was referenced.
+
+# Measured performance numbers
+RTF 0.028 on 4060 Ti; RTF 0.014 on 4090 (1400 words in 3.36s). Total processing time 1.363s for a short Korean sentence on RTX 3090 with RTF 1.531. Another user measured 1.1s-1.8s inference time for 20-25 character Chinese sentences on RTX 3090. Average RTF 0.497 reported by a Korean user.
+
+# Hardware mentioned
+NVIDIA RTX 4060 Ti, RTX 4090, M4 CPU, RTX 3090, H200.
+
+# Software/version mentioned
+GPT-SoVITS v2 ProPlus. ChatGPT suggested for writing CUDA Graph code.
+
+# Evidence level
+Anecdotal and user-submitted benchmark data from GitHub comments. No independent verification by project maintainers.
+
+# Useful paraphrases
+RTF values below 1.0 indicate faster-than-real-time processing, while values above 1.0 indicate latency. CUDA Graphs may reduce overhead but require code modification.
+
+# Confidence
+Low to medium due to lack of reproducible documentation and varying hardware/software versions.
+
+# Unresolved questions
+How to implement CUDA Graphs without access to proprietary code. Why RTF varies so drastically between users on similar hardware.

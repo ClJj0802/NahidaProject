@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "targetId": "707286FFD902FA5CAAF4008B0574B6E6",
+  "url": "https://geocoding-api.open-meteo.com/v1/search?name=puchong%2C+Malaysia&count=5&language=en&format=json",
+  "text": "{\"results\":[{\"id\":1749822,\"name\":\"Puchong\",\"latitude\":3.0,\"longitude\":101.61667,\"elevation\":27.0,\"feature_code\":\"PPL\",\"country_code\":\"MY\",\"admin1_id\":1733037,\"admin2_id\":1735156,\"timezone\":\"Asia/Kuala_Lumpur\",\"population\":375181,\"country_id\":1733045,\"country\":\"Malaysia\",\"admin1\":\"Selangor\",\"admin2\":\"Petaling\"},{\"id\":1749825,\"name\":\"Puchong Batu Dua Belas\",\"latitude\":3.01667,\"longitude\":101.61667,\"elevation\":26.0,\"feature_code\":\"PPL\",\"country_code\":\"MY\",\"admin1_id\":1733037,\"admin2_id\":1735156,\"timezone\":\"Asia/Kuala_Lumpur\",\"country_id\":1733045,\"country\":\"Malaysia\",\"admin1\":\"Selangor\",\"admin2\":\"Petaling\"}],\"generationtime_ms\":0.5506277}",
+  "truncated": false,
+  "captured_at": "2026-10-03T10:08:01+08:00",
+  "source_title": ""
+}

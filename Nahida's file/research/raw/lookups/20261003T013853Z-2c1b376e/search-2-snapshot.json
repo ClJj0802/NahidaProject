@@ -1,0 +1,117 @@
+{
+  "ok": true,
+  "format": "ai",
+  "targetId": "84F3AD8647B3BB0B388AD03D94EAA122",
+  "url": "https://www.bing.com/search?q=restaurants+near+Puchong+Malaysia&setlang=en&mkt=en-MY&cc=MY&rdr=1&rdrig=C3805781E9F64E43A8F22E961B54E044",
+  "snapshot": "- link \"zhihu.com\" [ref=e1]\n- link \"推荐系统，离线 AUC 涨了，线上 CTR 等效果没涨，可能有哪些原因？\" [ref=e2]\n- link \"zhihu.com\" [ref=e3] [nth=1]\n- link \"uauc与auc的恩恩怨怨？ - 知乎\" [ref=e4]\n- link \"zhihu.com\" [ref=e5] [nth=2]\n- link \"美国人眼里 UIUC 怎样？ - 知乎\" [ref=e6]\n- link \"zhihu.com\" [ref=e7] [nth=3]\n- link \"十年前沸沸扬扬的新概念作文比赛现在为何淡出了人们的视野？\" [ref=e8]\n- link \"zhihu.com\" [ref=e9] [nth=4]\n- link \"模型总是在前几个epoch达到性能的sota，后期效果一直下降是为什 …\" [ref=e10]\n- link \"zhihu.com\" [ref=e11] [nth=5]\n- link \"知乎 - 有问题，就会有答案\" [ref=e12]\n- link \"zhihu.com\" [ref=e13] [nth=6]\n- link \"英特尔的「处理器信息更新工具」是怎么工作的，为什么会有这种工 …\" [ref=e14]\n- link \"zhihu.com\" [ref=e15] [nth=7]\n- link \"知乎 - 知乎\" [ref=e16]\n- link \"zhihu.com\" [ref=e17] [nth=8]\n- link \"推荐系统中，双塔模型用于粗排和用于召回的区别有哪些? - 知乎\" [ref=e18]\n- link \"zhihu.com\" [ref=e19] [nth=9]\n- link \"系统UAC是不是就是账户控制设置？到底要不要开？开几档？ - 知乎\" [ref=e20]\n- link \"Page 2\" [ref=e21]\n- link \"Page 3\" [ref=e22]\n- link \"Next page\" [ref=e23]",
+  "refs": {
+    "e1": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 0
+    },
+    "e2": {
+      "role": "link",
+      "name": "推荐系统，离线 AUC 涨了，线上 CTR 等效果没涨，可能有哪些原因？"
+    },
+    "e3": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 1
+    },
+    "e4": {
+      "role": "link",
+      "name": "uauc与auc的恩恩怨怨？ - 知乎"
+    },
+    "e5": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 2
+    },
+    "e6": {
+      "role": "link",
+      "name": "美国人眼里 UIUC 怎样？ - 知乎"
+    },
+    "e7": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 3
+    },
+    "e8": {
+      "role": "link",
+      "name": "十年前沸沸扬扬的新概念作文比赛现在为何淡出了人们的视野？"
+    },
+    "e9": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 4
+    },
+    "e10": {
+      "role": "link",
+      "name": "模型总是在前几个epoch达到性能的sota，后期效果一直下降是为什 …"
+    },
+    "e11": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 5
+    },
+    "e12": {
+      "role": "link",
+      "name": "知乎 - 有问题，就会有答案"
+    },
+    "e13": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 6
+    },
+    "e14": {
+      "role": "link",
+      "name": "英特尔的「处理器信息更新工具」是怎么工作的，为什么会有这种工 …"
+    },
+    "e15": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 7
+    },
+    "e16": {
+      "role": "link",
+      "name": "知乎 - 知乎"
+    },
+    "e17": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 8
+    },
+    "e18": {
+      "role": "link",
+      "name": "推荐系统中，双塔模型用于粗排和用于召回的区别有哪些? - 知乎"
+    },
+    "e19": {
+      "role": "link",
+      "name": "zhihu.com",
+      "nth": 9
+    },
+    "e20": {
+      "role": "link",
+      "name": "系统UAC是不是就是账户控制设置？到底要不要开？开几档？ - 知乎"
+    },
+    "e21": {
+      "role": "link",
+      "name": "Page 2"
+    },
+    "e22": {
+      "role": "link",
+      "name": "Page 3"
+    },
+    "e23": {
+      "role": "link",
+      "name": "Next page"
+    }
+  },
+  "stats": {
+    "lines": 23,
+    "chars": 888,
+    "refs": 23,
+    "interactive": 23
+  }
+}

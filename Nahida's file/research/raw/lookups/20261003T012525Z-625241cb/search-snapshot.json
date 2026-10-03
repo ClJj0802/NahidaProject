@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "format": "ai",
+  "targetId": "4CA4072CA2408DD82C5C5F684679B542",
+  "url": "https://html.duckduckgo.com/html/?q=restaurants+Puchong+Malaysia",
+  "snapshot": "- link \"DuckDuckGo\" [ref=e1]\n- button \"Submit\" [ref=e2]",
+  "refs": {
+    "e1": {
+      "role": "link",
+      "name": "DuckDuckGo"
+    },
+    "e2": {
+      "role": "button",
+      "name": "Submit"
+    }
+  },
+  "stats": {
+    "lines": 2,
+    "chars": 55,
+    "refs": 2,
+    "interactive": 2
+  }
+}

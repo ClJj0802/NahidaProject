@@ -1,0 +1,45 @@
+{
+  "id": "20261002T151945Z-91f27fab",
+  "started_at": "2026-10-02T23:19:45+08:00",
+  "topic": "GPT-SoVITS speed optimization",
+  "stage": "discovery",
+  "status": "completed",
+  "stages": [
+    {
+      "stage": "discovery",
+      "session_id": "bc0fd4b0-2de7-4ba4-b6bf-f2779fb064d5",
+      "assistant_turns": 1,
+      "tools_available": 0,
+      "output_chars": 225,
+      "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+      "provider": "llamacpp"
+    }
+  ],
+  "pages_visited": [],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "sources": 2,
+    "page_chars": 4000,
+    "browser_calls": 48,
+    "browser_attempts": 2,
+    "llm_tool_calls": 0,
+    "stage_seconds": 120,
+    "run_seconds": 900
+  },
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "b1a54d5c12d4760caee9258cafbd3424612e75b134154d8136cef9ace4ab4be8"
+  ],
+  "finished_at": "2026-10-02T23:20:19+08:00",
+  "browser_calls": 12,
+  "cleanup_failed": []
+}

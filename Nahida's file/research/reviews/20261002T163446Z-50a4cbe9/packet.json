@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "run_id": "20261002T163446Z-50a4cbe9",
+  "topic": "GPT-SoVITS speed optimization",
+  "draft_sha256": "b40678ff02c2cbc16f5c6e9de5fbbf7ba170c7a49e7c6a9e0f935fa5ca464bb7",
+  "basis_sha256": "3b41e09f9011dac8cf973249a39c66d2d52562296c449296beb0c0b09de4869e",
+  "sources": [
+    {
+      "source_key": "S1",
+      "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2579",
+      "title": "about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion",
+      "evidence_path": "research/raw/runs/20261002T163446Z-50a4cbe9/source1-evidence.json",
+      "text_sha256": "b1ec80e1dbab6ce190563b9b83ddac53f40ae6d4968a5f0a0337d64fe8784f34",
+      "captured_at": "2026-10-03T00:35:43+08:00",
+      "truncated": 1,
+      "text": "RVC-Boss\n/\nGPT-SoVITS\nPublic\nNotifications\nFork 6.7k\n Star 62.2k\nCode\nIssues\n794\nPull requests\n103\nActions\nProjects\nWiki\nabout GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion\n #2579\nNew issue\nOpen\nDescription\nJHP0124\nopened \nLast edited by JHP0124\n\nRTF(inference speed) of GPT-SoVITS v2 ProPlus: 0.028 tested in 4060Ti, 0.014 tested in 4090 (1400words~=4min, inference time is 3.36s), 0.526 in M4 CPU. You can test our huggingface demo (half H200) to experience high-speed inference .\n\ni know this infomation.\n\nbut Based on the parameters below\n\n============================================================\n\nself.default_params = {\n\"text_lang\": \"auto\",\n\"ref_audio_path\": \" secret my path haha \",\n\"prompt_lang\": \"ja\",\n\"prompt_text\": \" nothing \",\n\"top_k\": 5,\n\"top_p\": 1,\n\"temperature\": 1,\n\"text_split_method\": \"cut0\",\n\"batch_size\": 4,\n\"batch_threshold\": 2,\n\"split_bucket\": \"True\",\n\"speed_factor\": 1.0,\n\"fragment_interval\": 0.0001,\n\"seed\": -1,\n\"media_type\": \"wav\",\n\"streaming_mode\": \"False\",\n\"parallel_infer\": \"True\",\n\"repetition_penalty\": 1.35,\n\"sample_steps\": 32,\n\"super_sampling\": \"False\"\n\n============================================================\n\nBased on splitting a long Korean sentence and sending it to api_v2 and receiving a voice, we achieved the first reaction in 0.3 to 0.4 seconds.\n\n============================================================\n\nSummary of performance measurement results\nFirst response time: 0.443 seconds\nTotal processing time: 1.363 seconds\nTotal audio length: 0.89 seconds\nTotal RTF: 1.531 (processing time/audio length)\n\nAverage Statistics:\n\nAPI response time: 0.442 seconds\nAudio length per sentence: 0.89 seconds\nAverage RTF: 0.497\nRTF Range:\n\nMinimum RTF: 0.497 (fastest)\nMaximum RTF: 0.497 (slowest)\n\n============================================================\n\nBelow are other results.\n\n============================================================\nPerformance Measurement Summary\n\nFirst Response Time: 0.339 seconds\nTotal Processing Time: 1.668 seconds\nTotal Audio Length: 0.97 seconds\nTotal RTF: 1.719 (Processing Time/Audio Length)\n\nAverage Statistics:\n\nAPI Response Time: 0.664 seconds\nAudio Length per Sentence: 0.97 seconds\nAverage RTF: 0.685\n\nRTF Range:\n\nMinimum RTF: 0.685 (Fastest)\nMaximum RTF: 0.685 (Slowest)\n============================================================\n\nIs it normal in the rtx3090 execution environment before applying cuda_graph based on Korean?\n\nThe log below is output from api_v2.py.\n\n============================================================\n\n############ Text Segmentation ############\nActual input target text:\nThank you.\nActual input target text (after segmenting sentences):\n['Thank you.']\n############ Text BERT Feature Extraction ############\n100%|█████████████████████████████████████████████████████| 1/1 [00:00<00:00, 48.14 it/s]\n############ Inference ############\nText after front-end processing (sentence by sentence): ['Thank you.']\n############ Semantic-based Token Prediction ############\n1%|▍ | 16/1500 [00:00<00:09, 151.66 it/s] T2S Decoding EOS [135 -> 162]\n2%|▋ | 26/1500 [00:00<00:10, 145.65 it/s]\n############ Audio Generation ############\nParallel Audio Generation...\n0.000 0.022 0.180 0.133\nINFO: 127.0.0.1:49036 - \"GET /tts?text_lang=auto&ref_audio_path=/home/p/voice_maker/dataset_32khz/OTs14_08.wav&prompt_lang=ja&prompt_text=%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%80%82%E3%81%93%E3%82%8C%E3%81%A7%E6%9C%9D%E3%81%AF%E8%AA%B0%E3%81%8B%E3%81%AB%E8%B5%B7%E3%81%93%E3%81%97%E3%81%A6%E3%82%82%E3%82%89%E3%81%88%E3%82%8B%E3%82%8F%E3%81%AD%E3%80%82&top_k=5&top_p=1&temperature=1&text_split_method=cut0&batch_size=4&batch_threshold=2&split_bucket=True&speed_factor=1.0&fragment_interval=0.0001&seed=-1&media_type=wav&streaming_mode=False&parallel_infer=True&repetition_penalty=1.35&sample_steps=32&super_sampling=False&text=%EA%B0%90%EC%82%AC%ED%95%A9%EB%8B%88%EB%8B%A4. HTTP/1.1\" 200 OK\n\n============================================================\n\nI think the iterations per second i"
+    },
+    {
+      "source_key": "S2",
+      "url": "https://github.com/RVC-Boss/GPT-SoVITS/issues/2571",
+      "title": "Inference speed issue of ProPlus version.",
+      "evidence_path": "research/raw/runs/20261002T163446Z-50a4cbe9/source2-evidence.json",
+      "text_sha256": "3402afac63d5e528460c8174282a1a0303f2ed2def731b282c1a2b4815307bde",
+      "captured_at": "2026-10-03T00:36:15+08:00",
+      "truncated": 0,
+      "text": "RVC-Boss\n/\nGPT-SoVITS\nPublic\nNotifications\nFork 6.7k\n Star 62.2k\nCode\nIssues\n794\nPull requests\n103\nActions\nProjects\nWiki\nInference speed issue of ProPlus version.\n #2571\nNew issue\nOpen\nDescription\nAleksandar-Lazarevic\nopened \nLast edited by Aleksandar-Lazarevic\n\nCould you explain about this sentence?|\n<RTF(inference speed) of GPT-SoVITS v2 ProPlus: 0.028 tested in 4060Ti, 0.014 tested in 4090 (1400words~=4min, inference time is 3.36s), 0.526 in M4 CPU. You can test our huggingface demo (half H200) to experience high-speed inference .>\nhere, what is the meaning of 0.028, 0.014?\nIt means second?\nActually I want tts engine of which inference time is less than 1s.\nBut according to my test, the inference time is in 1.1s-1.8s for Chinese sentence(20-25 characters) on RTX 3090 gpu besides of bert generation time of reference audio.\nany methods to improve this?\n\n👍\nReact with 👍\n1\nReacted by JH.P\nActivity\nXXXXRT666 commented \nXXXXRT666\nContributor\n\nA simple acceleration using CUDA Graph\n\n👍\nReact with 👍\n1\nReacted by JH.P\nJHP0124 commented \nJHP0124\nLast edited by JHP0124\n\nA simple acceleration using CUDA Graph\n\nThis is my first time using gpt-sovits.\nI'm trying to find a detailed related document, but it's hard to find.\nDo I need to modify certain files in gpt-sovits to use the cuda graph or is there a special cmd option?\n\nThank you for your good response.\nI'm trying to figure it out by myself\nI don't know how to apply the cuda graph.\n\nBased on a short Korean sentence(안녕하세요), the first response is at a speed of 0.4 seconds.\nIs this a normal speed?\n\n=============================================\nSummary of performance measurement results\n\nFirst response time: 0.443 seconds\nTotal processing time: 1.363 seconds\nTotal audio length: 0.89 seconds\nTotal RTF: 1.531 (processing time/audio length)\n\nAverage Statistics:\n\nAPI response time: 0.442 seconds\nAudio length per sentence: 0.89 seconds\nAverage RTF: 0.497\n\nRTF Range:\n\nMinimum RTF: 0.497 (fastest)\nMaximum RTF: 0.497 (slowest)\n============================================================\n\nHow can I achieve RTF 0.028?\nI'm also using an RTX3090.\n\nXXXXRT666 commented \nXXXXRT666\nLast edited by XXXXRT666\nContributor\n\nA simple acceleration using CUDA Graph\n\nNot open source yet\nYou can write it yourself with ChatGPT, it's very simple\n\n👍\nReact with 👍\n1\nReacted by JH.P\nJHP0124 commented \nJHP0124\n\nA simple acceleration using CUDA Graph\n\nNot open source yet You can write it yourself with ChatGPT, it's very simple\n\nthank you. I understand what you mean, thank you for your kind reply.\n\nSign up for free\n to join this conversation on GitHub. Already have an account? Sign in to comment\nMetadata\nAssignees\nNo one assigned\nLabels\nNo labels\nProjects\nNo projects\nMilestone\nNo milestone\nRelationships\nNone yet\nDevelopment\nNo branches or pull requests\nParticipants\nIssue actions\nOpen in GitHub Copilot app"
+    }
+  ],
+  "instructions": "Approve only after checking that each exact quote supports the revised statement. Classify quoted benchmarks and user reports honestly. Matching text does not prove truth. Keep original proposed_statement/section/source_keys/id and source metadata unchanged.",
+  "claims": [
+    {
+      "id": "C01",
+      "section": "Summary",
+      "proposed_statement": "User reports indicate significant variance in GPT-SoVITS v2 ProPlus inference speed across different GPU architectures.",
+      "source_keys": [],
+      "decision": "pending",
+      "statement": "User reports indicate significant variance in GPT-SoVITS v2 ProPlus inference speed across different GPU architectures.",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C02",
+      "section": "Summary",
+      "proposed_statement": "High-end NVIDIA GPUs (RTX 4090) demonstrate real-time factors (RTF) as low as 0.014, while mid-range cards (RTX 4060 Ti) and CPUs show RTF values closer to 0.5.",
+      "source_keys": [],
+      "decision": "pending",
+      "statement": "High-end NVIDIA GPUs (RTX 4090) demonstrate real-time factors (RTF) as low as 0.014, while mid-range cards (RTX 4060 Ti) and CPUs show RTF values closer to 0.5.",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C03",
+      "section": "Summary",
+      "proposed_statement": "Unverified optimizations like CUDA Graphs are discussed but lack public implementation details [S1].",
+      "source_keys": [
+        "S1"
+      ],
+      "decision": "pending",
+      "statement": "Unverified optimizations like CUDA Graphs are discussed but lack public implementation details [S1].",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C04",
+      "section": "Confirmed Findings",
+      "proposed_statement": "High-end hardware (RTX 4090) achieves RTF of 0.014, processing 1400 words in 3.36 seconds.",
+      "source_keys": [],
+      "decision": "pending",
+      "statement": "High-end hardware (RTX 4090) achieves RTF of 0.014, processing 1400 words in 3.36 seconds.",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C05",
+      "section": "Confirmed Findings",
+      "proposed_statement": "Mid-range hardware (RTX 4060 Ti) exhibits an RTF of 0.028 [S2].",
+      "source_keys": [
+        "S2"
+      ],
+      "decision": "pending",
+      "statement": "Mid-range hardware (RTX 4060 Ti) exhibits an RTF of 0.028 [S2].",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C06",
+      "section": "Confirmed Findings",
+      "proposed_statement": "Apple M4 CPU performance reported at RTF 0.526 [S1].",
+      "source_keys": [
+        "S1"
+      ],
+      "decision": "pending",
+      "statement": "Apple M4 CPU performance reported at RTF 0.526 [S1].",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C07",
+      "section": "Confirmed Findings",
+      "proposed_statement": "Token prediction speeds observed around 150 iterations per second [S1].",
+      "source_keys": [
+        "S1"
+      ],
+      "decision": "pending",
+      "statement": "Token prediction speeds observed around 150 iterations per second [S1].",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C08",
+      "section": "Likely Findings",
+      "proposed_statement": "Parameter tuning (e.g., `text_split_method`, `batch_size`) influences first response latency, potentially reducing it to 0.339–0.443 seconds [S1].",
+      "source_keys": [
+        "S1"
+      ],
+      "decision": "pending",
+      "statement": "Parameter tuning (e.g., `text_split_method`, `batch_size`) influences first response latency, potentially reducing it to 0.339–0.443 seconds [S1].",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C09",
+      "section": "Likely Findings",
+      "proposed_statement": "Total processing times vary widely based on sentence length and hardware, ranging from 1.363s (short sentences) to 3.36s (longer Chinese sentences) [S1].",
+      "source_keys": [
+        "S1"
+      ],
+      "decision": "pending",
+      "statement": "Total processing times vary widely based on sentence length and hardware, ranging from 1.363s (short sentences) to 3.36s (longer Chinese sentences) [S1].",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C10",
+      "section": "Likely Findings",
+      "proposed_statement": "Enabling `streaming_mode` or `parallel_infer` may impact latency, though specific results are unverified [S1].",
+      "source_keys": [
+        "S1"
+      ],
+      "decision": "pending",
+      "statement": "Enabling `streaming_mode` or `parallel_infer` may impact latency, though specific results are unverified [S1].",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C11",
+      "section": "User Reports",
+      "proposed_statement": "Users report inconsistent RTF values on similar hardware, questioning reproducibility.",
+      "source_keys": [],
+      "decision": "pending",
+      "statement": "Users report inconsistent RTF values on similar hardware, questioning reproducibility.",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C12",
+      "section": "User Reports",
+      "proposed_statement": "Some report Total RTF between 1.363 and 1.719 under load [S1].",
+      "source_keys": [
+        "S1"
+      ],
+      "decision": "pending",
+      "statement": "Some report Total RTF between 1.363 and 1.719 under load [S1].",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C13",
+      "section": "User Reports",
+      "proposed_statement": "One user noted RTF 1.531 on an RTX 3090 for short Korean sentences [S2].",
+      "source_keys": [
+        "S2"
+      ],
+      "decision": "pending",
+      "statement": "One user noted RTF 1.531 on an RTX 3090 for short Korean sentences [S2].",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C14",
+      "section": "Recommended Experiments",
+      "proposed_statement": "**Proposed:** Test CUDA Graph implementation to reduce overhead, pending code availability.",
+      "source_keys": [],
+      "decision": "pending",
+      "statement": "**Proposed:** Test CUDA Graph implementation to reduce overhead, pending code availability.",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C15",
+      "section": "Recommended Experiments",
+      "proposed_statement": "**Proposed:** Benchmark `streaming_mode` vs. batch inference to determine latency benefits.",
+      "source_keys": [],
+      "decision": "pending",
+      "statement": "**Proposed:** Benchmark `streaming_mode` vs. batch inference to determine latency benefits.",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C16",
+      "section": "Recommended Experiments",
+      "proposed_statement": "**Proposed:** Validate parameter optimizations (`text_split_method`) across different language inputs.",
+      "source_keys": [],
+      "decision": "pending",
+      "statement": "**Proposed:** Validate parameter optimizations (`text_split_method`) across different language inputs.",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C17",
+      "section": "Hardware Relevance",
+      "proposed_statement": "Performance scales heavily with GPU architecture.",
+      "source_keys": [],
+      "decision": "pending",
+      "statement": "Performance scales heavily with GPU architecture.",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C18",
+      "section": "Hardware Relevance",
+      "proposed_statement": "RTX 4090 is significantly faster than RTX 4060 Ti or M4 CPU.",
+      "source_keys": [],
+      "decision": "pending",
+      "statement": "RTX 4090 is significantly faster than RTX 4060 Ti or M4 CPU.",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    },
+    {
+      "id": "C19",
+      "section": "Hardware Relevance",
+      "proposed_statement": "No data exists for RTX 5060 Ti or Ryzen 7500X3D configurations in these reports [S1].",
+      "source_keys": [
+        "S1"
+      ],
+      "decision": "pending",
+      "statement": "No data exists for RTX 5060 Ti or Ryzen 7500X3D configurations in these reports [S1].",
+      "classification": null,
+      "confidence": null,
+      "evidence": [],
+      "note": ""
+    }
+  ]
+}

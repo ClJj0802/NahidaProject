@@ -1,0 +1,59 @@
+{
+  "id": "20261003T014638Z-9f0ef33b",
+  "started_at": "2026-10-03T09:46:38+08:00",
+  "topic": "https://example.com/",
+  "prefix": "live",
+  "stage": "live",
+  "status": "ok",
+  "stages": [],
+  "pages_visited": [
+    "https://example.com/"
+  ],
+  "knowledge_created": [],
+  "knowledge_drafts": [],
+  "limits": {
+    "browser_calls": 18,
+    "page_chars": 4000,
+    "sources": 2,
+    "run_seconds": 110,
+    "llm_tool_calls": 0,
+    "model_turns": 0
+  },
+  "kind": "page",
+  "query": "https://example.com/",
+  "health": {
+    "model": "D:\\Users\\User\\Desktop\\NahidaProject\\Qwen3.5-9B-heretic.Q6_K.gguf",
+    "proxy": {
+      "http://example.com": 200,
+      "http://192.168.1.1": 403,
+      "http://10.0.0.1": 403,
+      "http://172.17.0.1": 403
+    }
+  },
+  "browser_instances": [
+    "f7182aed7d0a17cb8d033cf382df4c468295072b01457c9fcfba5abece98b0ca"
+  ],
+  "finished_at": "2026-10-03T09:46:50+08:00",
+  "browser_calls": 5,
+  "cleanup_failed": [],
+  "result": {
+    "status": "ok",
+    "kind": "page",
+    "captured_at": "2026-10-03T09:46:49+08:00",
+    "sources": [
+      "https://example.com/"
+    ],
+    "results": [
+      {
+        "title": "Example Domain",
+        "url": "https://example.com/",
+        "excerpt": "This domain is for use in documentation examples without needing permission. This is not a service; avoid relying on it for testing and monitoring purposes.\n\nهذا النطاق مُخصص للاستخدام في أمثلة التوثيق دون الحاجة إلى إذن. هذه ليست خدمة، يُرجى تجنب الاعتماد عليها لأغراض الاختبار والمراقبة.\n\n该域名仅用于文档示例，无需获得许可。这并非一项服务，请勿将其用于测试和监控目的。\n\nL’usage de ce domaine est réservé à des exemples de documentation, sans autorisation préalable. Il ne s’agit pas d’un service ; son utilisation à des fins de test ou de surveillance est à éviter.\n\nДанный домен предназначен для использования в примерах документации без необходимости получения предварительного разрешения. Это не сервис; не рекомендуется его использование для тестирования и мониторинга.\n\nEste dominio está destinado al uso en ejemplos de documentación sin necesidad de permiso. Esto no es un servicio; evitar utilizarlo para realizar pruebas o monitoreos.\n\nLearn more",
+        "captured_at": "2026-10-03T09:46:49+08:00",
+        "truncated": true
+      }
+    ],
+    "lookup_id": "20261003T014638Z-9f0ef33b",
+    "performed": true,
+    "record": "research/raw/lookups/20261003T014638Z-9f0ef33b/lookup.json"
+  }
+}

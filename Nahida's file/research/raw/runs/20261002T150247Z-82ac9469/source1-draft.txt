@@ -1,0 +1,63 @@
+# Source 1: GPT-SoVITS v2 ProPlus RTF
+
+**Title**  
+about GPT-SoVITS v2 ProPlus's RTF(inference speed) a criterion
+
+**URL**  
+https://github.com/RVC-Boss/GPT-SoVITS/issues/2579
+
+**Source type**  
+GitHub issue discussion (unverified contributor)
+
+**Observed claims**  
+- Baseline RTF values: 0.028 (RTX 4060 Ti), 0.014 (RTX 4090), 0.526 (Apple M4 CPU) for a 1,400-word sample (~4 min duration).
+- Korean sentence splitting via API v2: first response 0.3–0.4s; measured first response 0.443s; total processing 1.363s.
+- Calculated RTF: 1.531 (total processing / audio length) and 0.497 (average RTF).
+- Alternative run: first response 0.339s; total processing 1.668s; RTF 1.719; average RTF 0.685.
+- Query regarding RTX 3090 performance before CUDA graph optimization.
+
+**Relevant configuration**  
+- `batch_size`: 4
+- `parallel_infer`: True
+- `streaming_mode`: False
+- `sample_steps`: 32
+- `split_bucket`: True
+- `speed_factor`: 1.0
+- `text_lang`: auto / `prompt_lang`: ja
+- Sentence splitting: `text_split_method`: cut0
+
+**Measured performance numbers**  
+- 4090: 0.014 RTF (1,400 words)
+- 4060 Ti: 0.028 RTF
+- M4 CPU: 0.526 RTF
+- API v2 (Korean): 0.443s first response; 1.363s total; 0.89s audio; 1.531 RTF
+- API v2 (Alt): 0.339s first response; 1.668s total; 0.97s audio; 1.719 RTF
+
+**Hardware mentioned**  
+- NVIDIA RTX 4090
+- NVIDIA RTX 4060 Ti
+- NVIDIA RTX 3090 (query only)
+- Apple M4 CPU
+- H200 (Hugging Face demo)
+
+**Software/version mentioned**  
+- GPT-SoVITS v2 ProPlus
+- API v2 (`api_v2.py`)
+- CUDA graph (pre-optimization context)
+
+**Evidence level**  
+- Mixed: User-reported benchmarks vs. logged API metrics. Values vary by setup and text.
+
+**Useful paraphrases**  
+- Short sentences yield faster first-response latency (0.3–0.4s) but RTF depends on total processing.
+- RTF values diverge significantly between direct inference and API v2 pipelines.
+
+**Confidence**  
+- Low to Moderate: Unverified contributor; heterogeneous environments; no controlled comparison.
+
+**Unresolved questions**  
+- Impact of CUDA graph on RTX 3090 latency.
+- Why API v2 RTF (0.5–1.7) exceeds direct inference claims (0.014–0.526).
+
+**Last Updated**  
+2026-10-02T23:03:34+08:00

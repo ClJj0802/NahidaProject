@@ -1,0 +1,39 @@
+{
+  "ok": true,
+  "format": "ai",
+  "targetId": "B65D60121D889EF10E7A7DD3FB5B079A",
+  "url": "https://search.brave.com/search?q=restaurants+near+Puchong+Malaysia&source=web",
+  "snapshot": "- link \"Brave logo\" [ref=e1]\n- button \"Drag the slider\" [ref=e2]\n- link \"Why am I seeing this?\" [ref=e3]\n- link \"Settings\" [ref=e4]\n- link \"Learn more.\" [ref=e5]\n- button \"Close\" [ref=e6]",
+  "refs": {
+    "e1": {
+      "role": "link",
+      "name": "Brave logo"
+    },
+    "e2": {
+      "role": "button",
+      "name": "Drag the slider"
+    },
+    "e3": {
+      "role": "link",
+      "name": "Why am I seeing this?"
+    },
+    "e4": {
+      "role": "link",
+      "name": "Settings"
+    },
+    "e5": {
+      "role": "link",
+      "name": "Learn more."
+    },
+    "e6": {
+      "role": "button",
+      "name": "Close"
+    }
+  },
+  "stats": {
+    "lines": 6,
+    "chars": 187,
+    "refs": 6,
+    "interactive": 6
+  }
+}
