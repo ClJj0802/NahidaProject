@@ -150,7 +150,7 @@ The active path is `main.py` → `TTSWorker` → [tts_client.py](../nahida_brain
 Current request settings:
 
 ```text
-top_k=15, top_p=0.7, temperature=0.7
+top_k=15, top_p=1.0, temperature=0.7
 text_split_method=cut5, batch_size=1, batch_threshold=0.75
 split_bucket=False, parallel_infer=False, repetition_penalty=1.35
 speed_factor=1.0, fragment_interval=0.05, seed=-1
@@ -159,7 +159,7 @@ media_type=wav, streaming_mode=1
 
 `seed=-1` causes GPT-SoVITS to choose and log an actual random seed. In this API version, `streaming_mode=1` returns each completed sentence fragment over HTTP; it does not emit audio while that sentence's semantic tokens are still being generated. The client reads 16-bit PCM WAV data and uses a 0.06-second prebuffer before playback.
 
-Text cleanup removes bracketed actions, asterisk-delimited actions, emoji, and leading punctuation. It also converts full-width `～` and ASCII `~` to Chinese commas **before** `cut5` segmentation. This lets the backend split at those pauses instead of converting a wave sign into an internal ellipsis after segmentation. Runs of two or more ASCII periods, such as `...` or `.....`, become a single Chinese full stop `。`; single periods and decimal points such as `3.14` are preserved. The displayed and stored reply keeps its original text.
+Text cleanup removes bracketed actions, asterisk-delimited actions, emoji, and leading punctuation. It also converts full-width `～` and ASCII `~` to Chinese commas **before** `cut5` segmentation. This lets the backend split at those pauses instead of converting a wave sign into an internal ellipsis after segmentation. ASCII ellipses (`...` or `.....`), Unicode ellipses (`…`, `……`, or `⋯`), and repeated Chinese full stops (`。。。。。`) become a single Chinese full stop `。`; single ASCII periods and decimal points such as `3.14` are preserved. This also removes ellipses that `cut5` would otherwise retain when it merges short fragments. The displayed and stored reply keeps its original text.
 
 On the next chat message, Brain cancels queued/playing TTS and waits up to three seconds for the worker to become idle. Cancellation is cooperative: a blocking network read can delay it, and the client does not send a backend inference-stop request.
 
@@ -167,7 +167,7 @@ On the next chat message, Brain cancels queued/playing TTS and waits up to three
 
 The semantic decoder has a hardcoded 1500-iteration limit. A short sentence running to that limit can produce a long, mostly quiet audio tail even though tokens are generated quickly. Sentence-fragment streaming can therefore play the first sentence promptly while a later sentence remains blocked.
 
-The wave-to-comma cleanup addresses the reproduced punctuation trigger. There is currently no automatic semantic repetition guard, failed-sentence retry, or skip mechanism. The 180-second network timeout is not a per-sentence generation budget. For diagnosis, record the processed sentence, actual seed, semantic-generation duration, and returned audio duration; a `200 OK` response alone does not establish normal completion.
+The wave-to-comma cleanup addresses the reproduced punctuation trigger. Ellipsis cleanup covers both ASCII and Unicode forms, but paired local API tests with the Nahida voice showed that cleanup alone could still return prolonged low-volume audio at `top_p=0.7`. The client uses `top_p=1.0` while preserving `top_k=15` and `temperature=0.7`; changing only `top_p` resolved that reproduced case. There is currently no automatic semantic repetition guard, failed-sentence retry, or skip mechanism. The 180-second network timeout is not a per-sentence generation budget. For diagnosis, record the processed sentence, actual seed, semantic-generation duration, and returned audio duration; a `200 OK` response alone does not establish normal completion.
 
 Logs include `Header ready`, `First playable audio`, and completion wall/audio durations. The final wall/audio ratio includes playback time and is not a synthesis-only benchmark. The client and API print to their terminals; the standard startup does not capture inference logs to a file.
 

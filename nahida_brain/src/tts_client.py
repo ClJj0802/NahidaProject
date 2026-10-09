@@ -118,8 +118,9 @@ class TTSClient:
         # Convert wave punctuation before cut5, which does not split on it.
         text = text.replace("～", "，").replace("~", "，")
 
-        # Give ASCII ellipses a single sentence boundary, preserving decimal points.
-        text = re.sub(r"\.{2,}", "。", text)
+        # Normalize ellipses before short backend segments can merge them.
+        # Keep single ASCII periods and decimal points unchanged.
+        text = re.sub(r"\.{2,}|[…⋯]+|。{2,}", "。", text)
 
         text = re.sub(
             r"^[\s。！？!?，,、；;：:…~～]+",
@@ -141,7 +142,8 @@ class TTSClient:
             "prompt_text": self.prompt_text,
             "prompt_lang": self.prompt_lang,
             "top_k": 15,
-            "top_p": 0.7,
+            # Narrow nucleus sampling produced long quiet output with this voice.
+            "top_p": 1.0,
             "temperature": 0.7,
             "text_split_method": "cut5",
             "batch_size": 1,
