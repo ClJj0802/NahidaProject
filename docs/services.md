@@ -159,7 +159,7 @@ media_type=wav, streaming_mode=1
 
 `seed=-1` causes GPT-SoVITS to choose and log an actual random seed. In this API version, `streaming_mode=1` returns each completed sentence fragment over HTTP; it does not emit audio while that sentence's semantic tokens are still being generated. The client reads 16-bit PCM WAV data and uses a 0.06-second prebuffer before playback.
 
-Text cleanup removes bracketed actions, asterisk-delimited actions, emoji, and leading punctuation. It also converts full-width `～` and ASCII `~` to Chinese commas **before** `cut5` segmentation. This lets the backend split at those pauses instead of converting a wave sign into an internal ellipsis after segmentation. The displayed and stored reply keeps its original text.
+Text cleanup removes bracketed actions, asterisk-delimited actions, emoji, and leading punctuation. It also converts full-width `～` and ASCII `~` to Chinese commas **before** `cut5` segmentation. This lets the backend split at those pauses instead of converting a wave sign into an internal ellipsis after segmentation. Runs of two or more ASCII periods, such as `...` or `.....`, become a single Chinese full stop `。`; single periods and decimal points such as `3.14` are preserved. The displayed and stored reply keeps its original text.
 
 On the next chat message, Brain cancels queued/playing TTS and waits up to three seconds for the worker to become idle. Cancellation is cooperative: a blocking network read can delay it, and the client does not send a backend inference-stop request.
 

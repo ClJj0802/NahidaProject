@@ -118,6 +118,9 @@ class TTSClient:
         # Convert wave punctuation before cut5, which does not split on it.
         text = text.replace("～", "，").replace("~", "，")
 
+        # Give ASCII ellipses a single sentence boundary, preserving decimal points.
+        text = re.sub(r"\.{2,}", "。", text)
+
         text = re.sub(
             r"^[\s。！？!?，,、；;：:…~～]+",
             "",
