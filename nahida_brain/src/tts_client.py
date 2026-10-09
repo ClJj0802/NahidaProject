@@ -115,6 +115,9 @@ class TTSClient:
             text,
         )
 
+        # Convert wave punctuation before cut5, which does not split on it.
+        text = text.replace("～", "，").replace("~", "，")
+
         text = re.sub(
             r"^[\s。！？!?，,、；;：:…~～]+",
             "",
