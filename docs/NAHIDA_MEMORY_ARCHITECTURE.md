@@ -1,8 +1,86 @@
 # Nahida Memory System & Database Design
 
-> Status: Design Draft  
+> Status: Design Draft with Current Implementation Notes\
 > Target: Nahida Brain  
 > Goal: Build a long-term companion memory system that preserves context, relationships, events, goals, emotions, and important life experiences without overloading the LLM context.
+
+---
+
+# 0. Current Implementation (2026-10-09)
+
+This section describes the checked-in implementation. Sections 1–44 remain the original design proposal: their diagrams, example schemas, lifecycles, and implementation phases describe the target architecture rather than a complete list of available features.
+
+## Storage and Memory Types
+
+The current personal database is `nahida_brain/data/nahida.db`, resolved relative to the Brain source directory. [database.py](../nahida_brain/src/database.py) creates and incrementally adds missing columns to these tables at startup:
+
+| Table | Current use |
+| --- | --- |
+| `sessions` | Conversation start and end times |
+| `messages` | User and assistant messages, timestamps, and session IDs |
+| `memories` | Categorized persistent facts and episodes |
+| `session_contexts` | The latest Active Context JSON for each session |
+| `daily_summaries` | One generated episodic summary per date |
+| `events` | Scheduled or tentative events and recurring series |
+| `event_occurrence_state` | Per-occurrence cancellation, completion, time/location overrides, and acknowledgement state |
+
+The [memory analyzer](../nahida_brain/src/memory_filter.py) supports `fixed`, `short_term_episode`, and `autobiographical` memory types. It accepts up to four `add` or `update` operations per message. Categories include `preference`, `personal`, `project`, `decision`, `goal`, `relationship`, `explicit`, `communication`, and `other`; these categories do not create separate structured tables.
+
+Current importance values are integers from 1 to 10. Confidence ranges from 0.0 to 1.0. Short-term episodes use TTLs of 1, 3, 7, or 30 days; the other two memory types have no automatic expiry. Core memory is restricted to `fixed` records. Expiry cleanup runs when Brain starts and marks records inactive with `status='expired'`; it does not delete them. Normal memory and core-memory queries also filter out expired records.
+
+## Retrieval and Active Context
+
+[main.py](../nahida_brain/main.py) gives the analyzer up to 150 active, unexpired memory candidates, ordered by importance and newest ID, together with the previous eight messages in the current session. The LLM selects relevant existing IDs, updates Active Context, and proposes validated memory writes in one call. This is LLM-based selection from a bounded catalog; embeddings, a vector index, and the multi-factor ranking formula in Section 21 are not implemented.
+
+[chat.py](../nahida_brain/src/chat.py) builds each response prompt with up to 20 core fixed memories and up to 20 active `communication` preferences, plus the selected memories, relevant episodic facts, structured events, local time, interaction gap, and the latest eight messages in the current session. Communication preferences affect response style and are excluded from the ordinary selected-memory block.
+
+[Active Context](../nahida_brain/src/active_context.py) uses `topic`, `last_entity_key`, `latest_reference`, and an `entities` list containing at most 12 distinct entity keys. It helps keep pronouns and unnamed people distinct. The latest JSON is saved in `session_contexts`, but each Brain startup creates a new session with an empty Active Context; the main loop does not restore an earlier session's JSON. There is no separate rolling session-summary implementation yet.
+
+## Daily Episodes and Structured Events
+
+[Daily summaries](../nahida_brain/src/daily_summary.py) are generated on `/summary`, when the input loop notices a date change after conversation activity, and on a normal exit when the day has unsummarized activity. These are loop/exit actions, not a scheduled background job. The source is the day's saved messages across sessions. Long histories are summarized in character-bounded chunks and merged chronologically before the daily row is inserted or updated.
+
+The summary prompt requires supported user facts, original message times, specific names, uncertainty, and the latest explicit corrections. Assistant suggestions and unsupported search claims must not become user experiences. These are model instructions; generated summaries are not independently verified.
+
+[Episodic retrieval](../nahida_brain/src/episodic_memory.py) runs for messages containing recall or temporal hints, except simple current-date/time questions. It splits the latest 14 available daily-summary records into facts and asks the LLM to select existing fact IDs. This is separate from short-term episode rows in `memories`; the limit is 14 summaries, not necessarily 14 consecutive calendar days.
+
+[Temporal memory](../nahida_brain/src/temporal_memory.py) analyzes up to 80 event candidates per turn. It supports `add`, `update`, `cancel`, `complete`, and `ignore`, with statuses `scheduled`, `tentative`, `cancelled`, and `completed`. Dates, dayparts, exact times, date ranges, and a limited daily/weekly/monthly/yearly recurrence syntax are handled. A recurring series can keep a single occurrence's cancellation, completion, or changed time/location without changing the whole series.
+
+Today's active occurrences are supplied as conversational context. At most one proactive event opportunity is offered per day, subject to stored acknowledgement/surfacing state. It is a prompt opportunity during a chat turn, not a timed notification. A date passing does not automatically prove an event happened or promote it into autobiographical memory.
+
+## Actual Turn Pipeline
+
+```text
+Keyboard input / SenseVoice transcription
+    ↓
+Save user message
+    ↓
+Analyze and update structured events
+    ↓
+Build today's event awareness and acknowledgement state
+    ↓
+Select personal memories + update Active Context + add/update memories
+    ↓
+Optionally select facts from dated daily summaries
+    ↓
+Build response context
+    ↓
+Route a live lookup / unsupported-lookup reply / reviewed research / normal LLM reply
+    ↓
+Save assistant message
+    ↓
+Submit speech to the background TTS worker when enabled
+```
+
+Reviewed research and live browser results have separate storage and routing. Research findings are not passed into the personal-memory analyzer. Actual user and displayed assistant messages still follow the normal chat-history storage flow. See [Brain research and live lookup documentation](../nahida_brain/RESEARCH.md) for the implemented evidence boundaries and tests.
+
+## Remaining Design Work
+
+Dedicated people/relationships, goals, preferences/habits, narrative state, emotional decay, perception buffers, memory links/access logs, and automatic memory promotion/consolidation remain design goals. Their proposed SQL in Sections 23–36 is not the current migration schema. Some related facts can already be stored as categorized `memories`, and SenseVoice emotion tags are logged, but the tags are not sent into the LLM or a persistent emotion-state layer.
+
+The current memory analyzer does not expose `delete`, `promote`, or `merge` actions. Daily-summary merging combines partial summaries; it does not perform the cross-layer promotion proposed in Sections 18–20. Some metadata columns exist, but a full contradiction/supersession history, confidence-aware retrieval ranking, and retrieval access logging are not wired into the chat loop.
+
+For launch commands, voice configuration, and diagnostic entry points, see [Services](services.md).
 
 ---
 

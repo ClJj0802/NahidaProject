@@ -2,7 +2,7 @@
 
 研究运行完成后，模型生成的文本仍是草稿。完整运行会自动创建审核清单，并登记独立数据库 `Nahida's file/research/db/research.db`。审核明确批准的条目才进入正式查询。这里的“已审核”表示原文与结论的关系经过核对；用户报告或引用基准不会因此变成独立复现的性能事实。
 
-所有命令均在 `NahidaProject` 根目录执行。审核命令使用本地快照，不启动浏览器、Docker 或模型。
+所有命令均在 `NahidaProject` 根目录执行，使用 Python 3.11+。审核命令使用本地快照，不启动浏览器、Docker 或模型；需要保留对应的 `Nahida's file/research/raw/runs/<运行ID>/` 原始文件。仅保留导出的 Markdown 不能替代这些审核依据。
 
 ## 已完成的例子
 
@@ -24,7 +24,9 @@ python nahida-agent-stack/research_review.py search "GPT-SoVITS"
 python nahida-agent-stack/research_review.py context "GPT-SoVITS"
 ```
 
-`context` 返回精简 JSON 字符串；容量不足时省略整条结论并标记 `truncated`，保留完整句子的含义。完整证据可通过对应条目的 ID 和 `search`/审核文件追溯。纳西妲聊天已通过 `retrieve` 调用只读主题检索；该接口从标准输入接收 `{ "text": "用户问题", "active_topic": null }`，明确匹配已审核主题或有限技术追问后才返回资料。详见 [聊天接入说明](../nahida_brain/RESEARCH.md)。
+`context` 返回精简 JSON 字符串；容量不足时省略整条结论并标记 `truncated`，保留完整句子的含义。完整证据可通过对应条目的 ID 和 `search`/审核文件追溯。`search` 默认最多 10 条，可用 `--limit` 调整到 1–20 条；查询字符串最多 300 字符。`context --max-chars` 支持 500–4000 字符。
+
+纳西妲聊天已通过 `retrieve` 调用只读主题检索；该接口从 UTF-8 标准输入接收且仅接受 `{ "text": "用户问题", "active_topic": null }` 两个字段，整个输入最多 16384 字节，`text` 为 1–2000 字符，`active_topic` 为 `null` 或最多 300 字符的字符串。`retrieve --max-chars` 支持 1000–4000 字符，明确匹配已审核主题或有限技术追问后才返回资料；数据库不存在或未匹配主题时返回空的 `knowledge` 列表。Brain 自身使用更小的输入边界，详见 [聊天接入说明](../nahida_brain/RESEARCH.md)。
 
 ## 审核新运行
 
@@ -34,7 +36,7 @@ python nahida-agent-stack/research_review.py context "GPT-SoVITS"
    python nahida-agent-stack/research_review.py prepare --run 20261002T160959Z-cf44ea88
    ```
 
-2. 编辑 `packet.json` 的 `claims`。保留 `id`、`section`、`proposed_statement`、`source_keys` 和所有顶层来源信息。可以修正 `statement`，并填写 `decision`、`classification`、`confidence`、`evidence`、`note`。批准必须有 1–3 段真实原文；每段长度 20–600 字符，且在对应快照中唯一出现。片段不足以支持结论时，应修正或拒绝，不能仅因为匹配了关键词就批准。
+2. 编辑 `packet.json` 的 `claims`。保留全部候选条目、`id`、`section`、`proposed_statement`、`source_keys` 和所有顶层来源信息。可以修正 `statement`，并填写 `decision`、`classification`、`confidence`、`evidence`、`note`。`decision` 使用 `pending`、`approve` 或 `reject`。批准项的修正结论为 10–1200 字符；批准和拒绝都必须填写 5–2000 字符的实质审核说明。批准必须有 1–3 段真实原文；每段长度 20–600 字符，且在对应快照中唯一出现。片段不足以支持结论时，应修正或拒绝，不能仅因为匹配了关键词就批准。
 
    ```json
    {
@@ -56,7 +58,7 @@ python nahida-agent-stack/research_review.py context "GPT-SoVITS"
    python nahida-agent-stack/research_review.py apply --packet research/reviews/20261002T160959Z-cf44ea88/packet.json --reviewer your_name
    ```
 
-批准项写入正式知识，拒绝项保留审核记录，`pending` 项继续是草稿。任一批准项校验失败时整次审核都不写入，避免部分批准。重复索引、生成清单或提交相同审核不会增加重复记录、清空审核决定或覆盖已有清单。修改已经审核的条目要提交明确的新决定；撤回批准可改为 `reject` 并说明原因，正式查询与导出随之移除该条目。
+`check` 只有全部条目校验通过且至少一项为 `approve` 或 `reject` 时才返回 `ready_to_apply: true` 和退出码 0；返回的条目存在 `issues` 或全部仍为 `pending` 时退出码为 2。清单结构、原始依据或文件读取错误会直接停止并返回退出码 1。批准项写入正式知识，拒绝项保留审核记录，`pending` 项继续是草稿。任一条目校验失败时整次审核都不写入，避免部分批准。重复索引、生成清单或提交相同审核不会增加重复记录、清空审核决定或覆盖已有清单。修改已经审核的条目要提交明确的新决定；撤回批准可改为 `reject` 并说明原因，正式查询与导出随之移除该条目。
 
 证据类型可选 `quoted_claim`、`user_report`、`maintainer_statement`、`documentation`、`suggestion`、`inference`。Contributor 身份不能直接等同于维护者。置信度使用 `low`、`medium`、`high`，审核说明应交代它指向文本忠实度还是结论可信度。
 

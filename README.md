@@ -1,11 +1,16 @@
 # Nahida Pet
 
-A desktop Live2D AI companion built with **Tauri**, **PixiJS**, **Live2D Cubism**, local LLM, speech recognition, and voice synthesis.
+A Windows companion project with a **Tauri / PixiJS / Live2D desktop pet** and a separate **Python Nahida Brain** for local-model chat, memory, speech recognition, and voice synthesis.
+
+The pet currently renders Nahida in a transparent, always-on-top 200 × 380 window at the bottom-right of the primary display, with mouse-following gaze and an FPS counter. Chat runs in the Brain terminal. Communication between the pet and Brain, speech-driven lip sync, and emotion-driven expression changes are not implemented yet.
 
 ## Documentation
 
-* **Home** — Project setup and Live2D desktop pet
-* [Services →](docs/services.md) — Nahida Brain, Llama LLM, SenseVoice STT, GPT-SoVITS TTS, and Desktop Pet
+* **Home** — Project setup, launcher, and Live2D desktop pet
+* [Services →](docs/services.md) — Startup, model selection, Brain commands, STT, and Streaming TTS
+* [Memory architecture →](docs/NAHIDA_MEMORY_ARCHITECTURE.md) — Current implementation and the longer-term design draft
+* [Research in Brain →](nahida_brain/RESEARCH.md) — Reviewed knowledge, live lookup, configuration, and limits
+* [Research tools →](nahida-agent-stack/README.md) — Isolated research workflow and [evidence review](nahida-agent-stack/REVIEWING.md)
 
 ---
 
@@ -26,8 +31,10 @@ A desktop Live2D AI companion built with **Tauri**, **PixiJS**, **Live2D Cubism*
 * llama.cpp
 * Qwen3.5
 * SenseVoiceSmall
-* GPT-SoVITS
+* GPT-SoVITS v2Pro with local Nahida fine-tuned weights
 * Python
+
+Optional research and live lookup use the separately configured Docker / OpenClaw stack in `nahida-agent-stack/`.
 
 ---
 
@@ -107,6 +114,24 @@ npm install
 
 The required packages, including PixiJS and the Live2D engine, will automatically be installed from `package.json`.
 
+`npm install` prepares the desktop dependencies. AI services also need the existing `stt-compare/.venv` Python environment, a `GPTSoVits` Conda environment, a `llama` executable available after activating the shared venv, and local model files. See [service setup](docs/services.md#local-environments-and-model-files).
+
+Place GGUF models under `models/`; the launcher defaults to `models/Qwen3.5-9B-heretic.Q6_K.gguf` and can select other models in subfolders. GGUF files and Python environments are ignored by Git. `GPT-SoVITS/` is a separate Git checkout recorded as a gitlink; this repository currently has no `.gitmodules` configuration, so a fresh clone also needs that checkout and its local weights prepared separately.
+
+## Start with the Service Launcher
+
+From the project root, run:
+
+```cmd
+start_nahida.bat
+```
+
+Use **Up / Down** to move, **Space** to toggle services, **Enter** to launch, and **Esc** to exit. The default selection starts GPT-SoVITS, Llama, Nahida Brain, the desktop pet, and enables SenseVoice inside Brain. Select **Choose other model to start** to choose a GGUF under `models/`.
+
+The launcher manages Llama and GPT-SoVITS as separate processes. Running `nahida_brain/main.py` alone requires an existing Llama service on port `8080`; it does not start one. See [manual startup](docs/services.md#manual-startup) for individual components.
+
+The launcher currently hardcodes `D:\Users\User\Desktop\NahidaProject` in its `ROOT` setting. If the checkout moves, update that setting, the TTS paths in `nahida_brain/main.py`, and the custom GPT-SoVITS inference configuration before starting. A listening Llama service is retained; stop it before using the launcher to load a different model.
+
 ---
 
 ## Run the Desktop Pet
@@ -116,6 +141,8 @@ Start the Tauri development application:
 ```bash
 npm run tauri dev
 ```
+
+Run this command from the project root. `run_Nahida_desktop_pet_only.bat` runs the same command and also expects that working directory.
 
 Tauri will:
 
@@ -153,18 +180,37 @@ NahidaProject/
 │
 ├── src-tauri/
 │
+├── models/
+│   └── *.gguf                  # Local LLM weights, including subfolders
+│
 ├── nahida_brain/
 │   ├── main.py
-│   └── ...
+│   ├── src/
+│   ├── tests/
+│   ├── persona/
+│   ├── data/nahida.db          # Local conversation and personal memory
+│   └── RESEARCH.md
 │
-├── GPT-SoVITS/
+├── GPT-SoVITS/                 # Separate checkout, environment, and voice weights
+│
+├── nahida-agent-stack/
+│   ├── research_runner.py
+│   ├── research_review.py
+│   ├── live_lookup.py
+│   └── README.md
+│
+├── Nahida's file/
+│   └── research/              # Independent research artifacts and database
 │
 ├── stt-compare/
-│   └── .venv/
+│   └── .venv/                 # Shared Brain / STT Python environment
 │
 ├── docs/
-│   └── services.md
+│   ├── services.md
+│   └── NAHIDA_MEMORY_ARCHITECTURE.md
 │
+├── start_nahida.bat
+├── run_Nahida_desktop_pet_only.bat
 ├── package.json
 └── README.md
 ```
@@ -271,6 +317,22 @@ For Node.js dependencies, normally only this command is required after cloning:
 ```bash
 npm install
 ```
+
+Check TypeScript and build the frontend with:
+
+```cmd
+npm run build
+```
+
+Build the desktop application with:
+
+```cmd
+npm run tauri build
+```
+
+`npm run dev` starts Vite alone. The pet uses Tauri window APIs, so use `npm run tauri dev` to test desktop behavior.
+
+Brain and research have separate offline test commands and optional live smoke checks; see [service validation](docs/services.md#validation) and [research usage](nahida_brain/RESEARCH.md).
 
 ---
 

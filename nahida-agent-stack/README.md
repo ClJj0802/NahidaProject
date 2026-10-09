@@ -2,13 +2,17 @@
 
 Host runner for the existing OpenClaw **2026.9.2**, Qwen3.5-9B, 16K/one-slot stack. It retains the internal Docker network, Squid, DNS relay and fixed LLM relay. It does not enable OpenClaw memory, skills or shell tools.
 
-Run from `D:\Users\User\Desktop\NahidaProject`:
+This is an optional research subsystem, separate from the desktop pet and normal Brain chat. Run commands from the `NahidaProject` repository root.
+
+The host runner requires Python 3.11+, Docker Desktop and the existing local `openclaw.json`. To start the model itself, it also needs the `llama` executable on `PATH` and the configured GGUF: it checks the configured model-ID path, then falls back to `models/<GGUF filename>`. The credential-bearing configuration is ignored by Git, and existing Docker containers are local machine state. A fresh checkout does not include this setup; the Dockerfiles here are image recipes, not a complete automatic setup. The runner expects `nahida-research-net` (internal, `172.30.50.0/24`), `nahida-egress-net`, the fixed `nahida-research-run`, `nahida-egress-proxy`, `nahida-dns` and `nahida-llm-relay` containers, and the matching agent/browser images. It validates this existing setup rather than provisioning replacements. Offline review commands need Python and the saved research workspace, but do not need Docker or a running model.
+
+Start a full research run:
 
 ```powershell
 python nahida-agent-stack/research_runner.py "GPT-SoVITS speed optimization"
 ```
 
-This runs Discovery → Source 1 → Source 2 → Synthesis. The default discovery page is the GPT-SoVITS GitHub issue search for `inference speed`. For another topic, supply a narrowly filtered public GitHub issue-list URL with `--discovery-url` and a separate artifact basename with `--prefix`. V1 discovery supports GitHub issue lists; it is not a general search engine.
+This runs Discovery → Source 1 → Source 2 → Synthesis. The default discovery page is the GPT-SoVITS GitHub issue search for `inference speed`. For another topic, supply a narrowly filtered public GitHub issue-list URL with `--discovery-url` and a separate artifact basename with `--prefix`. The topic is limited to 1–300 characters; prefixes start with a lowercase letter or digit, use only lowercase letters, digits and underscores, and are at most 64 characters. Synthesis filenames currently always use `<prefix>_speed.md`, including for other topics. V1 discovery supports GitHub issue lists; it is not a general search engine.
 
 Re-run a stage independently:
 
@@ -49,7 +53,7 @@ Every run checks the configured model through the relay and tests Squid: `exampl
 
 Completed full runs now save immutable host-rendered artifacts alongside their original model output and bounded captures, index an independent SQLite database at `research/db/research.db`, and prepare `research/reviews/<run-id>/packet.json`. Failed and individual-stage runs are indexed as run records without automatically proposing new knowledge. Legacy full runs import their original `synthesis-draft.txt`, never the mutable `<prefix>_speed.md` file. Repeating a prefix cannot change an older review's inputs.
 
-Evidence Review V2 provides offline `prepare`, `check`, `apply`, `search`, `context` and `export` commands. See [REVIEWING.md](REVIEWING.md) for the review procedure and the reviewed example from the user's run. Applying a named review promotes only explicitly approved claims; exact excerpts, source hashes and character offsets are checked and stored. Text matching proves provenance, not the truth of a paraphrase or benchmark. Classification and semantic checking remain the reviewer's responsibility.
+Evidence Review V2 provides offline `index`, `prepare`, `check`, `apply`, `search`, `context`, `retrieve` and `export` commands. See [REVIEWING.md](REVIEWING.md) for the review procedure and the reviewed example from the user's run. Applying a named review promotes only explicitly approved claims; exact excerpts, source hashes and character offsets are checked and stored. Text matching proves provenance, not the truth of a paraphrase or benchmark. Classification and semantic checking remain the reviewer's responsibility.
 
 `search` is a read-only audit query that returns only reviewed statements and their evidence. It excludes pending/rejected/archived entries and the original unreviewed proposed text. `context` supplies a compact JSON string of at most 4000 Unicode characters with evidence type, confidence and source links. `retrieve` accepts a bounded UTF-8 JSON request on stdin and scopes results to a recognized reviewed topic or a short technical follow-up. Queries add no model turn and perform no writes.
 
